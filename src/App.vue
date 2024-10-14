@@ -12,8 +12,8 @@ import FooterComponent from './components/FooterComponent.vue';
 
 export default {
   components: {
-    NavbarComponent, // Đảm bảo component navbar được import và sử dụng
-    FooterComponent, // Đảm bảo component footer được import và sử dụng
+    NavbarComponent,
+    FooterComponent, 
   },
 };
 </script>

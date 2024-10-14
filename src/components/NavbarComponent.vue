@@ -1,47 +1,67 @@
 <template>
-  <nav class="navbar">
-    <div class="navbar-left">
-      <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo" />
-      <div class="hospital-name">
-        <h1>BỆNH VIỆN UNIME</h1>
-        <h2>UNIME HOSPITAL</h2>
+  <div class="navbar-container">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo" />
+        <div class="hospital-name">
+          <h1>BỆNH VIỆN UNIME</h1>
+          <h2>UNIME HOSPITAL</h2>
+        </div>
       </div>
-    </div>
-    <ul class="navbar-menu">
-      <li><router-link to="/">Trang chủ</router-link></li>
-      <li><router-link to="/gioi-thieu">Giới thiệu</router-link></li>
-      <li><router-link to="/appointment">Đặt lịch khám</router-link></li>
-      <li><router-link to="/signin" class="button">Đăng nhập</router-link></li>
-      <li><router-link to="/signup" class="button">Đăng kí</router-link></li>
-    </ul>
-  </nav>
+      <div class="navbar-right">
+        <ul :class="['navbar-menu', { 'active': isMenuOpen }]">
+          <li><router-link to="/">Trang chủ</router-link></li>
+          <li><router-link to="/about-us">Giới thiệu</router-link></li>
+          <li><router-link to="/appointment">Đặt lịch khám</router-link></li>
+          <li><router-link to="/sign-in" class="button">Đăng nhập</router-link></li>
+          <li><router-link to="/send-otp" class="button">Đăng kí</router-link></li>
+        </ul>
+        <div class="hamburger" @click="toggleMenu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+  </div>
 </template>
 
 <script>
 export default {
   name: "NavbarComponent",
+  data() {
+    return {
+      isMenuOpen: false,
+    };
+  },
+  methods: {
+    toggleMenu() {
+      this.isMenuOpen = !this.isMenuOpen;
+    },
+  },
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.navbar-container {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
 
 .navbar {
+  max-width: 1440px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ccc;
-  position: fixed; /* Giúp cố định thanh navbar */
-  top: 0; /* Cố định ở đầu trang */
-  left: 0;
-  width: 98%; /* Đảm bảo thanh navbar trải rộng toàn màn hình */
-  z-index: 1000; /* Đảm bảo nó nằm trên tất cả các thành phần khác */
-
-}
-
-body, .navbar, .navbar-menu li a {
   font-family: 'Poppins', sans-serif;
 }
 
@@ -51,62 +71,110 @@ body, .navbar, .navbar-menu li a {
 }
 
 .logo {
-  height: 60px;
-  margin-right: 20px;
+  height: 50px;
+  margin-right: 15px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .hospital-name h1 {
-  font-size: 24px;
+  font-size: 20px;
   margin: 0;
   color: #003a9e;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .hospital-name h2 {
-  font-size: 16px;
+  font-size: 14px;
   margin: 0;
-  color: #003a9e;
-  font-weight: normal;
+  color: #005bb5;
+  font-weight: 400;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
 }
 
 .navbar-menu {
-  list-style-type: none;
+  list-style: none;
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  margin: 0;
   padding: 0;
-}
-
-.navbar-menu li {
-  display: inline-block;
+  transition: max-height 0.3s ease-in-out;
 }
 
 .navbar-menu li a {
   text-decoration: none;
   color: #003a9e;
   font-size: 16px;
-  font-weight: bold;
-  transition: color 0.3s ease-in-out;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
+  padding-bottom: 5px;
 }
 
 .navbar-menu li a:hover {
-  color: #001c80;
-  text-decoration: underline;
+  /* color: #001c80; */
+  border-bottom: 2px solid #001c80;
 }
 
-/* Phong cách cho nút Đăng nhập và Đăng kí */
 .button {
-  padding: 8px 15px;
-  border: 1px solid #003a9e;
-  border-radius: 10px; /* Đường viền tròn giống như trong ảnh */
+  padding: 8px 20px;
+  border: 2px solid #003a9e;
+  border-radius: 25px;
   color: #003a9e;
   font-weight: 500;
-  text-align: center;
-  font-size: 16px;
-  transition: background-color 0.3s ease-in-out;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #f0f0f0;
+  background-color: #003a9e;
+  color: #ffffff;
   cursor: pointer;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: #003a9e;
+  transition: all 0.3s ease;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .navbar-menu {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    flex-direction: column;
+    background-color: #ffffff;
+    width: 200px;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 15px 0;
+    gap: 15px;
+    max-height: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-menu.active {
+    max-height: 500px; 
+  }
+
+  .hamburger {
+    display: flex;
+  }
 }
 </style>

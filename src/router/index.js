@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '@/components/HomePage.vue';
 import SignIn from '@/components/SignIn.vue';
-import GioiThieu from '@/components/GioiThieu.vue';
+import SendOTP from '@/components/SendOTP.vue';
+import VerifyOTP from '@/components/VerifyOTP.vue';
+import SignUp from '@/components/SignUp.vue';
+import ForgotPassword from '@/components/ForgotPassword.vue'; 
+import AboutUs from '@/components/AboutUs.vue';
+
 
 const routes = [
   {
@@ -10,14 +15,37 @@ const routes = [
     component: HomePage,
   },
   {
-    path: '/signin',
+    path: '/sign-in',
     name: 'SignIn',
     component: SignIn,
   },
+  {
+    path: '/sign-up',
+    name: 'SignUp',
+    component: SignUp,
+  },
+  {
+    path: '/send-otp',
+    name: 'SendOTP',
+    component: SendOTP,
+  },
+  {
+    path: '/verify-otp',
+    name: 'VerifyOTP',
+    component: VerifyOTP,
+  },
   { 
-    path: '/gioi-thieu', 
-    name: 'GioiThieu',
-    component: GioiThieu },
+    path: '/forgot-password', 
+    name: 'ForgotPassword',
+    component:  ForgotPassword,
+  },
+
+  { 
+    path: '/about-us', 
+    name: 'AboutUs',
+    component: AboutUs 
+  },
+  
 ];
 
 const router = createRouter({

@@ -37,53 +37,56 @@ export default {
   background-color: #0c4a6e;
   color: white;
   text-align: center;
-  padding: 20px 0;
+  padding: 40px 20px;
   display: flex;
-  flex-direction: column; /* Xếp chồng các phần tử theo chiều dọc */
-  align-items: flex-start; /* Căn lề trái */
+  flex-direction: column;
+  align-items: center; 
 }
 
 .footer-content {
-  text-align: left; /* Căn lề trái cho nội dung */
-  margin-left: 20px; /* Thêm khoảng cách từ cạnh trái */
-  margin-bottom: 20px; /* Thêm khoảng cách giữa footer-content và footer-stats */
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .footer-content h1 {
-  font-size: 2em;
-  margin: 0;
+  font-size: 2.5em;
   font-weight: bold;
-  color: linear-gradient(90deg, #ffffff, #83c9ff);
+  background: linear-gradient(90deg, #ffffff, #83c9ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  margin-bottom: 10px;
 }
 
 .footer-content p {
-  font-size: 1.2em;
+  font-size: 1.4em;
   margin: 5px 0;
+  color: #a3d5fa;
 }
 
 .footer-stats {
   display: flex;
-  justify-content: space-around; /* Giữ các mục của footer-stats giãn đều */
-  width: 100%; /* Đảm bảo footer-stats trải rộng theo chiều ngang */
-  padding: 0 20px; /* Thêm khoảng cách từ cạnh trái và phải */
+  justify-content: space-between;
+  gap: 30px; /* Tạo khoảng cách giữa các mục */
+  max-width: 1200px;
+  width: 100%;
 }
 
 .stat-item {
-  display: flex; /* Đặt layout cho stat-item là flex để sắp xếp theo hàng ngang */
-  align-items: center; /* Đặt hình ảnh và văn bản ở giữa theo chiều dọc */
-  text-align: left; /* Căn lề trái cho nội dung */
-
+  display: flex;
+  flex-direction: column; /* Sắp xếp theo chiều dọc */
+  align-items: center;
+  text-align: center;
 }
 
 .stat-item img {
-  width: 50px;
+  width: 60px;
   margin-bottom: 10px;
 }
 
 .stat-item p {
   margin: 0;
-  font-size: 0.9em;
+  font-size: 1.1em;
   line-height: 1.5;
-  color : #a3d5fa;
+  color: #e0f5ff;
 }
 </style>
