@@ -2,21 +2,21 @@
   <div class="container">
     <div class="login-wrapper">
       <div class="login-image">
-        <img src="@/assets/Doctor_intro.png" alt="Login Image">
+        <img src="@/assets/Doctor_intro.png" alt="Login Image" />
       </div>
       <div class="login-card">
         <h2>Đăng nhập</h2>
         <form @submit.prevent="submitLogin">
           <div class="input-field">
             <div class="input-group">
-              <i class="fas fa-phone"></i>
+              <i class="far fa-user"></i>
               <input
                 type="text"
-                id="phone"
-                v-model="phone"
-                placeholder="Nhập số điện thoại"
+                id="username"
+                v-model="username"
+                placeholder="Nhập username"
                 required
-                aria-label="Số điện thoại"
+                aria-label="Username"
               />
             </div>
           </div>
@@ -31,6 +31,9 @@
                 required
                 aria-label="Mật khẩu"
               />
+              <!-- <span class="toggle-password" @click="toggleShowPassword">
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </span> -->
             </div>
           </div>
           <div v-if="errorMessage" class="error-message">
@@ -45,51 +48,108 @@
       </div>
     </div>
   </div>
-  
 </template>
 
 <script>
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
   name: "SignIn",
-  data() {
+  setup() {
+    const username = ref("");
+    const password = ref("");
+    const showPassword = ref(false);
+    const errorMessage = ref("");
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const toggleShowPassword = () => {
+      showPassword.value = !showPassword.value;
+    };
+
+    const submitLogin = async () => {
+      const formData = new FormData();
+      formData.append("username", username.value);
+      formData.append("password", password.value);
+
+      var userData = {
+        username: "nhathoang",
+        phone: "0123456654",
+        password: "hoang1",
+        role: "user",
+      };
+
+      console.log(username.value);
+      console.log(password.value);
+      console.log(userData.role);
+
+      if (userData.role === "admin") {
+        router.push("/admin-dashboard");
+      } else if (userData.role === "employee") {
+        router.push("/employee-dashboard");
+      } else {
+        router.push("/"); 
+      }
+
+      var userToken = "loremipsum";
+
+      authStore.login(userData, userToken);
+
+      alert("dang nhap thanh cong");
+
+      router.push("/");
+      // try {
+      //   const response = await fetch('http://localhost/login-app/login.php', {
+      //     method: 'POST',
+      //     body: formData
+      //   });
+
+      //   if (!response.ok) {
+      //     throw new Error('Network response was not ok');
+      //   }
+
+      //   const data = await response.json();
+
+      //   if (data.success) {
+      //     // Giả sử backend trả về user data và token
+      //     const userData = data.user; // Thông tin người dùng
+      //     const userToken = data.token; // Token xác thực (nếu có)
+
+      //     // Cập nhật trạng thái trong Store
+      //     authStore.login(userData, userToken);
+
+      //     // Hiển thị thông báo thành công (tuỳ chọn)
+      //     alert(data.message);
+
+      //     // Điều hướng về trang chủ hoặc trang mong muốn
+      //     router.push('/');
+      //   } else {
+      //     // Hiển thị thông báo lỗi từ backend
+      //     errorMessage.value = data.message;
+      //   }
+      // } catch (error) {
+      //   console.error('Error:', error);
+      //   errorMessage.value = 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+      // }
+    };
+
     return {
-      phone: '',
-      password: '',
-      showPassword: false,
-      errorMessage: '',
+      username,
+      password,
+      showPassword,
+      errorMessage,
+      toggleShowPassword,
+      submitLogin,
     };
   },
-  methods: {
-    
-    submitLogin() {
-      const formData = new FormData();
-      formData.append('phone', this.phone);
-      formData.append('password', this.password);
-
-      fetch('http://localhost/login-app/login.php', { 
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message); 
-        } else {
-          this.errorMessage = data.message; 
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        this.errorMessage = 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
-      });
-    }
-  }
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
 
 :root {
   --primary-color: #3b82f6;
@@ -99,20 +159,27 @@ export default {
   --input-border: #ddd;
   --input-focus-border: var(--primary-color);
   --text-color: #333;
-  --link-color: var(--primary-color);
-  --link-hover-color: var(--secondary-color);
+  --link-color: #3b82f6;
+  --link-hover-color: #2563eb;
   --error-color: #ef4444;
 }
 
-body, .login-wrapper, .login-card, .input-field, .login-button, .extra-options a {
-  font-family: 'Poppins', sans-serif;
+body,
+.login-wrapper,
+.login-card,
+.input-field,
+.login-button,
+.extra-options a {
+  font-family: "Poppins", sans-serif;
 }
 
 .container {
   width: 100%;
-  background: linear-gradient(to right,  rgba(255, 255, 255, 1) 5%,     
-    rgba(92, 192, 246, 1) 52%,      
-    rgba(0, 114, 245, 0.9) 100%     
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 1) 5%,
+    rgba(92, 192, 246, 1) 52%,
+    rgba(0, 114, 245, 0.9) 100%
   );
 }
 
@@ -120,8 +187,8 @@ body, .login-wrapper, .login-card, .input-field, .login-button, .extra-options a
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 1440px; 
-  margin: 0 auto; 
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .login-card {
@@ -131,12 +198,12 @@ body, .login-wrapper, .login-card, .input-field, .login-button, .extra-options a
   width: 320px;
   text-align: center;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
-  max-width: 1440px; 
+  max-width: 1440px;
 }
 
 .login-image {
   flex: 1;
-  display: none; 
+  display: none;
   justify-content: center;
   align-items: center;
 }
@@ -197,12 +264,12 @@ h2 {
 .input-group i {
   position: absolute;
   left: 10px;
-  color: var(--secondary-color-color);
+  color: var(--secondary-color);
 }
 
 .input-group input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem; /* Đệm trái để tránh bị chồng icon */
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
   border: 1px solid var(--input-border);
   border-radius: 8px;
   font-size: 1rem;

@@ -66,14 +66,14 @@ export default {
 .footer-stats {
   display: flex;
   justify-content: space-between;
-  gap: 30px; /* Tạo khoảng cách giữa các mục */
+  gap: 30px; 
   max-width: 1200px;
   width: 100%;
 }
 
 .stat-item {
   display: flex;
-  flex-direction: column; /* Sắp xếp theo chiều dọc */
+  flex-direction: column; 
   align-items: center;
   text-align: center;
 }

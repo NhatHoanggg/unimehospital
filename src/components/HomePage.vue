@@ -7,7 +7,7 @@
       <div class="hero-content">
         <h1>Đặt Lịch Khám <br/> Nhanh Chóng và Dễ Dàng</h1>
         <p>Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ chuyên nghiệp.</p>
-        <router-link to="/sign-up" class="cta-button">Đặt Lịch Ngay</router-link>
+        <router-link to="/appointment" class="cta-button">Đặt Lịch Ngay</router-link>
       </div>
       <div class="hero-image">
         <img src="@/assets/doctor-hero1.png" alt="Doctor Illustration" />
@@ -148,20 +148,6 @@ export default {
   font-size: 1.2rem;
   margin-bottom: 2rem;
 }
-
-/* .cta-button {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.cta-button:hover {
-  background-color: var(--secondary-color);
-} */
 
 .cta-button {
   padding: 8px 20px;

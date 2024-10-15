@@ -6,7 +6,8 @@ import VerifyOTP from '@/components/VerifyOTP.vue';
 import SignUp from '@/components/SignUp.vue';
 import ForgotPassword from '@/components/ForgotPassword.vue'; 
 import AboutUs from '@/components/AboutUs.vue';
-
+import UserProfile from '@/components/UserProfile.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const routes = [
   {
@@ -39,18 +40,38 @@ const routes = [
     name: 'ForgotPassword',
     component:  ForgotPassword,
   },
-
   { 
     path: '/about-us', 
     name: 'AboutUs',
     component: AboutUs 
   },
-  
+  { // Thêm route Profile
+    path: '/profile',
+    name: 'Profile',
+    component: UserProfile,
+    meta: { requiresAuth: true },
+  },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+// Global Guard
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (!authStore.isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
+    authStore.initialize();
+  }
+
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    next('/sign-in');
+  } else {
+    next();
+  }
 });
 
 export default router;

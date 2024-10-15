@@ -1,3 +1,4 @@
+<!-- src/components/NavbarComponent.vue -->
 <template>
   <div class="navbar-container">
     <nav class="navbar">
@@ -13,8 +14,22 @@
           <li><router-link to="/">Trang chủ</router-link></li>
           <li><router-link to="/about-us">Giới thiệu</router-link></li>
           <li><router-link to="/appointment">Đặt lịch khám</router-link></li>
-          <li><router-link to="/sign-in" class="button">Đăng nhập</router-link></li>
-          <li><router-link to="/send-otp" class="button">Đăng kí</router-link></li>
+          <!-- Điều kiện hiển thị dựa trên trạng thái đăng nhập -->
+          <li v-if="!authStore.isLoggedIn">
+            <router-link to="/sign-in" class="button">Đăng nhập</router-link>
+          </li>
+          <li v-if="!authStore.isLoggedIn">
+            <router-link to="/send-otp" class="button">Đăng kí</router-link>
+          </li>
+          <li v-else class="user-menu">
+            <div class="user-icon" @click="toggleDropdown">
+              <img src="@/assets/user.png" alt="User Icon" />
+            </div>
+            <div v-if="showDropdown" class="dropdown">
+              <router-link to="/profile">Hồ sơ</router-link>
+              <a href="#" @click.prevent="handleLogout">Đăng xuất</a>
+            </div>
+          </li>
         </ul>
         <div class="hamburger" @click="toggleMenu">
           <span class="bar"></span>
@@ -27,18 +42,41 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+
 export default {
   name: "NavbarComponent",
-  data() {
-    return {
-      isMenuOpen: false,
+  setup() {
+    const isMenuOpen = ref(false);
+    const showDropdown = ref(false);
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value;
     };
-  },
-  methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
-    },
-  },
+
+    const toggleDropdown = () => {
+      showDropdown.value = !showDropdown.value;
+    };
+
+    const handleLogout = () => {
+      authStore.logout();
+      showDropdown.value = false;
+      router.push('/');
+    };
+
+    return {
+      isMenuOpen,
+      toggleMenu,
+      authStore,
+      showDropdown,
+      toggleDropdown,
+      handleLogout
+    };
+  }
 };
 </script>
 
@@ -149,6 +187,45 @@ export default {
   height: 3px;
   background-color: #003a9e;
   transition: all 0.3s ease;
+}
+
+/* Dropdown Menu Styles */
+.user-menu {
+  position: relative;
+}
+
+.user-icon img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 150px;
+}
+
+.dropdown a {
+  padding: 8px 20px;
+  text-decoration: none;
+  color: #003a9e;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown a:hover {
+  background-color: #f0f0f0;
 }
 
 /* Responsive Styles */
