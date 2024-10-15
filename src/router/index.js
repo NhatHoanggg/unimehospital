@@ -6,7 +6,11 @@ import VerifyOTP from '@/components/VerifyOTP.vue';
 import SignUp from '@/components/SignUp.vue';
 import ForgotPassword from '@/components/ForgotPassword.vue'; 
 import AboutUs from '@/components/AboutUs.vue';
+import BookAppointment from '@/components/BookAppointment.vue';
 import UserProfile from '@/components/UserProfile.vue';
+
+import AdminDashboard from '@/components/admin/AdminDashboard.vue';
+import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const routes = [
@@ -45,12 +49,31 @@ const routes = [
     name: 'AboutUs',
     component: AboutUs 
   },
-  { // Thêm route Profile
+  { 
+    path: '/appointment', 
+    name: 'Appointment',
+    component:  BookAppointment,
+  },
+  { 
     path: '/profile',
     name: 'Profile',
     component: UserProfile,
     meta: { requiresAuth: true },
   },
+  { 
+    path: '/admin/admin-dashboard',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: { requiresAuth: true },
+  },
+  
+  { 
+    path: '/employee/employee-dashboard',
+    name: 'EmployeeDashboard',
+    component: EmployeeDashboard,
+    meta: { requiresAuth: true },
+  },
+
 ];
 
 

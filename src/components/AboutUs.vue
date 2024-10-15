@@ -6,35 +6,41 @@
       <p>Dịch vụ khám chữa bệnh hơn 40 chuyên khoa</p>
       <p>Mang đến sức khỏe cho gia đình bạn</p>
     </div>
-
-    <div class="section hospital-details">
-      <h2>Thông tin Bệnh viện</h2>
-      <p>
-        Bệnh viện đã thực hiện hiệu quả công tác điều trị cho hàng trăm ngàn người bệnh ở các lĩnh vực chuyên khoa: Sản – Phụ khoa, Cơ – Xương – Khớp, Tiêu hóa, Tai – Mũi – Họng, Răng – Hàm – Mặt, Nhãn khoa, Phẫu thuật...
+  </div>
+  <div class="hospital-info">
+    <!-- Section: Thông tin bệnh viện -->
+    <section class="hospital-details">
+      <h2 class="section-title">Thông Tin Bệnh Viện</h2>
+      <p class="hospital-description">
+        Bệnh viện đã thực hiện hiệu quả công tác điều trị cho hàng trăm ngàn người bệnh ở các lĩnh vực chuyên khoa: Sản - Phụ khoa, Cơ - Xương - Khớp, Tiêu hóa, Tai - Mũi - Họng, Răng - Hàm - Mặt, Nhãn khoa, Phục hồi chức năng, Y học cổ truyền, khoa Xét nghiệm,...  
       </p>
-    </div>
+      <p class="hospital-description">
+        Bệnh viện UNIME quy tụ đội ngũ chuyên gia giàu kinh nghiệm, có thái độ phục vụ rất tận tình và chu đáo. Đồng thời, với mục tiêu mang đến dịch vụ chăm sóc sức khỏe toàn diện, hỗ trợ hết mình cho người dân, bệnh viện còn ứng dụng hệ thống thiết bị y tế cao cấp, hiện đại, được nhập khẩu đồng bộ từ các nước tiên tiến hàng đầu trên thế giới.
+      </p>
+    </section>
 
-    <div class="section mission-vision">
-      <h2>Sứ mệnh và Tầm nhìn</h2>
-      <div class="mission-slider">
-        <div v-for="(mission, index) in missions" :key="index" class="mission-card">
-          <img :src="mission.image" alt="Mission Image" />
-          <h3>{{ mission.title }}</h3>
-          <p>{{ mission.description }}</p>
+    <!-- Section: Sứ Mệnh và Tầm Nhìn -->
+    <section class="mission-vision">
+      <h2 class="section-title">Sứ Mệnh Và Tầm Nhìn</h2>
+      <div class="mission-cards">
+        <div class="card" v-for="(item, index) in missions" :key="index">
+          <img src="@/assets/mission1.png" class="card-img" />
+          <p class="card-description">{{ item.text }}</p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="section doctors">
-      <h2>Đội ngũ Bác sĩ</h2>
-      <div class="doctor-slider">
-        <div v-for="(doctor, index) in doctors" :key="index" class="doctor-card">
-          <img :src="doctor.image" alt="Doctor Image" />
-          <h3>{{ doctor.name }}</h3>
-          <p>{{ doctor.specialty }}</p>
+    <!-- Section: Đội Ngũ Bác Sĩ -->
+    <section class="doctor-team">
+      <h2 class="section-title">Đội Ngũ Bác Sĩ</h2>
+      <div class="doctor-carousel">
+        <div class="doctor" v-for="(doctor, index) in doctors" :key="index">
+          <img src="@/assets/doctors/doctor-1.jpg" class="doctor-img" alt="Doctor Image" />
+          <p class="doctor-name">{{ doctor.name }}</p>
+          <p class="doctor-specialty">{{ doctor.specialty }}</p>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -44,129 +50,170 @@ export default {
     return {
       missions: [
         {
-          title: "Mang lại giá trị chăm sóc sức khỏe",
-          description: "Cung cấp những dịch vụ khám chữa bệnh toàn diện, đáp ứng nhu cầu chăm sóc sức khỏe của cộng đồng.",
-          image: "@/assets/mission1.jpg"
+          image: '@/assets/mission1.png',
+          text: 'Mang lại dịch vụ chăm sóc y tế chuyên nghiệp, nhân văn, và chất lượng cao. Chúng tôi luôn đặt bệnh nhân làm trung tâm trong mọi hoạt động và nỗ lực không ngừng để cải tiến chất lượng dịch vụ.',
         },
         {
-          title: "Chất lượng hàng đầu",
-          description: "Chúng tôi cung cấp một loạt dịch vụ chăm sóc y tế với chất lượng tốt nhất từ đội ngũ chuyên gia y tế hàng đầu.",
-          image: "@/assets/mission2.jpg"
+          image: '@/assets/mission1.png',
+          text: 'Chúng tôi cung cấp một loạt các dịch vụ y tế từ khám chữa bệnh tổng quát đến các dịch vụ chuyên sâu. Mỗi chuyên khoa đều có đội ngũ bác sĩ hàng đầu với nhiều năm kinh nghiệm.',
         },
         {
-          title: "Đặt sức khỏe bệnh nhân lên hàng đầu",
-          description: "Chúng tôi đặt mục tiêu trở thành đơn vị hàng đầu trong chăm sóc sức khỏe bệnh nhân.",
-          image: "@/assets/mission3.jpg"
-        }
+          image: '@/assets/mission1.png',
+          text: 'Chúng tôi đặt mục tiêu trở thành bệnh viện hàng đầu khu vực trong lĩnh vực chăm sóc sức khỏe hiện đại và tiên tiến, hướng tới sự hài lòng tối đa của bệnh nhân.',
+        },
       ],
       doctors: [
         {
-          name: "Bác sĩ CKI Võ Hải Long",
-          specialty: "Tai Mũi Họng",
-          image: "@/assets/doctors/doctor-1.jpg"
+          image: '@/assets/doctors/doctor-1.jpg',
+          name: 'Bác sĩ CKII Võ Hải Long',
+          specialty: 'Tai Mũi Họng',
         },
         {
-          name: "Bác sĩ CKI Võ Hải Long",
-          specialty: "Tim mạch",
-          image: "@/assets/doctors/doctor-1.jpg"
+          image: '@/assets/doctors/doctor-1.jpg',
+          name: 'Bác sĩ CKII Võ Hải Long',
+          specialty: 'Tim Mạch',
         },
         {
-          name: "Bác sĩ CKI Võ Hải Long",
-          specialty: "Nha Khoa",
-          image: "@/assets/doctors/doctor-1.jpg"
+          image: '@/assets/doctors/doctor-1.jpg',
+          name: 'Bác sĩ CKII Võ Hải Long',
+          specialty: 'Nha Khoa',
         },
-      ]
+      ],
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
+
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #2563eb;
+  --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --card-background: #ffffff;
+  --input-border: #ddd;
+  --input-focus-border: var(--primary-color);
+  --text-color: #333;
+  --link-color: var(--primary-color);
+  --link-hover-color: var(--secondary-color);
+  --error-color: #ef4444;
+}
+
 .about-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.section {
-  margin-bottom: 40px;
-}
-
 .hospital-info {
-  text-align: center;
-  color: #004aad;
-}
-
-.hospital-info h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-.hospital-info p {
-  font-size: 1.2rem;
-}
-
-.hospital-image {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.hospital-details h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.hospital-details p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
-
-.mission-slider,
-.doctor-slider {
-  display: flex;
-  overflow-x: auto;
-  gap: 20px;
-  padding-bottom: 10px;
-}
-
-.mission-card,
-.doctor-card {
-  flex: 0 0 300px;
-  background-color: #fff;
+  font-family: 'Poppins', sans-serif;
+  max-width: 1440px;
+  margin: 0 auto;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  background-color: #f5f7fa;
 }
 
-.mission-card img,
-.doctor-card img {
+.section-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.hospital-details,
+.mission-vision,
+.doctor-team {
+  background-color: var(--card-background);
+  padding: 30px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hospital-description {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+.mission-cards {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 400px;
+  height: 600px;
+  background-color: var(--card-background);
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
   border-radius: 10px;
   margin-bottom: 15px;
 }
 
-.mission-card h3,
-.doctor-card h3 {
-  font-size: 1.4rem;
-  color: #004aad;
-  margin-bottom: 10px;
+.card-description {
+  font-size: 14px;
+  color: var(--text-color);
 }
 
-.mission-card p,
-.doctor-card p {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.4;
+.doctor-carousel {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-@media (min-width: 1024px) {
-  .mission-slider,
-  .doctor-slider {
-    padding-left: 20px;
-  }
+.doctor {
+  text-align: center;
+  width: 300px;
+  padding: 20px;
+  background-color: var(--card-background);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.doctor-img {
+  border-radius: 20%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 15px;
+  transition: box-shadow 0.3s ease;
+}
+
+.doctor-img:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.doctor-name {
+  font-size: 18px;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+.doctor-specialty {
+  font-size: 16px;
+  color: var(--text-color);
 }
 </style>

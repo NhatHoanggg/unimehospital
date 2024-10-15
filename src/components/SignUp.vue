@@ -152,8 +152,7 @@ export default {
         return;
       }
 
-      // Nếu tất cả hợp lệ, chuyển đến trang OTP
-      this.$router.push("/otp");
+      this.$router.push("/sign-in");
     },
   },
 };

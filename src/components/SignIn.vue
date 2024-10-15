@@ -83,13 +83,13 @@ export default {
 
       console.log(username.value);
       console.log(password.value);
-      console.log(userData.role);
+      userData.role = password.value;
 
-      if (userData.role === "admin") {
-        router.push("/admin-dashboard");
+      if (userData.role == "admin") {
+        router.push("/admin/admin-dashboard");
       } else if (userData.role === "employee") {
-        router.push("/employee-dashboard");
-      } else {
+        router.push("/employee/employee-dashboard");
+      } else if (userData.role === "user") {
         router.push("/"); 
       }
 
@@ -99,9 +99,9 @@ export default {
 
       alert("dang nhap thanh cong");
 
-      router.push("/");
+
       // try {
-      //   const response = await fetch('http://localhost/login-app/login.php', {
+      //   const response = await fetch('http://localhost/login', {
       //     method: 'POST',
       //     body: formData
       //   });
@@ -113,20 +113,16 @@ export default {
       //   const data = await response.json();
 
       //   if (data.success) {
-      //     // Giả sử backend trả về user data và token
-      //     const userData = data.user; // Thông tin người dùng
-      //     const userToken = data.token; // Token xác thực (nếu có)
+         
+      //     const userData = data.user; 
+      //     const userToken = data.token; 
 
-      //     // Cập nhật trạng thái trong Store
       //     authStore.login(userData, userToken);
 
-      //     // Hiển thị thông báo thành công (tuỳ chọn)
       //     alert(data.message);
 
-      //     // Điều hướng về trang chủ hoặc trang mong muốn
       //     router.push('/');
       //   } else {
-      //     // Hiển thị thông báo lỗi từ backend
       //     errorMessage.value = data.message;
       //   }
       // } catch (error) {

@@ -1,9 +1,8 @@
-<!-- src/components/NavbarComponent.vue -->
 <template>
   <div class="navbar-container">
     <nav class="navbar">
       <div class="navbar-left">
-        <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo" />
+        <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo"/>
         <div class="hospital-name">
           <h1>BỆNH VIỆN UNIME</h1>
           <h2>UNIME HOSPITAL</h2>
@@ -11,10 +10,10 @@
       </div>
       <div class="navbar-right">
         <ul :class="['navbar-menu', { 'active': isMenuOpen }]">
-          <li><router-link to="/">Trang chủ</router-link></li>
-          <li><router-link to="/about-us">Giới thiệu</router-link></li>
-          <li><router-link to="/appointment">Đặt lịch khám</router-link></li>
-          <!-- Điều kiện hiển thị dựa trên trạng thái đăng nhập -->
+          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/">Trang chủ</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/about-us">Giới thiệu</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/appointment">Đặt lịch khám</router-link></li>
+          
           <li v-if="!authStore.isLoggedIn">
             <router-link to="/sign-in" class="button">Đăng nhập</router-link>
           </li>
@@ -22,12 +21,18 @@
             <router-link to="/send-otp" class="button">Đăng kí</router-link>
           </li>
           <li v-else class="user-menu">
-            <div class="user-icon" @click="toggleDropdown">
-              <img src="@/assets/user.png" alt="User Icon" />
+            <div class="container">
+              <span>Xin chào! {{ authStore.user.username }}</span>
+              <div class="user-icon" @click="toggleDropdown">
+                <img src="@/assets/user.png" alt="User Icon" />
+              </div>
             </div>
+            
             <div v-if="showDropdown" class="dropdown">
-              <router-link to="/profile">Hồ sơ</router-link>
-              <a href="#" @click.prevent="handleLogout">Đăng xuất</a>
+              <router-link to="/profile"> <i class="fas fa-user"></i>  Hồ sơ</router-link>
+              <router-link to="/profile"> <i class="fas fa-history"></i>  Lịch sử</router-link>
+              <router-link to="/profile"> <i class="fas fa-cog"></i>   Cài đặt</router-link>
+              <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i>   Đăng xuất</a>
             </div>
           </li>
         </ul>
@@ -132,6 +137,12 @@ export default {
   font-weight: 400;
 }
 
+.container{
+  display: flex;
+  align-items: space-between;
+  gap: 20px;
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
@@ -214,6 +225,7 @@ export default {
   flex-direction: column;
   gap: 10px;
   min-width: 150px;
+  text-align: left;
 }
 
 .dropdown a {
