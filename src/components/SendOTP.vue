@@ -13,7 +13,7 @@
               <input
                 type="email"
                 id="email"
-                v-model="ElementInternals"
+                v-model="email"
                 placeholder="Nhập Email"
                 required
                 aria-label="Email"
@@ -40,13 +40,16 @@ export default {
   data() {
     return {
       email: "",
+      errorMessage: "",
     };
   },
   methods: {
     submitregister() {
-      this.email = "rimpve76@gmail.com"
       if (this.email) {
-        this.$router.push("/verify-otp");
+        this.$router.push({ 
+          path: "/verify-otp", 
+          query: { email: this.email } 
+        });
       } else {
         this.errorMessage = "Vui lòng nhập email hợp lệ";
       }

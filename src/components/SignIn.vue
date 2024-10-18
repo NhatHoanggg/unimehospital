@@ -54,6 +54,7 @@
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+// import jwt_decode from "jwt-decode";
 
 export default {
   name: "SignIn",
@@ -74,61 +75,68 @@ export default {
       formData.append("username", username.value);
       formData.append("password", password.value);
 
-      var userData = {
-        username: "nhathoang",
-        phone: "0123456654",
-        password: "hoang1",
-        role: "user",
-      };
+      // var userData = {
+      //   username: "nhathoang",
+      //   phone: "0123456654",
+      //   password: "hoang1",
+      //   role: "user",
+      // };
 
-      console.log(username.value);
-      console.log(password.value);
-      userData.role = password.value;
+      // console.log(username.value);
+      // console.log(password.value);
+      // userData.role = password.value;
 
-      if (userData.role == "admin") {
-        router.push("/admin/admin-dashboard");
-      } else if (userData.role === "employee") {
-        router.push("/employee/employee-dashboard");
-      } else if (userData.role === "user") {
-        router.push("/"); 
-      }
-
-      var userToken = "loremipsum";
-
-      authStore.login(userData, userToken);
-
-      alert("dang nhap thanh cong");
-
-
-      // try {
-      //   const response = await fetch('http://localhost/login', {
-      //     method: 'POST',
-      //     body: formData
-      //   });
-
-      //   if (!response.ok) {
-      //     throw new Error('Network response was not ok');
-      //   }
-
-      //   const data = await response.json();
-
-      //   if (data.success) {
-         
-      //     const userData = data.user; 
-      //     const userToken = data.token; 
-
-      //     authStore.login(userData, userToken);
-
-      //     alert(data.message);
-
-      //     router.push('/');
-      //   } else {
-      //     errorMessage.value = data.message;
-      //   }
-      // } catch (error) {
-      //   console.error('Error:', error);
-      //   errorMessage.value = 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+      // if (userData.role == "admin") {
+      //   router.push("/admin/admin-dashboard");
+      // } else if (userData.role === "employee") {
+      //   router.push("/employee/employee-dashboard");
+      // } else if (userData.role === "user") {
+      //   router.push("/");
       // }
+
+      // var userToken = "loremipsum";
+
+      // authStore.login(userData, userToken);
+
+      // alert("dang nhap thanh cong");
+
+      try {
+        const response = await fetch("http://localhost:8888/UNIME/auth/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username.value,
+            password: password.value,
+          }),
+        });
+
+        console.log("Response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Server response:", data); 
+        console.log("Token response:", data.result.token)
+
+        const t = data.result.token;
+        let token = {};
+        token.raw = t;
+        token.header = JSON.parse(window.atob(t.split('.')[0]));
+        token.payload = JSON.parse(window.atob(t.split('.')[1]));
+        console.log("token: ", token.payload)
+
+        authStore.login(token.payload); 
+
+        alert("Đăng nhập thành công");
+        router.push("/");
+      } catch (error) {
+        console.error("Error:", error);
+        errorMessage.value = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+      }
     };
 
     return {

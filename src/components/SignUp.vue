@@ -12,9 +12,9 @@
               <i class="fas fa-user"></i>
               <input
                 type="text"
-                id="username"
-                v-model="username"
-                placeholder="Nhập tên người dùng"
+                id="fullname"
+                v-model="fullname"
+                placeholder="Nhập họ tên người dùng"
                 required
                 aria-label="Tên người dùng"
               />
@@ -26,11 +26,11 @@
               <i class="fas fa-user"></i>
               <input
                 type="text"
-                id="fullname"
-                v-model="fullname"
-                placeholder="Nhập họ tên"
+                id="username"
+                v-model="username"
+                placeholder="Nhập tên đăng nhập"
                 required
-                aria-label="Họ tên"
+                aria-label="Tên người dùng"
               />
             </div>
           </div>
@@ -79,6 +79,44 @@
 
           <div class="input-field">
             <div class="input-group">
+              <i class="fas fa-calendar-alt"></i>
+              <input
+                type="date"
+                id="dob"
+                v-model="dob"
+                required
+                aria-label="Ngày sinh"
+              />
+            </div>
+          </div>
+
+          <div class="input-field">
+            <div class="input-group">
+              <label for="gender">Giới tính:</label>
+              <select v-model="gender" required>
+                <option value="" disabled selected>Chọn giới tính</option>
+                <option value="true">Nam</option>
+                <option value="false">Nữ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <div class="input-group">
+              <i class="fas fa-phone"></i>
+              <input
+                type="tel"
+                id="phone"
+                v-model="phone"
+                placeholder="Nhập số điện thoại"
+                required
+                aria-label="Số điện thoại"
+              />
+            </div>
+          </div>
+
+          <div class="input-field">
+            <div class="input-group">
               <i class="fas fa-map-marker-alt"></i>
               <input
                 type="text"
@@ -87,19 +125,6 @@
                 placeholder="Nhập địa chỉ"
                 required
                 aria-label="Địa chỉ"
-              />
-            </div>
-          </div>
-
-          <div class="input-field">
-            <div class="input-group">
-              <i class="fas fa-calendar-alt"></i>
-              <input
-                type="date"
-                id="dob"
-                v-model="dob"
-                required
-                aria-label="Ngày sinh"
               />
             </div>
           </div>
@@ -118,30 +143,35 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       username: "",
       fullname: "",
-      email: "",
+      email: this.$route.query.email || "",
       password: "",
       confirmPassword: "",
       address: "",
       dob: "",
+      gender: "", 
+      phone: "",  
       errorMessage: "",
     };
   },
   methods: {
-    submitregister() {
-      // Kiểm tra các trường dữ liệu tại đây
+    async submitregister() {
       if (
-        !this.username ||
         !this.fullname ||
+        !this.username ||
         !this.email ||
         !this.password ||
         !this.confirmPassword ||
         !this.address ||
-        !this.dob
+        !this.dob ||
+        !this.gender ||
+        !this.phone
       ) {
         this.errorMessage = "Vui lòng điền tất cả các trường.";
         return;
@@ -152,7 +182,27 @@ export default {
         return;
       }
 
-      this.$router.push("/sign-in");
+      const patientData = {
+        patientUsername: this.username,
+        patientPassword: this.password,
+        patientEmail: this.email,
+        patientName: this.fullname,
+        patientAddress: this.address,
+        patientPhoneNumber: this.phone,
+        patientGender: this.gender === "true", 
+        patientDateOfBirth: this.dob,
+      };
+      console.log(patientData)
+      try {
+        const response = await axios.post('http://localhost:8888/UNIME/patients', patientData);
+        
+        console.log(response.data);
+        
+        this.$router.push("/sign-in");
+      } catch (error) {
+        this.errorMessage = "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.";
+        console.error(error);
+      }
     },
   },
 };

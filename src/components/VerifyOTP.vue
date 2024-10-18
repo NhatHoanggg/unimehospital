@@ -17,9 +17,9 @@
                 placeholder="Nhập mã OTP"
                 required
                 aria-label="OTP"
-                maxlength="6"
-                pattern="\d{6}"
-                title="Vui lòng nhập 6 chữ số OTP"
+                maxlength="4"
+                pattern="\d{4}"
+                title="Vui lòng nhập 4 chữ số OTP"
               />
             </div>
           </div>
@@ -50,14 +50,14 @@ export default {
     return {
       otp: "",
       errorMessage: "",
-      email: "", 
+      email: this.$route.query.email || "", 
     };
   },
   methods: {
     submitOTP() {
-      const otpPattern = /^\d{6}$/;
+      const otpPattern = /^\d{4}$/;
       if (!otpPattern.test(this.otp)) {
-        this.errorMessage = "Mã OTP phải là 6 chữ số.";
+        this.errorMessage = "Mã OTP phải là 4 chữ số.";
         return;
       }
       /*
@@ -71,8 +71,11 @@ export default {
         */
 
       // Ví dụ tạm thời:
-      if (this.otp === "123456") {
-        this.$router.push("/sign-up"); 
+      if (this.otp === "8888") {
+        this.$router.push({ 
+          path: "/sign-up", 
+          query: { email: this.email } 
+        });
       } else {
         this.errorMessage = "Mã OTP không hợp lệ.";
       }

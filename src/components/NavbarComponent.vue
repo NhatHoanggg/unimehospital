@@ -10,9 +10,9 @@
       </div>
       <div class="navbar-right">
         <ul :class="['navbar-menu', { 'active': isMenuOpen }]">
-          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/">Trang chủ</router-link></li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/about-us">Giới thiệu</router-link></li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.role === 'user' )|| !authStore.isLoggedIn"><router-link to="/appointment">Đặt lịch khám</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT' )|| !authStore.isLoggedIn"><router-link to="/">Trang chủ</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT' )|| !authStore.isLoggedIn"><router-link to="/about-us">Giới thiệu</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT' )|| !authStore.isLoggedIn"><router-link to="/appointment">Đặt lịch khám</router-link></li>
           
           <li v-if="!authStore.isLoggedIn">
             <router-link to="/sign-in" class="button">Đăng nhập</router-link>
