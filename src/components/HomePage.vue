@@ -7,7 +7,7 @@
       <div class="hero-content">
         <h1>Đặt Lịch Khám <br/> Nhanh Chóng và Dễ Dàng</h1>
         <p>Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ chuyên nghiệp.</p>
-        <router-link to="/appointment" class="cta-button">Đặt Lịch Ngay</router-link>
+        <router-link to="/booking" class="cta-button">Đặt Lịch Ngay</router-link>
       </div>
       <div class="hero-image">
         <img src="@/assets/doctor-hero1.png" alt="Doctor Illustration" />
@@ -41,8 +41,11 @@
 </template>
 
 <script>
+
+
 export default {
   name: "HomePage",
+  
   data() {
     return {
       isMenuOpen: false,

@@ -54,7 +54,6 @@
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
-// import jwt_decode from "jwt-decode";
 
 export default {
   name: "SignIn",
@@ -131,8 +130,8 @@ export default {
 
         authStore.login(token.payload); 
 
-        alert("Đăng nhập thành công");
         router.push("/");
+        
       } catch (error) {
         console.error("Error:", error);
         errorMessage.value = "Đã xảy ra lỗi. Vui lòng thử lại sau.";

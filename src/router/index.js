@@ -6,12 +6,19 @@ import VerifyOTP from '@/components/VerifyOTP.vue';
 import SignUp from '@/components/SignUp.vue';
 import ForgotPassword from '@/components/ForgotPassword.vue'; 
 import AboutUs from '@/components/AboutUs.vue';
-import BookAppointment from '@/components/BookAppointment.vue';
+import BookingPage from '@/components/BookingPage.vue';
+import BookDoctor from '@/components/BookDoctor.vue';
+import BookService from '@/components/BookService.vue';
+
 import UserProfile from '@/components/UserProfile.vue';
+import DoctorDetail from '@/components/DoctorDetail.vue';
 
 import AdminDashboard from '@/components/admin/AdminDashboard.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import { useAuthStore } from '@/stores/auth';
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 const routes = [
   {
@@ -50,10 +57,28 @@ const routes = [
     component: AboutUs 
   },
   { 
-    path: '/appointment', 
-    name: 'Appointment',
-    component:  BookAppointment,
+    path: '/booking', 
+    name: 'Booking',
+    component:  BookingPage,
+    children: [
+      {
+        path: 'doctors',
+        component: BookDoctor,
+      },
+      {
+        path: 'services',
+        component: BookService,
+      },
+    ],
   },
+
+  {
+    path: '/doctor/:id', 
+    name: 'DoctorDetail',
+    component: DoctorDetail,
+    props: true,
+  },
+
   { 
     path: '/profile',
     name: 'Profile',
@@ -82,7 +107,6 @@ const router = createRouter({
   routes,
 });
 
-// Global Guard
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
@@ -94,6 +118,12 @@ router.beforeEach((to, from, next) => {
     next('/sign-in');
   } else {
     next();
+  }
+});
+
+router.afterEach((to, from) => {
+  if (to.name === 'Home' && from.name === 'SignIn') {
+    toast('Đăng nhập thành công');
   }
 });
 

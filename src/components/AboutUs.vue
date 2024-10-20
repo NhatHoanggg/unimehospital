@@ -35,7 +35,7 @@
       <h2 class="section-title">Đội Ngũ Bác Sĩ</h2>
       <div class="doctor-carousel">
         <div class="doctor" v-for="(doctor, index) in doctors" :key="index">
-          <img src="@/assets/doctors/doctor-1.jpg" class="doctor-img" alt="Doctor Image" />
+          <img src="" class="doctor-img" alt="Doctor Image" />
           <p class="doctor-name">{{ doctor.name }}</p>
           <p class="doctor-specialty">{{ doctor.specialty }}</p>
         </div>
@@ -105,14 +105,14 @@ export default {
 .about-container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .hospital-info {
   font-family: 'Poppins', sans-serif;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 20px;
+  /* padding: 20px; */
   background-color: #f5f7fa;
 }
 
