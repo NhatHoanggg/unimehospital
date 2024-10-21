@@ -8,6 +8,7 @@ import ForgotPassword from '@/components/ForgotPassword.vue';
 import AboutUs from '@/components/AboutUs.vue';
 import BookingPage from '@/components/BookingPage.vue';
 import BookDoctor from '@/components/BookDoctor.vue';
+import BookDoctorPage from '@/components/BookDoctorPage.vue';
 import BookService from '@/components/BookService.vue';
 
 import UserProfile from '@/components/UserProfile.vue';
@@ -73,9 +74,16 @@ const routes = [
   },
 
   {
-    path: '/doctor/:id', 
+    path: '/booking/doctors/:id', 
     name: 'DoctorDetail',
     component: DoctorDetail,
+    props: true,
+  },
+
+  {
+    path: '/booking/doctors/:id/booking-appointment', 
+    name: 'BookDoctorPage',
+    component: BookDoctorPage,
     props: true,
   },
 

@@ -11,7 +11,7 @@
             <p>{{ doctor.description }}</p>
             <div class="doctor-actions">
               <button class="btn view-more" @click="viewMore(doctor.id)">Xem thêm</button>
-              <button class="btn book-appointment">Đặt lịch</button>
+              <button class="btn book-appointment" @click="bookDoctor(doctor.id)">Đặt lịch</button>
             </div>
           </div>
         </div>
@@ -58,8 +58,10 @@
     },
     methods: {
       viewMore(id) {
-        // Điều hướng đến trang chi tiết bác sĩ
         this.$router.push({ name: 'DoctorDetail', params: { id } });
+      },
+      bookDoctor(id) {
+        this.$router.push({ name: 'BookDoctorPage', params: { id } });
       },
     },
   };
