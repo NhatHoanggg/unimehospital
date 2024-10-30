@@ -51,6 +51,9 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
 export default {
   data() {
     return {
@@ -59,12 +62,12 @@ export default {
       selectedDay: 0,
       visibleItems: 7,
       schedules: {
-        "22/10/2024": ["8:30-9:00", "9:30-10:00", "10:00-10:30"],
-        "23/10/2024": ["9:00-9:30", "10:30-11:00", "14:00-14:30"],
-        "24/10/2024": ["8:30-9:00", "10:00-10:30", "15:30-16:00"],
+        "30/10/2024": ["8:30-9:00", "9:30-10:00", "10:00-10:30"],
+        "31/10/2024": ["9:00-9:30", "10:30-11:00", "14:00-14:30"],
+        "1/11/2024": ["8:30-9:00", "10:00-10:30", "15:30-16:00"],
       },
       isCollapsed: false,
-      selectedShift: null, // Lưu trữ ca làm việc được chọn
+      selectedShift: null, 
     };
   },
   computed: {
@@ -125,9 +128,15 @@ export default {
     confirmSelection() {
       if (this.selectedShift) {
         const selectedDate = this.days[this.selectedDay];
-        alert(`Ngày: ${selectedDate}, Giờ: ${this.selectedShift}`);
+        this.$emit('date-selected', { date: selectedDate, time: this.selectedShift });
+        this.isCollapsed = !this.isCollapsed;
       } else {
-        alert("Vui lòng chọn giờ khám trước khi tiếp tục.");
+        toast.warning('Vui lòng chọn giờ khám trước khi tiếp tục!',
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);   
       }
     },
   },
@@ -143,6 +152,7 @@ export default {
   align-items: center;
   justify-content: center;
   display: flex;
+  color: #2046A9;
 }
 
 .box {
@@ -196,6 +206,7 @@ export default {
   cursor: pointer;
   color: #0047ba;
   background-color: white;
+  font-size: 20px;
 }
 
 .slider-item.active {
@@ -210,6 +221,9 @@ export default {
   padding: 10px;
   cursor: pointer;
   font-size: 1.5rem;
+  border-radius: 20px;
+  width: 50px;
+  height: 50px;
 }
 
 .arrow-button:hover {

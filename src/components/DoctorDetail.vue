@@ -130,7 +130,7 @@
   .doctor-highlight p,
   .doctor-basic-info p {
     color: #333;
-    white-space: pre-wrap; /* Giữ nguyên định dạng xuống dòng */
+    white-space: pre-wrap; 
   }
   </style>
   
