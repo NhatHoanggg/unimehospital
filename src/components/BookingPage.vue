@@ -30,7 +30,6 @@
     <div class="tab-content">
       <BookDoctor v-if="currentTab === 'doctor'" />
       <BookService v-if="currentTab === 'service'" />
-      <BookSpecialty v-if="currentTab === 'specialty'" />
     </div>
   </div>
 </template>

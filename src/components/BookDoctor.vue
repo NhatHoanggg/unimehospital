@@ -1,72 +1,85 @@
 <template>
-    <div class="doctor-container">
-      <div class="doctor-list">
-        <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
-          <div class="doctor-image">
-            <img :src="doctor.image" alt="Doctor Image" />
-          </div>
-          <div class="doctor-info">
-            <h3>{{ doctor.name }}</h3>
-            <p><strong>Khoa: </strong>{{ doctor.specialty }}</p>
-            <p>{{ doctor.description }}</p>
-            <div class="doctor-actions">
-              <button class="btn view-more" @click="viewMore(doctor.id)">Xem thêm</button>
-              <button class="btn book-appointment" @click="bookDoctor(doctor.id)">Đặt lịch</button>
-            </div>
+  <div class="doctor-container">
+    <div class="doctor-list">
+      <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
+        <div class="doctor-image">
+          <img :src="doctor.avatar" alt="Doctor Image" />
+        </div>
+        <div class="doctor-info">
+          <h3>{{ doctor.name }}</h3>
+          <p><strong>Khoa: </strong>{{ doctor.specitalty }}</p>
+          <p>{{ doctor.info }}</p>
+          <div class="doctor-actions">
+            <button class="btn view-more" @click="viewMore(doctor.id)">Xem thêm</button>
+            <button class="btn book-appointment" @click="bookDoctor(doctor.id)">Đặt lịch</button>
           </div>
         </div>
       </div>
-  
-      <div class="pagination">
-        <button class="pagination-btn">◀</button>
-        <span class="page-indicator">1</span>
-        <button class="pagination-btn">▶</button>
-      </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "BookDoctor",
-    data() {
-      return {
-        doctors: [
-          {
-            id: 1,
-            name: "PGS.TS.BS Lê Quang Quốc Ánh",
-            specialty: "Tiêu hóa",
-            description:
-              "- Chuyên về nội soi tiêu hóa. Hiện là Trưởng đơn vị Nội soi tại Bệnh viện Đa Khoa Tâm Trí - Sài Gòn.",
-            image: "/doctors/doctor-1.jpg",
-          },
-          {
-            id: 2,
-            name: "PGS.TS.BS Nguyễn Văn A",
-            specialty: "Tiêu hóa",
-            description: "- Chuyên về phẫu thuật nội soi và nội soi can thiệp.",
-            image: "/doctors/doctor-2.jpg",
-          },
-          {
-            id: 3,
-            name: "PGS.TS.BS Trần Văn B",
-            specialty: "Tiêu hóa",
-            description: "- Chuyên về điều trị bệnh lý đường tiêu hóa.",
-            image: "/doctors/doctor-2.jpg",
-          },
-        ],
-      };
+
+    <div class="pagination">
+      <button class="pagination-btn" @click="prevPage" :disabled="currentPage === 1">◀</button>
+      <span class="page-indicator">{{ currentPage }}</span>
+      <button class="pagination-btn" @click="nextPage">▶</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "BookDoctor",
+  data() {
+    return {
+      doctors: [],
+      currentPage: Number(this.$route.query.page) || 1, 
+      itemsPerPage: 10,
+    };
+  },
+  watch: {
+    "$route.query.page"(newPage) {
+      this.currentPage = Number(newPage) || 1;
+      this.fetchDoctors();
     },
-    methods: {
-      viewMore(id) {
-        this.$router.push({ name: 'DoctorDetail', params: { id } });
-      },
-      bookDoctor(id) {
-        this.$router.push({ name: 'BookDoctorPage', params: { id } });
-      },
+  },
+  methods: {
+    async fetchDoctors() {
+      try {
+        const response = await axios.get(
+          `https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors?page=${this.currentPage}&limit=${this.itemsPerPage}`
+        );
+        this.doctors = response.data;
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
     },
-  };
-  </script>
-  
+    nextPage() {
+      this.updatePage(this.currentPage + 1);
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.updatePage(this.currentPage - 1);
+      }
+    },
+    updatePage(page) {
+      this.$router.push({ query: { page } }); 
+    },
+    viewMore(id) {
+      this.$router.push({ name: "DoctorDetail", params: { id } });
+    },
+    bookDoctor(id) {
+      this.$router.push({ name: "BookDoctorPage", params: { id } });
+    },
+  },
+  mounted() {
+    this.fetchDoctors();
+  },
+};
+
+</script>
+
+
   <style scoped>
   .doctor-container {
     max-width: 1440px;
@@ -114,6 +127,15 @@
     color: #333;
   }
   
+  .doctor-info p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Số dòng hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+  
   .doctor-actions {
     margin-top: 10px;
   }
@@ -140,6 +162,7 @@
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    justify-items: center;
   }
   
   .pagination-btn {
