@@ -10,8 +10,8 @@
           <p><strong>Khoa: </strong>{{ doctor.specitalty }}</p>
           <p>{{ doctor.info }}</p>
           <div class="doctor-actions">
-            <button class="btn view-more" @click="viewMore(doctor.id)">Xem thêm</button>
-            <button class="btn book-appointment" @click="bookDoctor(doctor.id)">Đặt lịch</button>
+            <button class="btn view-more" @click="viewMore(doctor)">Xem thêm</button>
+            <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
           </div>
         </div>
       </div>
@@ -65,11 +65,13 @@ export default {
     updatePage(page) {
       this.$router.push({ query: { page } }); 
     },
-    viewMore(id) {
-    this.$router.push({ name: "DoctorDetail", params: { id } });
+    viewMore(doctor) {
+    this.$router.push({ name: "DoctorDetail", params: { id: doctor.id } });
+    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
-    bookDoctor(id) {
-      this.$router.push({ name: "BookDoctorPage", params: { id } });
+    bookDoctor(doctor) {
+    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.id } });
+    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
   },
   mounted() {

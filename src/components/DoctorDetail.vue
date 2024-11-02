@@ -29,22 +29,32 @@ export default {
       doctor: {},
     };
   },
+
   mounted() {
-    const doctorId = this.$route.params.id; 
-    this.fetchDoctorDetail(doctorId);
-  },
-  methods: {
-    async fetchDoctorDetail(id) {
-      try {
-        const response = await axios.get(
-          `https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`
-        );
-        this.doctor = response.data; // Cập nhật thông tin bác sĩ
-      } catch (error) {
-        console.error("Error fetching doctor details:", error);
-      }
-    },
-  },
+  const doctorId = this.$route.params.id;
+  const doctorData = localStorage.getItem("selectedDoctor");
+
+  if (doctorData) {
+    const doctor = JSON.parse(doctorData);
+    if (doctor.id === doctorId) {
+      this.doctor = doctor;
+    } else {
+      this.fetchDoctorData(doctorId);
+    }
+  } else {
+    this.fetchDoctorData(doctorId);
+  }
+},
+methods: {
+  async fetchDoctorData(id) {
+    try {
+      const response = await axios.get(`https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`);
+      this.doctor = response.data;
+    } catch (error) {
+      console.error("Error fetching doctor data:", error);
+    }
+  }
+}
 };
 </script>
 

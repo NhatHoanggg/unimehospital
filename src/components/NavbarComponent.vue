@@ -87,6 +87,7 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .navbar-container {
   width: 100%;
@@ -105,7 +106,8 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  font-family: 'Poppins', sans-serif;
+  /* font-family: 'Poppins', sans-serif; */
+  /* font-family: "Roboto", sans-serif; */
 }
 
 .navbar-left {

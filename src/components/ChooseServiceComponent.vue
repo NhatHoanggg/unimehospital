@@ -15,11 +15,21 @@
                 <div class="date"><i class="far fa-calendar-check"></i> Ngày: {{ selectedDate || "Chưa chọn" }}</div>
                 <div class="time"><i class="far fa-clock"></i> Giờ: {{ selectedTime || "Chưa chọn" }}</div>
               </div>
-              <div class="location"><i class="fas fa-map-marker-alt"></i> Địa điểm: 162 Nguyễn Thiện Thuật, Phường 3, Quận 3, TP HCM</div>
-              <div class="service-option"><i class="fas fa-hand-holding-heart"></i> Dịch vụ: Khám tổng quát</div>
-              <div class="money"><i class="fas fa-dollar-sign"></i> 300$</div>
+              <div class="location"><i class="fas fa-map-marker-alt"></i> Địa điểm: {{ doctor.address }}</div>
+              <!-- <div class="service-option"><i class="fas fa-hand-holding-heart"></i> Dịch vụ: Khám tổng quát</div> -->
+              <div class="service-option">
+                <i class="fas fa-hand-holding-heart"></i> 
+                Dịch vụ:
+                <select v-model="selectedService">
+                  <option disabled value="">Vui lòng chọn</option>
+                  <option v-for="item in items" :key="item.value" :value="item.value">
+                    {{ item.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="money"><i class="fas fa-dollar-sign"></i>Giá tiền: {{ servicePrice }}</div>
             </div>
-            <button class="button" :disabled="!selectedDate || !selectedTime" @click="confirmSelection">Tiếp tục</button>
+            <button class="button" @click="confirmSelection">Tiếp tục</button>
           </div>
         </div>
       </div>
@@ -28,6 +38,10 @@
 </template>
 
 <script>
+import axios from "axios";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
 export default {
   props: {
     selectedDate: {
@@ -41,18 +55,74 @@ export default {
   },
   data() {
     return {
-      isCollapsed: false,
+      isCollapsed: true,
+      doctor: {},
+      items: [
+        { label: 'Khám bệnh', value: 'Khám bệnh' },
+        { label: 'Tư vấn', value: 'Tư vấn' },
+      ],
+      selectedService: '',
     };
+  },
+  mounted() {
+  const doctorId = this.$route.params.id;
+  const doctorData = localStorage.getItem("selectedDoctor");
+
+  if (doctorData) {
+    const doctor = JSON.parse(doctorData);
+    if (doctor.id === doctorId) {
+      this.doctor = doctor;
+    } else {
+      this.fetchDoctorData(doctorId);
+    }
+  } else {
+    this.fetchDoctorData(doctorId);
+  }
+  },
+  
+  computed: {
+    servicePrice() {
+      if (this.selectedService === 'Khám bệnh') {
+        return '800000đ';
+      } else if (this.selectedService === 'Tư vấn') {
+        return '500000đ';
+      }
+      return 'Vui lòng chọn dịch vụ';
+    },
   },
   methods: {
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
     },
     confirmSelection() {
-      if (this.selectedDate && this.selectedTime) {
-        alert(`Dịch vụ vào ngày ${this.selectedDate} lúc ${this.selectedTime} đã được xác nhận.`);
+      if (this.selectedService === 'Khám bệnh' || this.selectedService === 'Tư vấn') {
+        // alert(`Dịch vụ vào ngày ${this.selectedDate} lúc ${this.selectedTime} đã được xác nhận.`);
+        this.isCollapsed = !this.isCollapsed;
+        this.$emit('service', { service: this.selectedService, price: this.servicePrice });
+        toast.success(`Chọn dịch vụ thành công`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);  
+      }
+      else {
+        toast.warning('Vui lòng chọn dịch vụ trước khi tiếp tục!',
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);
       }
     },
+    async fetchDoctorData(id) {
+    try {
+      const response = await axios.get(`https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`);
+      this.doctor = response.data;
+    } catch (error) {
+      console.error("Error fetching doctor data:", error);
+    }
+  }
   },
 };
 </script>
@@ -116,7 +186,6 @@ export default {
   position: relative;
   width: 100%;
   gap: 20px;
-  padding-left: 50px; 
 }
 
 .service-wrapper {
@@ -139,12 +208,14 @@ export default {
   align-items: center;
   font-size: 24px;
   padding: 10px;
+  padding-left: 50px;
 }
 
 .date-time, .location, .service-option, .money {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 900px;
 }
 
 .date-time .date, .date-time .time {
@@ -156,6 +227,13 @@ export default {
 .date-time {
     justify-content: space-between;
 }
+
+.service-option select{
+  font-size: 24px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
   .button {
     position: absolute; 
     bottom: 50px;       
