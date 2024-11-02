@@ -66,7 +66,7 @@ export default {
       this.$router.push({ query: { page } }); 
     },
     viewMore(id) {
-      this.$router.push({ name: "DoctorDetail", params: { id } });
+    this.$router.push({ name: "DoctorDetail", params: { id } });
     },
     bookDoctor(id) {
       this.$router.push({ name: "BookDoctorPage", params: { id } });
