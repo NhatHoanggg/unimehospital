@@ -8,7 +8,7 @@
         <h2>{{ doctor.name }}</h2>
         <p><strong>Chuyên khoa:</strong> {{ doctor.specitalty }}</p>
         <p><strong>Địa chỉ:</strong> {{ doctor.address }}</p>
-        <button class="btn book-appointment">Đặt lịch</button>
+        <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
       </div>
     </div>
 
@@ -53,7 +53,11 @@ methods: {
     } catch (error) {
       console.error("Error fetching doctor data:", error);
     }
-  }
+  },
+  bookDoctor(doctor) {
+    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.id } });
+    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+    },
 }
 };
 </script>

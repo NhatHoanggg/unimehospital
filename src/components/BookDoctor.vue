@@ -178,7 +178,7 @@ export default {
   
   .page-indicator {
     margin: 0 10px;
-    font-size: 16px;
+    font-size: 24px;
   }
   </style>
   

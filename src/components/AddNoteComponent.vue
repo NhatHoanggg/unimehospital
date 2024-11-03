@@ -13,6 +13,7 @@
             
             <textarea 
               v-model="noteText"
+              @input="limitWords"
               placeholder="Nhập ghi chú tại đây (để trống nếu không cần)" 
               rows="10" 
               cols="80"
@@ -36,7 +37,13 @@ export default {
     return {
       isCollapsed: true,
       noteText: '',
+      maxWords: 50,
     };
+  },
+  computed: {
+    wordCount() {
+      return this.noteText.trim().split(/\s+/).filter(word => word).length;
+    }
   },
   methods: {
     toggleCollapse() {
@@ -52,6 +59,12 @@ export default {
         position: toast.POSITION.TOP_RIGHT,
       });
     },
+    limitWords() {
+      const words = this.noteText.trim().split(/\s+/);
+      if (words.length > this.maxWords) {
+        this.noteText = words.slice(0, this.maxWords).join(" ");
+      }
+    }
   },
 };
 </script>

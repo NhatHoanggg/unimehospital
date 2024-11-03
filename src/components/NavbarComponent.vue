@@ -70,6 +70,7 @@ export default {
     const handleLogout = () => {
       authStore.logout();
       showDropdown.value = false;
+      localStorage.clear();
       router.push('/');
     };
 

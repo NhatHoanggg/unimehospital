@@ -15,7 +15,7 @@
   <DatePickerComponent @date-selected="handleDateSelected" />
   <ChooseServiceComponent :selectedDate="selectedDate" :selectedTime="selectedTime" @service="handleServiceSelected" />
   <AddNoteComponent @note="handleAddNote"/>
-  <button class="button">Xác nhận đặt lịch</button>
+  <button class="button" @click="confirmAppoinment()">Xác nhận đặt lịch</button>
   </div>
   
 </template>
@@ -25,6 +25,8 @@ import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import ChooseServiceComponent from "@/components/ChooseServiceComponent.vue";
 import AddNoteComponent from "@/components/AddNoteComponent.vue";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   components: {
@@ -64,14 +66,12 @@ export default {
       this.selectedDate = date;
       this.selectedTime = time;
       console.log(`Ngày: ${date}, Giờ: ${time}`);
-      // alert(`Bạn đã chọn: Ngày ${date}, Giờ ${time}`);
     },
 
     handleServiceSelected(selection) {
       const { service, price } = selection;
       this.selectedService = service;
       this.servicePrice = price;
-      // alert(`Dịch vụ: ${this.selectedService}, Giá: ${this.servicePrice}`);
       console.log(`Dịch vụ: ${this.selectedService}, Giá: ${this.servicePrice}`);
     },
 
@@ -79,7 +79,41 @@ export default {
       const { note } = selection;
       this.noteText = note;
       console.log(`Ghi chú: ${note}`);
-      // alert(`Ghi chú: ${note}`);
+    },
+
+    confirmAppoinment(){
+      if (!this.selectedDate || !this.selectedTime) {
+        // alert("Vui lòng chọn ngày, giờ trước khi xác nhận đặt lịch.");
+        toast.warning(`Vui lòng chọn ngày, giờ trước khi xác nhận đặt lịch.`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);  
+        return;
+      }
+      if (!this.selectedDate || !this.selectedTime || !this.selectedService) {
+        // alert("Vui lòng chọn dịch vụ trước khi xác nhận đặt lịch.");
+        toast.warning(`Vui lòng chọn dịch vụ trước khi xác nhận đặt lịch.`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);  
+        return;
+      }
+      const appointment_info = {
+        doctor_name: this.doctor.name,
+        doctor_specialty: this.doctor.specitalty,
+        date: this.selectedDate,
+        time: this.selectedTime,
+        doctor_address: this.doctor.address,
+        service: this.selectedService,
+        note: this.noteText,
+        price: this.servicePrice,
+      }
+      localStorage.setItem("appointment-info", JSON.stringify(appointment_info));
+      this.$router.push({ name: 'BookingSuccess' });
     },
 
     async fetchDoctorData(id) {

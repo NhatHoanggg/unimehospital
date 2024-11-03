@@ -13,9 +13,13 @@ import BookService from '@/components/BookService.vue';
 
 import UserProfile from '@/components/UserProfile.vue';
 import DoctorDetail from '@/components/DoctorDetail.vue';
+import BookingSuccessPage from '@/components/BookingSuccessPage.vue';
 
 import AdminDashboard from '@/components/admin/AdminDashboard.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
+
+import NotFound from '@/components/NotFound.vue';
+
 import { useAuthStore } from '@/stores/auth';
 
 import { toast } from 'vue3-toastify';
@@ -87,6 +91,14 @@ const routes = [
     props: true,
   },
 
+  {
+    path: '/booking-success',
+    name: 'BookingSuccess',
+    component: BookingSuccessPage,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+
   { 
     path: '/profile',
     name: 'Profile',
@@ -105,6 +117,12 @@ const routes = [
     name: 'EmployeeDashboard',
     component: EmployeeDashboard,
     meta: { requiresAuth: true },
+  },
+
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
   },
 
 ];
@@ -130,8 +148,28 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to, from) => {
+  if (to.name === 'SignIn' && from.name === 'BookDoctorPage') {
+    toast.warning('Yêu cầu đăng nhập để thực hiện', {
+      rtl: false,
+      limit: 3,
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  }
+});
+
+router.afterEach((to, from) => {
   if (to.name === 'Home' && from.name === 'SignIn') {
     toast('Đăng nhập thành công');
+  }
+});
+
+router.afterEach((to, from) => {
+  if (to.name === 'BookingSuccess' && from.name === 'BookDoctorPage') {
+    toast.success('Đặt lịch hẹn thành công!', {
+      rtl: false,
+      limit: 3,
+      position: toast.POSITION.TOP_RIGHT,
+    });
   }
 });
 
