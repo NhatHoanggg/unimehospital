@@ -16,6 +16,10 @@ import DoctorDetail from '@/components/DoctorDetail.vue';
 import BookingSuccessPage from '@/components/BookingSuccessPage.vue';
 
 import AdminDashboard from '@/components/admin/AdminDashboard.vue';
+import UserManagement from '@/components/admin/UserManagement.vue';
+import DepartmentManagement from '@/components/admin/DepartmentManagement.vue';
+import ServiceManagement from '@/components/admin/ServiceManagement.vue';
+
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 
 import NotFound from '@/components/NotFound.vue';
@@ -106,9 +110,27 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { 
-    path: '/admin/admin-dashboard',
+    path: '/admin',
     name: 'AdminDashboard',
     component: AdminDashboard,
+    redirect: '/admin/user-management',
+    children: [
+      {
+        path: 'user-management',
+        component: UserManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'department-management',
+        component: DepartmentManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'service-management',
+        component: ServiceManagement,
+        meta: { requiresAuth: true },
+      },
+    ],
     meta: { requiresAuth: true },
   },
   
