@@ -74,31 +74,6 @@ export default {
       formData.append("username", username.value);
       formData.append("password", password.value);
 
-      // var userData = {
-      //   username: "nhathoang",
-      //   phone: "0123456654",
-      //   password: "hoang1",
-      //   role: "user",
-      // };
-
-      // console.log(username.value);
-      // console.log(password.value);
-      // userData.role = password.value;
-
-      // if (userData.role == "admin") {
-      //   router.push("/admin/admin-dashboard");
-      // } else if (userData.role === "employee") {
-      //   router.push("/employee/employee-dashboard");
-      // } else if (userData.role === "user") {
-      //   router.push("/");
-      // }
-
-      // var userToken = "loremipsum";
-
-      // authStore.login(userData, userToken);
-
-      // alert("dang nhap thanh cong");
-
       try {
         const response = await fetch("http://localhost:8888/UNIME/auth/token", {
           method: "POST",
@@ -130,7 +105,16 @@ export default {
 
         authStore.login(token.payload); 
 
-        router.push("/");
+        const userData = localStorage.getItem("user");
+        const user = JSON.parse(userData);
+        if (user.scope === "ADMIN") {
+          router.push("/admin");
+        } else if (user.scope === "EMPLOYEE") {
+          router.push("/employee");
+        } else if (user.scope === "USER") {
+          router.push("/");
+        }
+        // router.push("/");
         
       } catch (error) {
         console.error("Error:", error);
