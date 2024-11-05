@@ -19,6 +19,7 @@
   <style scoped>
   .department-management {
     margin-top: 64px;
+    max-width: 1440px;
   }
   </style>
   
