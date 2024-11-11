@@ -78,9 +78,14 @@ export default {
     const authStore = useAuthStore();
     const router = useRouter();
     const isAdmin = ref(false);
+    const isEmployee = ref(false);
 
     if (authStore.isLoggedIn && authStore.user.scope === 'ADMIN') {
       isAdmin.value = true;
+    }
+
+    if (authStore.isLoggedIn && authStore.user.scope === 'ADMIN') {
+      isEmployee.value = true;
     }
 
     const toggleMenu = () => {
