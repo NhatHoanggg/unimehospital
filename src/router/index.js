@@ -23,6 +23,7 @@ import ServiceManagement from '@/components/admin/ServiceManagement.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 
 import NotFound from '@/components/NotFound.vue';
+import TestUploadImage from '@/components/TestUploadImage.vue';
 
 import { useAuthStore } from '@/stores/auth';
 
@@ -135,16 +136,22 @@ const routes = [
   },
   
   { 
-    path: '/employee/employee-dashboard',
+    path: '/employee',
     name: 'EmployeeDashboard',
     component: EmployeeDashboard,
-    meta: { requiresAuth: true },
+    // meta: { requiresAuth: true },
   },
 
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
+  },
+
+  {
+    path: '/upload',
+    name: 'TestUploadImage',
+    component: TestUploadImage,
   },
 
 ];
