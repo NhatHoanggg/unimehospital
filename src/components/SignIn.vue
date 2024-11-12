@@ -75,7 +75,8 @@ export default {
       formData.append("password", password.value);
 
       try {
-        const response = await fetch("http://localhost:8888/UNIME/auth/token", {
+        const response = await fetch("http://api.unime.site:8888/UNIME/auth/token", {
+       // const response = await fetch("http://localhost:8888/UNIME/auth/token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

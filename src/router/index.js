@@ -22,6 +22,12 @@ import ServiceManagement from '@/components/admin/ServiceManagement.vue';
 
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 
+import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
+import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
+import NextAppointments from '@/components/doctor/NextAppointments.vue';
+import BusyManagement from '@/components/doctor/BusyManagement.vue';
+import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
+
 import NotFound from '@/components/NotFound.vue';
 import TestUploadImage from '@/components/TestUploadImage.vue';
 
@@ -139,6 +145,38 @@ const routes = [
     path: '/employee',
     name: 'EmployeeDashboard',
     component: EmployeeDashboard,
+    // meta: { requiresAuth: true },
+  },
+
+  { 
+    path: '/doctor',
+    name: 'DoctorDashboard',
+    component: DoctorDashboard,
+    redirect: '/doctor/schedule',
+    children: [
+      {
+        path: 'next-appointments',
+        component: NextAppointments,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'next-appointments/:id',  
+        name: 'AppointmentDetail',
+        component: AppointmentDetail,
+        props: true,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'schedule',
+        component: ScheduleManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'busy',
+        component: BusyManagement,
+        meta: { requiresAuth: true },
+      },
+    ],
     // meta: { requiresAuth: true },
   },
 
