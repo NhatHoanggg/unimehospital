@@ -1,38 +1,39 @@
 <template>
   <div class="about-container">
-    <div class="section hospital-info">
-      <img src="@/assets/background.jpg" alt="hospital" class="hospital-image" />
-      <h1>BỆNH VIỆN UNIME</h1>
-      <p>Dịch vụ khám chữa bệnh hơn 40 chuyên khoa</p>
-      <p>Mang đến sức khỏe cho gia đình bạn</p>
+      <img src="@/assets/background.jpg" alt="hospital" class="hospital-image" />  
     </div>
-  </div>
-  <div class="hospital-info">
-    <!-- Section: Thông tin bệnh viện -->
-    <section class="hospital-details">
-      <h2 class="section-title">Thông Tin Bệnh Viện</h2>
-      <p class="hospital-description">
-        Bệnh viện đã thực hiện hiệu quả công tác điều trị cho hàng trăm ngàn người bệnh ở các lĩnh vực chuyên khoa: Sản - Phụ khoa, Cơ - Xương - Khớp, Tiêu hóa, Tai - Mũi - Họng, Răng - Hàm - Mặt, Nhãn khoa, Phục hồi chức năng, Y học cổ truyền, khoa Xét nghiệm,...  
-      </p>
-      <p class="hospital-description">
-        Bệnh viện UNIME quy tụ đội ngũ chuyên gia giàu kinh nghiệm, có thái độ phục vụ rất tận tình và chu đáo. Đồng thời, với mục tiêu mang đến dịch vụ chăm sóc sức khỏe toàn diện, hỗ trợ hết mình cho người dân, bệnh viện còn ứng dụng hệ thống thiết bị y tế cao cấp, hiện đại, được nhập khẩu đồng bộ từ các nước tiên tiến hàng đầu trên thế giới.
-      </p>
-    </section>
 
-    <!-- Section: Sứ Mệnh và Tầm Nhìn -->
+    <div>
+        <div class="header-line"></div>
+        <div class="section-header">
+        <h1>BỆNH VIỆN UNIME</h1>
+          </div>
+        <div class="rounded-border">
+          <p>Dịch vụ khám chữa bệnh hơn 40 chuyên khoa</p>
+          <p>Mang đến sức khỏe cho gia đình bạn</p>
+        </div>
+    </div>
+
     <section class="mission-vision">
-      <h2 class="section-title">Sứ Mệnh Và Tầm Nhìn</h2>
-      <div class="mission-cards">
+      <div class="header-line"></div>
+      <div class="section-header">
+        <h2>Sứ Mệnh Và Tầm Nhìn</h2>
+      </div>
+      <div class="rounded-border">
+        <div class="mission-cards">
         <div class="card" v-for="(item, index) in missions" :key="index">
           <img src="@/assets/mission1.png" class="card-img" />
           <p class="card-description">{{ item.text }}</p>
         </div>
       </div>
+      </div>
     </section>
 
-    <!-- Section: Đội Ngũ Bác Sĩ -->
     <section class="doctor-team">
-      <h2 class="section-title">Đội Ngũ Bác Sĩ</h2>
+      <div class="header-line"></div>
+      <div class="section-header">
+        <h3>Đội Ngũ Bác Sĩ</h3>
+      </div>
       <div class="doctor-carousel">
         <div class="doctor" v-for="(doctor, index) in doctors" :key="index">
           <img src="" class="doctor-img" alt="Doctor Image" />
@@ -41,7 +42,13 @@
         </div>
       </div>
     </section>
+    
+  
+
+  <div>
+
   </div>
+
 </template>
 
 <script>
@@ -102,10 +109,29 @@ export default {
   --error-color: #ef4444;
 }
 
-.about-container {
-  max-width: 1440px;
-  margin: 0 auto;
-  /* padding: 20px; */
+.header-line {  
+  width: 100%;
+  height: 15px;
+  background-color: #1a4da1;
+}
+
+.section-header {
+  display: inline-block;
+  background-color: #1a4da1; /* Màu xanh đồng nhất với đường thẳng */
+  color: white; /* Màu chữ trắng */
+  padding: 20px; /* Đệm xung quanh nội dung */
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 0 0 30px 30px; /* Bo tròn góc dưới */
+  text-align: center;
+}
+
+.rounded-border{
+  border: 2px solid #1a4da1; /* Viền màu đen */
+    border-radius: 15px; /* Bo tròn các góc */
+    padding: 10px; /* Khoảng cách bên trong */
+    margin: 10px; /* Khoảng cách bên ngoài */
+    color: #1a4da1;
 }
 
 .hospital-info {
@@ -116,14 +142,6 @@ export default {
   background-color: #f5f7fa;
 }
 
-.section-title {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: var(--primary-color);
-}
-
 .hospital-details,
 .mission-vision,
 .doctor-team {
@@ -132,13 +150,6 @@ export default {
   border-radius: 10px;
   margin-bottom: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.hospital-description {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--text-color);
-  margin-bottom: 15px;
 }
 
 .mission-cards {
@@ -216,4 +227,6 @@ export default {
   font-size: 16px;
   color: var(--text-color);
 }
+
+
 </style>
