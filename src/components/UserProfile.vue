@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>User Profile</h1>
+        <h1>Hồ sơ</h1>
     </div>
 </template>
 
@@ -12,8 +12,8 @@ export default {
 
 <style scoped>
 div{
-    width: 200px;
-    height: 200px;
+    width: 500px;
+    height: 500px;
     background-color: red;
 }
 

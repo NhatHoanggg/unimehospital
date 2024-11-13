@@ -36,7 +36,7 @@
       </div>
       <div class="doctor-carousel">
         <div class="doctor" v-for="(doctor, index) in doctors" :key="index">
-          <img src="" class="doctor-img" alt="Doctor Image" />
+          <img :src="doctor.image || 'https://via.placeholder.com/200'" class="doctor-img" alt="Doctor Image" />
           <p class="doctor-name">{{ doctor.name }}</p>
           <p class="doctor-specialty">{{ doctor.specialty }}</p>
         </div>
@@ -71,17 +71,17 @@ export default {
       ],
       doctors: [
         {
-          image: '@/assets/doctors/doctor-1.jpg',
+          image: require('@/assets/doctor-1.png'),
           name: 'Bác sĩ CKII Võ Hải Long',
           specialty: 'Tai Mũi Họng',
         },
         {
-          image: '@/assets/doctors/doctor-1.jpg',
+          image: require('@/assets/doctor-1.png'),
           name: 'Bác sĩ CKII Võ Hải Long',
           specialty: 'Tim Mạch',
         },
         {
-          image: '@/assets/doctors/doctor-1.jpg',
+          image: require('@/assets/doctor-1.png'),
           name: 'Bác sĩ CKII Võ Hải Long',
           specialty: 'Nha Khoa',
         },
@@ -116,13 +116,15 @@ export default {
 }
 
 .section-header {
+  /* Inherit the font size from the parent */
+  font-size: inherit;
+  /* Other styles for section-header */
   display: inline-block;
-  background-color: #1a4da1; /* Màu xanh đồng nhất với đường thẳng */
-  color: white; /* Màu chữ trắng */
-  padding: 20px; /* Đệm xung quanh nội dung */
+  background-color: #1a4da1;
+  color: white;
+  padding: 20px;
   font-weight: bold;
-  font-size: 15px;
-  border-radius: 0 0 30px 30px; /* Bo tròn góc dưới */
+  border-radius: 0 0 30px 30px;
   text-align: center;
 }
 
@@ -132,6 +134,7 @@ export default {
     padding: 10px; /* Khoảng cách bên trong */
     margin: 10px; /* Khoảng cách bên ngoài */
     color: #1a4da1;
+    font-size: 20px;
 }
 
 .hospital-info {
@@ -150,6 +153,8 @@ export default {
   border-radius: 10px;
   margin-bottom: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Set the font size here */
+  font-size: 18px;  /* Same size as Bệnh viện Unime */
 }
 
 .mission-cards {
@@ -183,7 +188,7 @@ export default {
 }
 
 .card-description {
-  font-size: 14px;
+  font-size: 20px;
   color: var(--text-color);
 }
 
