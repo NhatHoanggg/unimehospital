@@ -188,13 +188,13 @@ export default {
         patientEmail: this.email,
         patientName: this.fullname,
         patientAddress: this.address,
-        patientPhoneNumber: this.phone,
+        patientPhoneNumber: "+84" + this.phone.substring(1),
         patientGender: this.gender === "true", 
         patientDateOfBirth: this.dob,
       };
       console.log(patientData)
       try {
-        const response = await axios.post('http://localhost:8888/UNIME/patients', patientData);
+        const response = await axios.post('https://api.unime.site/UNIME/patients', patientData);
         
         console.log(response.data);
         

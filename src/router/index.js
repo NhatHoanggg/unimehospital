@@ -21,6 +21,9 @@ import DepartmentManagement from '@/components/admin/DepartmentManagement.vue';
 import ServiceManagement from '@/components/admin/ServiceManagement.vue';
 
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
+import AddDoctorService from '@/components/employee/AddDoctorService.vue';
+import TimeOffManagement from '@/components/employee/TimeOffManagement.vue';
+import ListDoctorServices from '@/components/employee/ListDoctorServices.vue';
 
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
 import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
@@ -145,6 +148,24 @@ const routes = [
     path: '/employee',
     name: 'EmployeeDashboard',
     component: EmployeeDashboard,
+    redirect: '/employee/add-doctor-service',
+    children: [
+      {
+        path: 'time-off-management',
+        component: TimeOffManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'add-doctor-service',
+        component: AddDoctorService,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'list-services',
+        component: ListDoctorServices,
+        meta: { requiresAuth: true },
+      },
+    ]
     // meta: { requiresAuth: true },
   },
 
