@@ -25,8 +25,10 @@ export default {
     return {
       menuItems: [
         { text: 'User', icon: require('@/assets/User-icon.png'), path: '/user-management' },
-        { text: 'Department', icon: require('@/assets/department-icon.png'), path: '/department-management' },
-        { text: 'Service', icon: require('@/assets/Service-icon.png'), path: '/service-management' },
+        { text: 'Chuyên khoa', icon: require('@/assets/department-icon.png'), path: '/department-management' },
+        { text: 'Thêm khoa', icon: require('@/assets/add-department.png'), path: '/add-department' },
+        { text: 'Dịch vụ', icon: require('@/assets/Service-icon.png'), path: '/service-management' },
+        { text: 'Thêm dịch vụ', icon: require('@/assets/add-doctor-service.png'), path: '/add-service' },
       ],
     };
   },

@@ -1,17 +1,12 @@
 <template>
-  <div class="wrapper">
-
   <div class="service-management">
-    <h1>Quản lý Service</h1>
+    <h1>Quản lý User</h1>
     <div>
-      <div class="filter-container">
-
     <input type="text" v-model="searchQuery" placeholder="Search by name" />
-        </div>
+
     <select v-model="rowsPerPage">
       <option v-for="option in rowsOptions" :key="option" :value="option">{{ option }} rows</option>
     </select>
-    <div class="tabe">
 
     <table border="1" cellpadding="10">
       <thead>
@@ -40,23 +35,14 @@
         </tr>
       </tbody>
     </table>
-    </div>
 
-
-    <div class="pagination">
+    <div>
       <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">Previous</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
       <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">Next</button>
     </div>
-    <!-- <div class="pagination">
-      <button :disabled="currentPage === 1" @click="previousPage">Previous</button>
-      <span>{{ currentPage }}</span>
-      <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
-    </div> -->
   </div>
   </div>
-</div>
-
 </template>
 
 <script>
@@ -125,34 +111,18 @@ export default {
 </script>
 
 <style scoped>
-.wrapper {
-  display: flex;
-  justify-content: center;
-  height: 100vh;
-  width: 100%;
+.service-management {
   margin-top: 64px;
 }
 
-.service-management {
-  padding: 50px;
-  border-radius: 20px;
-  border-width: 1px;
-  max-width: 960px;
-  background-color: white;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.table-container {
-  overflow-x: auto;
-}
 table {
   width: 100%;
   border-collapse: collapse;
 }
+
 th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
+  text-align: left;
+  padding: 8px;
 }
 
 th {
@@ -178,25 +148,6 @@ input[type="text"] {
 select {
   margin-bottom: 10px;
   padding: 5px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-button {
-  padding: 5px 10px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-  border-radius: 8px;
-}
-button:disabled {
-  background-color: #ccc;
 }
 
 </style>

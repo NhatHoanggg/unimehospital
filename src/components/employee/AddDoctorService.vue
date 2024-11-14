@@ -3,19 +3,16 @@
     <div class="add-service-container">
       <h2>Thêm dịch vụ bác sĩ</h2>
 
-      <!-- Input tên dịch vụ -->
       <div class="form-group">
         <label for="serviceName">Tên dịch vụ:</label>
         <input type="text" v-model="serviceName" id="serviceName" placeholder="Nhập tên dịch vụ" />
       </div>
 
-      <!-- Input giá tiền -->
       <div class="form-group">
         <label for="servicePrice">Giá tiền:</label>
         <input type="number" v-model="servicePrice" id="servicePrice" placeholder="Nhập giá tiền" />
       </div>
 
-      <!-- Dropdown chọn chuyên khoa với tìm kiếm -->
       <div class="form-group">
         <label for="department">Chuyên khoa:</label>
         <multiselect
@@ -27,11 +24,10 @@
           :searchable="true"
           :close-on-select="true"
           :allow-empty="false"
-          class = "multi-select"
+          class="multi-select"
         />
       </div>
 
-      <!-- Dropdown multiple select chọn bác sĩ -->
       <div class="form-group">
         <label for="doctors">Chọn bác sĩ:</label>
         <multiselect
@@ -40,17 +36,21 @@
           :multiple="true"
           :close-on-select="false"
           :clear-on-select="false"
-          placeholder="Select options"
+          placeholder="Chọn bác sĩ"
           label="label"
           track-by="value"
-          class = "multi-select"
+          class="multi-select"
         />
       </div>
-      <p>Các lựa chọn đã chọn:</p>
-      <ul>
-        <li v-for="doctor in selectedDoctors" :key="doctor.value">{{ doctor.label }}</li>
-      </ul>
-      <!-- Nút submit -->
+
+      <div class="form-group">
+        <label for="serviceImage">Hình ảnh dịch vụ:</label>
+        <input type="file" id="serviceImage" @change="handleImageUpload" accept="image/*" />
+      </div>
+      <div class="form-group">
+        <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview-image" />
+      </div>
+
       <button @click="addService">Thêm dịch vụ</button>
     </div>
   </div>
@@ -69,6 +69,9 @@ export default {
       servicePrice: '',
       selectedDepartment: null,
       selectedDoctors: [],
+      serviceImage: null,
+      previewImage: null,
+      imageUrl: "",
       departments: [
         { label: "Khoa Nội", value: "Khoa Nội" },
         { label: "Khoa Ngoại", value: "Khoa Ngoại" },
@@ -87,18 +90,50 @@ export default {
         { label: "Tony Johnson", value: "Tony Johnson" },
         { label: "Alan Rice", value: "Alan Rice" },
         { label: "Lucas Nash", value: "Lucas Nash" },
-        { label: "Nathan Aguilar", value: "Nathan Aguilar" },
+        { label: "Nathan Aguilar", value: "Nathan Aguilar" }
       ]
     };
   },
   methods: {
-    addService() {
-      console.log('Tên dịch vụ:', this.serviceName);
-      console.log('Giá tiền:', this.servicePrice);
-      console.log('Chuyên khoa:', this.selectedDepartment);
-      console.log('Bác sĩ:', this.selectedDoctors);
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.serviceImage = file;
+        this.previewImage = URL.createObjectURL(file); 
+      } else {
+        console.error("No file selected or file is invalid.");
+      }
     },
-  },
+    async addService() {
+      if (this.serviceImage) {
+        const uploadPreset = process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET;
+        const cloudName = process.env.VUE_APP_CLOUD_NAME;
+
+        const formData = new FormData();
+        formData.append("file", this.serviceImage);
+        formData.append("upload_preset", uploadPreset);
+
+        try {
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: "POST",
+            body: formData
+          });
+          const data = await response.json();
+          this.imageUrl = data.secure_url;
+
+          console.log("Tên dịch vụ:", this.serviceName);
+          console.log("Giá tiền:", this.servicePrice);
+          console.log("Chuyên khoa:", this.selectedDepartment);
+          console.log("Bác sĩ:", this.selectedDoctors);
+          console.log("URL hình ảnh:", this.imageUrl);
+        } catch (error) {
+          console.error("Upload failed:", error);
+        }
+      } else {
+        console.log("Please select an image to upload.");
+      }
+    }
+  }
 };
 </script>
 
@@ -106,7 +141,7 @@ export default {
 .wrapper {
   display: flex;
   justify-content: center;
-  height: 100vh;
+  height: auto;
   width: 100%;
 }
 
@@ -115,7 +150,8 @@ export default {
   padding: 50px;
   border-radius: 20px;
   border-width: 1px;
-  width: 960px;
+  width: 800px;
+  height: auto;
   background-color: white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
@@ -123,6 +159,7 @@ export default {
 .form-group {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
@@ -141,7 +178,7 @@ input, select {
 }
 
 .multi-select {
-  max-width: 810px;
+  max-width: 650px;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -160,4 +197,11 @@ button:disabled {
   background-color: #ccc;
 }
 
+.preview-image {
+  margin-top: 10px;
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 </style>

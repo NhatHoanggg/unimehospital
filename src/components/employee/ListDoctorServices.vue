@@ -1,63 +1,67 @@
 <template>
   <div class="wrapper">
-    <div class="appointment-dashboard">
-      <h1>Danh sách dịch vụ bác sĩ</h1>
-      <div class="controls">
-        <input type="text" v-model="searchQuery" placeholder="Search by name" />
-        <select v-model="rowsPerPage">
-          <option v-for="option in rowsOptions" :key="option" :value="option">
-            {{ option }} rows
-          </option>
-        </select>
+    <div class="board">
+      <h1>Danh sách dịch vụ</h1>
+
+      <div v-if="isLoading" class="loading">
+        <p>Đang tải dữ liệu</p>
+         <LoadingComponent />
       </div>
 
-      <table border="1" cellpadding="10">
-        <thead>
-          <tr>
-            <th style="width: 30px;">#</th>
-            <th style="width: 300px;">Patient</th>
-            <th style="width: 100px; text-align: center;">Status</th>
-            <th style="width: 200px;">Appointment</th>
-            <th style="width: 300px;">Doctor</th>
-            <th style="width: 150px; text-align: center;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(appointment, index) in filteredAppointments"
-            :key="appointment.id"
-          >
-            <td>{{ index + 1 + (currentPage - 1) * rowsPerPage }}</td>
-            <td>{{ appointment.patient }}</td>
-            <td :class="statusClass(appointment.status)">
-              {{ appointment.status }}
-            </td>
-            <td>{{ formatDate(appointment.createAt) }}</td>
-            <td>{{ appointment.doctor }}</td>
-            <td class = "action-container">
-              <button @click="scheduleAppointment(appointment.id)">
-                Schedule
-              </button>
-              <button @click="cancelAppointment(appointment.id)">Cancel</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-else>
+        <div class="controls">
+          <input type="text" v-model="searchQuery" placeholder="Search by name" />
+          <select v-model="rowsPerPage">
+            <option v-for="option in rowsOptions" :key="option" :value="option">
+              {{ option }} rows
+            </option>
+          </select>
+        </div>
 
-      <div class="pagination">
-        <button
-          :disabled="currentPage === 1"
-          @click="goToPage(currentPage - 1)"
-        >
-          Previous
-        </button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button
-          :disabled="currentPage === totalPages"
-          @click="goToPage(currentPage + 1)"
-        >
-          Next
-        </button>
+        <table border="1" cellpadding="10">
+          <thead>
+            <tr>
+              <th style="width: 30px;">#</th>
+              <th style="width: 500px;">Tên dịch vụ</th>
+              <th style="width: 200px;">Chuyên khoa</th>
+              <th style="width: 200px;">Giá dịch vụ</th>
+              <th style="width: 200px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(service, index) in filteredServices"
+              :key="service.serviceId"
+            >
+              <td>{{ index + 1 + (currentPage - 1) * rowsPerPage }}</td>
+              <td>{{ service.serviceName }}</td>
+              <td>{{ service.departmentName }}</td>
+              <td>{{ service.servicePrice }} VND</td>
+              <td class="action-container">
+                <button @click="scheduleService(service.serviceId)">
+                  Detail
+                </button>
+                <button @click="cancelService(service.serviceId)">Cancel</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="pagination">
+          <button
+            :disabled="currentPage === 1"
+            @click="goToPage(currentPage - 1)"
+          >
+            Previous
+          </button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button
+            :disabled="currentPage === totalPages"
+            @click="goToPage(currentPage + 1)"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -65,24 +69,26 @@
 
 <script>
 import axios from "axios";
+import LoadingComponent from "../LoadingComponent.vue";
 
 export default {
+  components: {
+    LoadingComponent,
+  },
   data() {
     return {
-      appointments: [],
+      services: [],
       rowsPerPage: 5,
       currentPage: 1,
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
-      scheduledCount: 0,
-      pendingCount: 0,
-      cancelledCount: 0,
+      isLoading: true, // Trạng thái chờ loading
     };
   },
   computed: {
-    filteredAppointments() {
-      const filtered = this.appointments.filter((appointment) =>
-        appointment.patient
+    filteredServices() {
+      const filtered = this.services.filter((service) =>
+        service.serviceName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
@@ -91,8 +97,8 @@ export default {
       return filtered.slice(start, start + this.rowsPerPage);
     },
     totalPages() {
-      const filtered = this.appointments.filter((appointment) =>
-        appointment.patient
+      const filtered = this.services.filter((service) =>
+        service.serviceName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
@@ -101,54 +107,29 @@ export default {
   },
   methods: {
     fetchData() {
+      this.isLoading = true; // Bắt đầu hiển thị loading
       axios
-        .get("https://672a7507976a834dd0237a0a.mockapi.io/appointments")
+        .get("https://api.unime.site/UNIME/services/get/serviceList")
         .then((response) => {
-          this.appointments = response.data;
-          this.updateStats();
+          this.services = response.data.result;
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
+        })
+        .finally(() => {
+          this.isLoading = false; 
         });
     },
-    updateStats() {
-      this.scheduledCount = this.appointments.filter(
-        (a) => a.status === "scheduled"
-      ).length;
-      this.pendingCount = this.appointments.filter(
-        (a) => a.status === "pending"
-      ).length;
-      this.cancelledCount = this.appointments.filter(
-        (a) => a.status === "cancelled"
-      ).length;
+    scheduleService(id) {
+      console.log(`Scheduling Service with id: ${id}`);
     },
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      });
-    },
-    scheduleAppointment(id) {
-      console.log(`Scheduling appointment with id: ${id}`);
-    },
-    cancelAppointment(id) {
-      console.log(`Cancelling appointment with id: ${id}`);
+    cancelService(id) {
+      console.log(`Cancelling Service with id: ${id}`);
     },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
-    },
-    statusClass(status) {
-      return {
-        scheduled: status === "scheduled",
-        pending: status === "pending",
-        cancelled: status === "cancelled",
-      };
     },
   },
   mounted() {
@@ -156,7 +137,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .wrapper {
   display: flex;
@@ -166,8 +146,7 @@ export default {
   min-height: 100vh;
 }
 
-.appointment-dashboard {
-  /* margin-top: 64px; */
+.board {
   width: 100%;
   max-width: 1440px;
   background: #ffffff;
@@ -181,67 +160,6 @@ h1 {
   color: #333;
   margin-bottom: 20px;
   text-align: center;
-}
-
-.appointment-stats {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #f0f2f5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card i {
-  font-size: 2.5rem;
-  color: #666;
-}
-
-.stat-info {
-  margin-left: 15px;
-}
-
-.stat-number {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #FFF;
-}
-
-.stat-info p:last-child {
-  color: #FFF;
-  font-size: 1rem;
-}
-
-.scheduled,
-.pending,
-.cancelled {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  font-size: 0.9rem;
-  min-width: 80px;
-}
-
-.scheduled {
-  background-color: #28a745;
-}
-
-.pending {
-  background-color: #3b82f6;
-}
-
-.cancelled {
-  background-color: #dc3545;
 }
 
 .controls {
@@ -261,9 +179,15 @@ select {
 
 table {
   width: 100%;
-  border-collapse: collapse; 
+  border-collapse: collapse;
   margin-bottom: 20px;
-  border: 2px solid #000; 
+}
+
+.loading{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 th,
@@ -282,16 +206,10 @@ th {
 
 tr:nth-child(even) {
   background-color: #e7e9f8;
-  border-bottom: 1px solid #000; 
 }
 
-tr:nth-child(odd) {
-  border-bottom: 1px solid #000; 
-}
-
-.action-container{
+.action-container {
   display: flex;
-  flex-direction: row;
   gap: 10px;
   justify-content: center;
 }
@@ -303,10 +221,6 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #ddd;
 }
 
 button:first-child {
@@ -327,16 +241,9 @@ button:last-child {
   margin-top: 20px;
 }
 
-.pagination button {
-  padding: 8px 15px;
-  font-size: 1rem;
-  border-radius: 4px;
-}
-
 .pagination button:disabled {
   background-color: #e9ecef;
   color: #6c757d;
   cursor: not-allowed;
 }
-
 </style>
