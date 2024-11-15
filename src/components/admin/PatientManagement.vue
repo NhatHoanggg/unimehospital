@@ -1,6 +1,6 @@
 <template>
   <div class="service-management">
-    <h1>Quản lý User</h1>
+    <h1>Quản lý Patient</h1>
     <div>
     <input type="text" v-model="searchQuery" placeholder="Search by name" />
 

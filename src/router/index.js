@@ -16,7 +16,9 @@ import DoctorDetail from '@/components/DoctorDetail.vue';
 import BookingSuccessPage from '@/components/BookingSuccessPage.vue';
 
 import AdminDashboard from '@/components/admin/AdminDashboard.vue';
-import UserManagement from '@/components/admin/UserManagement.vue';
+import PatientManagement from '@/components/admin/PatientManagement.vue';
+import DoctorManagement from '@/components/admin/DoctorManagement.vue';
+import EmployeeManagement from '@/components/admin/EmployeeManagement.vue';
 import DepartmentManagement from '@/components/admin/DepartmentManagement.vue';
 import ServiceManagement from '@/components/admin/ServiceManagement.vue';
 import AddService from '@/components/admin/AddService.vue';
@@ -125,12 +127,28 @@ const routes = [
     path: '/admin',
     name: 'AdminDashboard',
     component: AdminDashboard,
-    redirect: '/admin/user-management',
+    redirect: 'admin/user-management/patients',
     children: [
       {
-        path: 'user-management',
-        component: UserManagement,
+        path: 'user-management/patients',
+        component: PatientManagement,
         meta: { requiresAuth: true },
+        // redirect: 'user-management/patients',
+        
+      },
+      {
+        path: 'user-management/doctors',
+        component: DoctorManagement,
+        meta: { requiresAuth: true },
+        // redirect: 'user-management/doctors',',
+        
+      },
+      {
+        path: 'user-management/employees',
+        component: EmployeeManagement,
+        meta: { requiresAuth: true },
+        // redirect: 'user-management/doctors',',
+        
       },
       {
         path: 'department-management',

@@ -1,14 +1,70 @@
 <template>
   <div class="sidebar">
-    <!-- Menu Items -->
     <div
-      v-for="item in menuItems"
-      :key="item.text"
-      :class="['menu-item', { selected: selectedItem === item.text }]"
-      @click="selectItem(item)"
+      class="menu-item dropdown-tab"
+      :class="{ selected: selectedItem === 'Người dùng' }"
+      @click="toggleUserSubmenu"
     >
-      <img :src="item.icon" alt="Icon" class="menu-icon" />
-      <span>{{ item.text }}</span>
+      <img src="@/assets/User-icon.png" alt="User Icon" class="menu-icon" :class="{ rotated: showUserSubmenu }"/>
+      <span>Người dùng </span>
+      <img src="@/assets/down.png" alt="User Icon" class="menu-icon down"  />
+    </div>
+
+    <div :class="['submenu', { open: showUserSubmenu }]">
+  <div
+    class="submenu-item"
+    @click="selectItem('Bệnh nhân', '/user-management/patients')"
+  >
+    <span>Bệnh nhân</span>
+  </div>
+  <div
+    class="submenu-item"
+    @click="selectItem('Bác sĩ', '/user-management/doctors')"
+  >
+    <span>Bác sĩ</span>
+  </div>
+  <div
+    class="submenu-item"
+    @click="selectItem('Quản lý', '/user-management/employees')"
+  >
+    <span>Quản lý</span>
+  </div>
+</div>
+
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Chuyên khoa' }"
+      @click="selectItem('Chuyên khoa', '/department-management')"
+    >
+      <img src="@/assets/department-icon.png" alt="Department Icon" class="menu-icon" />
+      <span>Chuyên khoa</span>
+    </div>
+
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Thêm khoa' }"
+      @click="selectItem('Thêm khoa', '/add-department')"
+    >
+      <img src="@/assets/add-department.png" alt="Add Department Icon" class="menu-icon" />
+      <span>Thêm khoa</span>
+    </div>
+
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Dịch vụ' }"
+      @click="selectItem('Dịch vụ', '/service-management')"
+    >
+      <img src="@/assets/Service-icon.png" alt="Service Icon" class="menu-icon" />
+      <span>Dịch vụ</span>
+    </div>
+
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Thêm dịch vụ' }"
+      @click="selectItem('Thêm dịch vụ', '/add-service')"
+    >
+      <img src="@/assets/add-doctor-service.png" alt="Service Icon" class="menu-icon" />
+      <span>Thêm dịch vụ</span>
     </div>
   </div>
 </template>
@@ -17,31 +73,29 @@
 export default {
   props: {
     selectedItem: {
-      type: Object,
+      type: String,
       default: null,
     },
   },
   data() {
     return {
-      menuItems: [
-        { text: 'User', icon: require('@/assets/User-icon.png'), path: '/user-management' },
-        { text: 'Chuyên khoa', icon: require('@/assets/department-icon.png'), path: '/department-management' },
-        { text: 'Thêm khoa', icon: require('@/assets/add-department.png'), path: '/add-department' },
-        { text: 'Dịch vụ', icon: require('@/assets/Service-icon.png'), path: '/service-management' },
-        { text: 'Thêm dịch vụ', icon: require('@/assets/add-doctor-service.png'), path: '/add-service' },
-      ],
+      showUserSubmenu: false,
     };
   },
   methods: {
-    selectItem(item) {
-      // console.log(`Clicked Item: ${item.text}`); 
-      this.$emit('select', item.text); 
-      this.$router.push({ path: `/admin${item.path}` }); 
+    toggleUserSubmenu() {
+      this.showUserSubmenu = !this.showUserSubmenu;
+      this.selectItem('Người dùng'); 
+    },
+    selectItem(text, path = null) {
+      this.$emit('select', text);
+      if (path) {
+        this.$router.push({ path: `/admin${path}` });
+      }
     },
   },
 };
 </script>
-
 
 <style scoped>
 .sidebar {
@@ -78,6 +132,20 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 }
+
+.dropdown-tab{
+  display: flex;
+  justify-content: space-between;
+}
+
+.down {
+  transition: transform 0.3s ease;
+}
+
+.down.rotated {
+  transform: rotate(180deg);
+}
+
 .menu-icon {
   width: 20px;
   margin-right: 10px;
@@ -90,6 +158,47 @@ export default {
   background-color: #bec5cf;
   color: #0056b3;
 }
+.submenu {
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: left;
+  text-indent: 20px;
+  /* background-color: gray; */
+  border: 1px solid #0056b3;
 
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  max-height: 0;
+}
+
+.submenu-item {
+  padding: 8px 20px;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.5s;
+
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.submenu-item:hover {
+  color: #0056b3;
+  background-color: #bec5cf;
+}
+
+.submenu-item:active{
+  background-color: #83A7D6;
+  color: #ffffff;
+}
+
+.submenu.open {
+  max-height: 500px; 
+}
+
+.submenu.open .submenu-item {
+  opacity: 1;
+}
 </style>
   

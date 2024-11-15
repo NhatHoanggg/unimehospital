@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      selectedItem: "User",
+      selectedItem: "Người dùng",
     };
   },
   methods: {

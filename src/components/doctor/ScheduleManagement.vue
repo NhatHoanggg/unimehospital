@@ -90,10 +90,17 @@ export default {
 
     const startOfNextWeek = new Date(currentMonday);
     startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
-    const date = new Date(startOfNextWeek);
-    date.setDate(startOfNextWeek.getDate());
-    this.weekNumber = this.getWeekOfYear(date);
-    console.log(this.weekNumber);
+
+    this.dates = Array.from({ length: 6 }, (_, i) => {
+      const date = new Date(startOfNextWeek);
+      date.setDate(startOfNextWeek.getDate() + i);
+      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+      
+      this.weekNumber = this.getWeekOfYear(date);
+      // console.log(`Ngày ${formattedDate} thuộc tuần thứ ${this.weekNumber} của năm`);
+      
+      return formattedDate;
+    });
   },
 
   getWeekOfYear(date) {
@@ -138,8 +145,15 @@ export default {
       
       return { date, slots };
     });
-    
-    console.log("Dữ liệu gửi đi:", formattedData);
+    const sendData = {
+      weekNumber: this.weekNumber,
+      data: formattedData,
+    };
+
+    const data = JSON.stringify(sendData);
+
+    console.log(data)
+    // console.log("Dữ liệu gửi đi:", formattedData);
   },
 },
 
