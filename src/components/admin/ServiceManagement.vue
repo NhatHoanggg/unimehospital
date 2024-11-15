@@ -5,7 +5,7 @@
 
       <div v-if="isLoading" class="loading">
         <p>Đang tải dữ liệu</p>
-         <LoadingComponent />
+        <LoadingComponent />
       </div>
 
       <div v-else>
@@ -29,18 +29,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(service, index) in filteredServices"
-              :key="service.serviceId"
-            >
+            <tr v-for="(service, index) in filteredServices" :key="service.serviceId">
               <td>{{ index + 1 + (currentPage - 1) * rowsPerPage }}</td>
               <td>{{ service.serviceName }}</td>
               <td>{{ service.departmentName }}</td>
               <td>{{ service.servicePrice }} VND</td>
               <td class="action-container">
-                <button @click="scheduleService(service.serviceId)">
-                  Detail
-                </button>
+                <button @click="openDetail(service)">Detail</button>
                 <button @click="cancelService(service.serviceId)">Cancel</button>
               </td>
             </tr>
@@ -48,19 +43,22 @@
         </table>
 
         <div class="pagination">
-          <button
-            :disabled="currentPage === 1"
-            @click="goToPage(currentPage - 1)"
-          >
-            Previous
-          </button>
+          <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">Previous</button>
           <span>Page {{ currentPage }} of {{ totalPages }}</span>
-          <button
-            :disabled="currentPage === totalPages"
-            @click="goToPage(currentPage + 1)"
-          >
-            Next
-          </button>
+          <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">Next</button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div v-if="selectedService" class="modal-overlay" @click="closeDetail">
+        <div class="modal" @click.stop>
+          <h2>Chi tiết dịch vụ</h2>
+          <p><strong>Tên dịch vụ:</strong> {{ selectedService.serviceName }}</p>
+          <p><strong>Chuyên khoa:</strong> {{ selectedService.departmentName }}</p>
+          <p><strong>Giá:</strong> {{ selectedService.servicePrice }} VND</p>
+          <p><strong>Mô tả:</strong> {{ selectedService.serviceDescription || 'Không có mô tả' }}</p>
+          <img :src="selectedService.serviceImage" alt="service-thumbnail">
+          <button @click="closeDetail">Đóng</button>
         </div>
       </div>
     </div>
@@ -82,15 +80,14 @@ export default {
       currentPage: 1,
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
-      isLoading: true, // Trạng thái chờ loading
+      isLoading: true,
+      selectedService: null, 
     };
   },
   computed: {
     filteredServices() {
       const filtered = this.services.filter((service) =>
-        service.serviceName
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase())
+        service.serviceName.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
 
       const start = (this.currentPage - 1) * this.rowsPerPage;
@@ -98,16 +95,14 @@ export default {
     },
     totalPages() {
       const filtered = this.services.filter((service) =>
-        service.serviceName
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase())
+        service.serviceName.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
       return Math.ceil(filtered.length / this.rowsPerPage);
     },
   },
   methods: {
     fetchData() {
-      this.isLoading = true; // Bắt đầu hiển thị loading
+      this.isLoading = true;
       axios
         .get("https://api.unime.site/UNIME/services/get/serviceList")
         .then((response) => {
@@ -117,11 +112,14 @@ export default {
           console.error("Error fetching data: ", error);
         })
         .finally(() => {
-          this.isLoading = false; 
+          this.isLoading = false;
         });
     },
-    scheduleService(id) {
-      console.log(`Scheduling Service with id: ${id}`);
+    openDetail(service) {
+      this.selectedService = service;
+    },
+    closeDetail() {
+      this.selectedService = null;
     },
     cancelService(id) {
       console.log(`Cancelling Service with id: ${id}`);
@@ -137,6 +135,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .wrapper {
   display: flex;
@@ -147,7 +146,6 @@ export default {
 }
 
 .board {
-  /* margin-top: 64px; */
   width: 100%;
   max-width: 1440px;
   background: #ffffff;
@@ -184,7 +182,7 @@ table {
   margin-bottom: 20px;
 }
 
-.loading{
+.loading {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -196,7 +194,6 @@ td {
   text-align: left;
   padding: 12px;
   font-size: 1rem;
-  border: none;
 }
 
 th {
@@ -246,5 +243,51 @@ button:last-child {
   background-color: #e9ecef;
   color: #6c757d;
   cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal h2 {
+  margin-bottom: 15px;
+}
+
+.modal img{ 
+  width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.modal button {
+  margin-top: 15px;
+  padding: 8px 12px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background: #0056b3;
 }
 </style>

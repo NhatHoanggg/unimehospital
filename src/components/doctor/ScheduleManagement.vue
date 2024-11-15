@@ -80,83 +80,100 @@ export default {
   },
   methods: {
     updateWeekDates() {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
+      const today = new Date();
+      const dayOfWeek = today.getDay();
 
-    const currentMonday = new Date(today);
-    currentMonday.setDate(
-      today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)
-    );
+      const currentMonday = new Date(today);
+      currentMonday.setDate(
+        today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)
+      );
 
-    const startOfNextWeek = new Date(currentMonday);
-    startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
+      const startOfNextWeek = new Date(currentMonday);
+      startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
 
-    this.dates = Array.from({ length: 6 }, (_, i) => {
-      const date = new Date(startOfNextWeek);
-      date.setDate(startOfNextWeek.getDate() + i);
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-      
-      this.weekNumber = this.getWeekOfYear(date);
-      // console.log(`Ngày ${formattedDate} thuộc tuần thứ ${this.weekNumber} của năm`);
-      
-      return formattedDate;
-    });
+      this.dates = Array.from({ length: 6 }, (_, i) => {
+        const date = new Date(startOfNextWeek);
+        date.setDate(startOfNextWeek.getDate() + i);
+        const formattedDate = `${date.getDate()}/${
+          date.getMonth() + 1
+        }/${date.getFullYear()}`;
+
+        this.weekNumber = this.getWeekOfYear(date);
+        // console.log(`Ngày ${formattedDate} thuộc tuần thứ ${this.weekNumber} của năm`);
+
+        return formattedDate;
+      });
+    },
+
+    getWeekOfYear(date) {
+      const targetDate = new Date(date);
+      targetDate.setHours(0, 0, 0, 0);
+
+      const startOfYear = new Date(targetDate.getFullYear(), 0, 1);
+      const dayOfWeek = startOfYear.getDay();
+      const startOfFirstWeek = new Date(startOfYear);
+      startOfFirstWeek.setDate(
+        startOfYear.getDate() + (dayOfWeek === 0 ? -6 : 1 - dayOfWeek)
+      );
+
+      const daysDifference = Math.floor(
+        (targetDate - startOfFirstWeek) / (24 * 60 * 60 * 1000)
+      );
+      const weekNumber = Math.ceil((daysDifference + 1) / 7);
+      return weekNumber;
+    },
+
+    toggleSelection(dayIndex, period) {
+      const slotIndex = this.selectedSlots.findIndex(
+        (slot) => slot.dayIndex === dayIndex && slot.period === period
+      );
+
+      if (slotIndex > -1) {
+        this.selectedSlots.splice(slotIndex, 1);
+      } else {
+        this.selectedSlots.push({ dayIndex, period });
+      }
+    },
+
+    isSelected(dayIndex, period) {
+      return this.selectedSlots.some(
+        (slot) => slot.dayIndex === dayIndex && slot.period === period
+      );
+    },
+
+    getDayOfWeek(dayIndex) {
+      const dayMap = {
+        0: "MONDAY",
+        1: "TUESDAY",
+        2: "WEDNESDAY",
+        3: "THURSDAY",
+        4: "FRIDAY",
+        5: "SATURDAY",
+      };
+      return dayMap[dayIndex];
+    },
+
+    sendData() {
+      const formattedData = [];
+
+      this.dates.forEach((date, dayIndex) => {
+        this.periods.forEach((period) => {
+          formattedData.push({
+            doctorTimeworkYear: new Date().getFullYear(),
+            weekOfYear: this.weekNumber,
+            dayOfWeek: this.getDayOfWeek(dayIndex),
+            startTime: this.shifts[period].split("-")[0],
+            endTime: this.shifts[period].split("-")[1],
+            doctorTimeworkStatus: this.isSelected(dayIndex, period)
+              ? "Busy"
+              : "Available",
+          });
+        });
+      });
+
+      console.log(JSON.stringify(formattedData, null, 2));
+    },
   },
-
-  getWeekOfYear(date) {
-    const targetDate = new Date(date);
-    targetDate.setHours(0, 0, 0, 0);
-
-    const startOfYear = new Date(targetDate.getFullYear(), 0, 1);
-    const dayOfWeek = startOfYear.getDay();
-    const startOfFirstWeek = new Date(startOfYear);
-    startOfFirstWeek.setDate(startOfYear.getDate() + (dayOfWeek === 0 ? -6 : 1 - dayOfWeek));
-
-    const daysDifference = Math.floor((targetDate - startOfFirstWeek) / (24 * 60 * 60 * 1000));
-    const weekNumber = Math.ceil((daysDifference + 1) / 7);
-    return weekNumber;
-  },
-
-  toggleSelection(dayIndex, period) {
-    const slotIndex = this.selectedSlots.findIndex(
-      (slot) => slot.dayIndex === dayIndex && slot.period === period
-    );
-
-    if (slotIndex > -1) {
-      this.selectedSlots.splice(slotIndex, 1);
-    } else {
-      this.selectedSlots.push({ dayIndex, period });
-    }
-  },
-
-  isSelected(dayIndex, period) {
-    return this.selectedSlots.some(
-      (slot) => slot.dayIndex === dayIndex && slot.period === period
-    );
-  },
-
-  sendData() {
-    const formattedData = this.dates.map((date, dayIndex) => {
-      const slots = this.periods.map((period) => ({
-        id: period,
-        time: this.shifts[period],
-        selected: this.isSelected(dayIndex, period),
-      }));
-      
-      return { date, slots };
-    });
-    const sendData = {
-      weekNumber: this.weekNumber,
-      data: formattedData,
-    };
-
-    const data = JSON.stringify(sendData);
-
-    console.log(data)
-    // console.log("Dữ liệu gửi đi:", formattedData);
-  },
-},
-
 };
 </script>
 

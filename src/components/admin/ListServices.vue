@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
       <div class="board">
-        <h1>Danh sách dịch vụ</h1>
+        <h1>Danh sách dịch vụ BV</h1>
   
         <div v-if="isLoading" class="loading">
           <p>Đang tải dữ liệu</p>
