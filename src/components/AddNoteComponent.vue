@@ -12,6 +12,8 @@
           <div class="note-wrapper">
             
             <textarea 
+              v-model="noteText"
+              @input="limitWords"
               placeholder="Nhập ghi chú tại đây (để trống nếu không cần)" 
               rows="10" 
               cols="80"
@@ -33,20 +35,36 @@ import 'vue3-toastify/dist/index.css';
 export default {
   data() {
     return {
-      isCollapsed: false,
+      isCollapsed: true,
+      noteText: '',
+      maxWords: 50,
     };
+  },
+  computed: {
+    wordCount() {
+      return this.noteText.trim().split(/\s+/).filter(word => word).length;
+    }
   },
   methods: {
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
     },
     confirmSelection() {
-      toast.info('Success', {
+      this.isCollapsed = !this.isCollapsed;
+      this.$emit('note', { note: this.noteText });
+      // alert(this.noteText);
+      toast.success('Thêm ghi chú thành công', {
         rtl: false,
         limit: 3,
         position: toast.POSITION.TOP_RIGHT,
       });
     },
+    limitWords() {
+      const words = this.noteText.trim().split(/\s+/);
+      if (words.length > this.maxWords) {
+        this.noteText = words.slice(0, this.maxWords).join(" ");
+      }
+    }
   },
 };
 </script>

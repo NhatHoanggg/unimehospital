@@ -74,33 +74,8 @@ export default {
       formData.append("username", username.value);
       formData.append("password", password.value);
 
-      // var userData = {
-      //   username: "nhathoang",
-      //   phone: "0123456654",
-      //   password: "hoang1",
-      //   role: "user",
-      // };
-
-      // console.log(username.value);
-      // console.log(password.value);
-      // userData.role = password.value;
-
-      // if (userData.role == "admin") {
-      //   router.push("/admin/admin-dashboard");
-      // } else if (userData.role === "employee") {
-      //   router.push("/employee/employee-dashboard");
-      // } else if (userData.role === "user") {
-      //   router.push("/");
-      // }
-
-      // var userToken = "loremipsum";
-
-      // authStore.login(userData, userToken);
-
-      // alert("dang nhap thanh cong");
-
       try {
-        const response = await fetch("http://localhost:8888/UNIME/auth/token", {
+        const response = await fetch("https://api.unime.site/UNIME/auth/token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -130,7 +105,16 @@ export default {
 
         authStore.login(token.payload); 
 
-        router.push("/");
+        const userData = localStorage.getItem("user");
+        const user = JSON.parse(userData);
+        if (user.scope === "ADMIN") {
+          router.push("/admin");
+        } else if (user.scope === "EMPLOYEE") {
+          router.push("/employee");
+        } else if (user.scope === "PATIENT") {
+          router.push("/");
+        }
+        // router.push("/");
         
       } catch (error) {
         console.error("Error:", error);
@@ -301,22 +285,48 @@ h2 {
 }
 
 .login-button {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 8px;
-  width: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-}
+  background: #fff;
+  box-shadow: 4px 4px #3b82f6, 9px 9px #151515;
+  color: #151515;
+  text-transform: lowercase;
+  border: solid 2px #151515;
 
+  text-decoration: none;
+
+  padding: 18px 32px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  cursor: pointer;
+  overflow: hidden;
+  transition-delay: 0s !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px;
+  font-family: sans-serif;
+}
+.login-button::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 0;
+  width: 0%;
+  height: 100%;
+  background: #151515;
+  z-index: -1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.login-button:hover::before {
+  width: 100%;
+  left: 0;
+  right: unset;
+}
 .login-button:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-2px);
+  box-shadow: 0 0 #3b82f6, 0 0 #151515;
+  color: white;
 }
 
 .extra-options {

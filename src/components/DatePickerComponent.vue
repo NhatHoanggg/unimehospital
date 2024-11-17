@@ -61,11 +61,12 @@ export default {
       currentIndex: 0,
       selectedDay: 0,
       visibleItems: 7,
-      schedules: {
-        "30/10/2024": ["8:30-9:00", "9:30-10:00", "10:00-10:30"],
-        "31/10/2024": ["9:00-9:30", "10:30-11:00", "14:00-14:30"],
-        "1/11/2024": ["8:30-9:00", "10:00-10:30", "15:30-16:00"],
-      },
+      // schedules: {
+      //   "30/10/2024": ["8:30-9:00", "9:30-10:00", "10:00-10:30"],
+      //   "31/10/2024": ["9:00-9:30", "10:30-11:00", "14:00-14:30"],
+      //   "1/11/2024": ["8:30-9:00", "10:00-10:30", "15:30-16:00"],
+      // },
+      schedules: {},
       isCollapsed: false,
       selectedShift: null, 
     };
@@ -85,6 +86,7 @@ export default {
   },
   mounted() {
     this.generateDays();
+    this.updateSchedules();
   },
   methods: {
     generateDays() {
@@ -130,6 +132,12 @@ export default {
         const selectedDate = this.days[this.selectedDay];
         this.$emit('date-selected', { date: selectedDate, time: this.selectedShift });
         this.isCollapsed = !this.isCollapsed;
+        toast.success(`Chọn giờ khám thành công!\nNgày ${selectedDate}\nGiờ ${this.selectedShift}`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);  
       } else {
         toast.warning('Vui lòng chọn giờ khám trước khi tiếp tục!',
             {
@@ -137,6 +145,22 @@ export default {
               limit: 3,
               position: toast.POSITION.TOP_RIGHT,
             },);   
+      }
+    },
+    updateSchedules() {
+    const today = new Date();
+    this.schedules = {};
+
+    for (let i = 0; i < 7; i++) {
+      const newDate = new Date(today);
+      newDate.setDate(today.getDate() + i);
+
+      const day = newDate.getDate();
+      const month = newDate.getMonth() + 1;
+      const year = newDate.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+
+      this.schedules[formattedDate] = ["8:30-9:00", "9:30-10:00", "10:00-10:30"];
       }
     },
   },
@@ -148,7 +172,7 @@ export default {
   width: 100%;
   height: auto;
   background-color: #F1F5F9;
-  margin-top: 70px;
+  /* margin-top: 70px; */
   align-items: center;
   justify-content: center;
   display: flex;

@@ -7,21 +7,43 @@
       <div class="register-card">
         <h2>Nhập OTP</h2>
         <form @submit.prevent="submitOTP">
-          <div class="input-field">
-            <div class="input-group">
-              <i class="fas fa-key"></i>
-              <input
-                type="text"
-                id="otp"
-                v-model="otp"
-                placeholder="Nhập mã OTP"
-                required
-                aria-label="OTP"
-                maxlength="4"
-                pattern="\d{4}"
-                title="Vui lòng nhập 4 chữ số OTP"
-              />
-            </div>
+          <div class="otp-inputs">
+            <input
+              type="text"
+              v-model="otp[0]"
+              @input="moveFocus(0)"
+              maxlength="1"
+              aria-label="OTP 1"
+              class="otp-input"
+              ref="otpInput0"
+            />
+            <input
+              type="text"
+              v-model="otp[1]"
+              @input="moveFocus(1)"
+              maxlength="1"
+              aria-label="OTP 2"
+              class="otp-input"
+              ref="otpInput1"
+            />
+            <input
+              type="text"
+              v-model="otp[2]"
+              @input="moveFocus(2)"
+              maxlength="1"
+              aria-label="OTP 3"
+              class="otp-input"
+              ref="otpInput2"
+            />
+            <input
+              type="text"
+              v-model="otp[3]"
+              @input="moveFocus(3)"
+              maxlength="1"
+              aria-label="OTP 4"
+              class="otp-input"
+              ref="otpInput3"
+            />
           </div>
 
           <div v-if="errorMessage" class="error-message">
@@ -43,35 +65,35 @@
   </div>
 </template>
 
+
 <script>
 export default {
   name: "SendOTP",
   data() {
     return {
-      otp: "",
+      otp: ["", "", "", ""], 
       errorMessage: "",
       email: this.$route.query.email || "", 
     };
   },
   methods: {
+    moveFocus(index) {
+      if (this.otp[index].length === 1 && index < 3) {
+        this.$refs[`otpInput${index + 1}`].focus();
+      } else if (this.otp[index].length === 0 && index > 0) {
+        this.$refs[`otpInput${index - 1}`].focus();
+      }
+    },
     submitOTP() {
+      const otpString = this.otp.join('');
       const otpPattern = /^\d{4}$/;
-      if (!otpPattern.test(this.otp)) {
+      if (!otpPattern.test(otpString)) {
         this.errorMessage = "Mã OTP phải là 4 chữ số.";
         return;
       }
-      /*
-        this.$axios.post('/api/verify-otp', { email: this.email, otp: this.otp })
-          .then(response => {
-            this.$router.push('/dashboard');
-          })
-          .catch(error => {
-            this.errorMessage = "Mã OTP không hợp lệ hoặc đã hết hạn.";
-          });
-        */
 
-      // Ví dụ tạm thời:
-      if (this.otp === "8888") {
+      // Kiểm tra mã OTP tạm thời
+      if (otpString === "8888") {
         this.$router.push({ 
           path: "/sign-up", 
           query: { email: this.email } 
@@ -81,12 +103,13 @@ export default {
       }
     },
     resendOTP() {
-
       alert("Đã gửi lại mã OTP vào email của bạn.");
     },
   },
 };
 </script>
+
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -232,25 +255,73 @@ h2 {
   text-align: left;
 }
 
-.confirm-button {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  padding: 0.75rem;
-  border: none;
+.otp-inputs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.otp-input {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  text-align: center;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  width: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin: 0 5px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.otp-input:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
   box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
 }
 
-.confirm-button:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-2px);
-}
+.confirm-button {
+  background: #fff;
+  box-shadow: 4px 4px #3b82f6, 9px 9px #151515;
+  color: #151515;
+  text-transform: lowercase;
+  border: solid 2px #151515;
 
+  text-decoration: none;
+
+  padding: 18px 32px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  cursor: pointer;
+  overflow: hidden;
+  transition-delay: 0s !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px;
+  font-family: sans-serif;
+}
+.confirm-button::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 0;
+  width: 0%;
+  height: 100%;
+  background: #151515;
+  z-index: -1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.confirm-button:hover::before {
+  width: 100%;
+  left: 0;
+  right: unset;
+}
+.confirm-button:hover {
+  box-shadow: 0 0 #3b82f6, 0 0 #151515;
+  color: white;
+}
 .resend-button {
   background: none;
   border: none;
