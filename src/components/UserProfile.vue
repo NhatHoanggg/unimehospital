@@ -61,15 +61,12 @@ export default {
   },
   methods: {
     handleSave() {
-      // Handle saving the form data
       alert("Profile saved!");
     },
     handleCancel() {
-      // Handle cancel action
       alert("Changes canceled");
     },
     handleLogout() {
-      // Handle logout
       alert("Logged out");
     }
   }
@@ -85,11 +82,11 @@ export default {
   width: 200px;
   background: #f5f5f5;
   padding: 20px 10px;
-  position: fixed; /* Keeps the sidebar fixed on the screen */
-  top: 60px; /* Adjust this to match the navbar height */
+  position: fixed;
+  top: 60px; 
   left: 0;
-  height: 125px; /* Sidebar height minus the navbar height */
-  z-index: 1; /* Keeps it above other elements */
+  height: 125px;
+  z-index: 1; 
 }
 
 .sidebar a,
@@ -102,9 +99,9 @@ export default {
 
 .profile-content {
   flex: 1;
-  margin-left: 220px; /* Offset for the width of the sidebar */
+  margin-left: 220px;
   padding: 20px;
-  padding-top: 80px; /* Adjust for the navbar height */
+  padding-top: 80px;
   background: #f0f0f0;
 }
 
