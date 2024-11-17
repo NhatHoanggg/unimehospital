@@ -13,6 +13,8 @@ import BookService from '@/components/BookService.vue';
 
 import UserProfile from '@/components/UserProfile.vue';
 import DoctorDetail from '@/components/DoctorDetail.vue';
+import ChangePassword from '@/components/ChangePassword.vue';
+import HistoryBooking from '@/components/HistoryBooking.vue';
 
 import AdminDashboard from '@/components/admin/AdminDashboard.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
@@ -91,6 +93,18 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: UserProfile,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/change-password',
+    name: 'ChangePassword',
+    component: ChangePassword,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/history-booking',
+    name: 'HistoryBooking',
+    component: HistoryBooking,
     meta: { requiresAuth: true },
   },
   { 
