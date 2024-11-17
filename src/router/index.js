@@ -37,6 +37,7 @@ import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
 
 import NotFound from '@/components/NotFound.vue';
 import TestUploadImage from '@/components/TestUploadImage.vue';
+import TestUploadMultipleImages from '@/components/TestUploadMultipleImages.vue';
 
 import { useAuthStore } from '@/stores/auth';
 
@@ -241,6 +242,12 @@ const routes = [
     path: '/upload',
     name: 'TestUploadImage',
     component: TestUploadImage,
+  },
+
+  {
+    path: '/multiple-upload',
+    name: 'TestUploadMultipleImages',
+    component: TestUploadMultipleImages,
   },
 
 ];
