@@ -45,9 +45,11 @@
             </div>
 
             <div v-if="showDropdown" class="dropdown">
-              <router-link to="/profile"> <i class="fas fa-user"></i> Hồ sơ</router-link>
-              <router-link to="/profile"> <i class="fas fa-history"></i> Lịch sử</router-link>
-              <router-link to="/profile"> <i class="fas fa-cog"></i> Cài đặt</router-link>
+              <router-link to="/profile"> <i class="fas fa-user"></i>  Hồ sơ</router-link>
+              <router-link to="/history-booking"> <i class="fas fa-history"></i>  Lịch sử</router-link>
+              <router-link to="/change-password"> <i class="fas fa-cog"></i>   Cài đặt</router-link>
+              <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i>   Đăng xuất</a>
+
               <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </div>
           </li>
