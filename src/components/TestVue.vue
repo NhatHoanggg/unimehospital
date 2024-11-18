@@ -38,7 +38,7 @@ export default {
       weekOfYear: this.getCurrentWeek().week,
       year: this.getCurrentWeek().year,
       maxWeek: this.getCurrentWeek().week + 2,
-      days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"],
+      days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
       shifts: [
         "08:00-09:00",
         "09:00-10:00",
@@ -76,7 +76,6 @@ export default {
         WEDNESDAY: "Thứ Tư",
         THURSDAY: "Thứ Năm",
         FRIDAY: "Thứ Sáu",
-        SATURDAY: "Thứ Bảy",
       };
       return days[dayOfWeek] || dayOfWeek;
     },
@@ -140,7 +139,6 @@ export default {
 .weekly-schedule {
   max-width: 1000px;
   margin: 0 auto;
-  margin-top: 64px;
   padding: 20px;
   font-family: Arial, sans-serif;
   background: #f9f9f9;

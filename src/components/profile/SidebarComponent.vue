@@ -1,6 +1,5 @@
 <template>
     <div class="sidebar">
-      <!-- Menu Items -->
       <div
         v-for="item in menuItems"
         :key="item.text"
@@ -33,7 +32,6 @@
     },
     methods: {
       selectItem(item) {
-        // console.log(`Clicked Item: ${item.text}`); 
         this.$emit('select', item.text); 
         this.$router.push({ path: `/employee${item.path}` }); 
       },

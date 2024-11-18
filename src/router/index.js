@@ -11,11 +11,11 @@ import BookDoctor from '@/components/BookDoctor.vue';
 import BookDoctorPage from '@/components/BookDoctorPage.vue';
 import BookService from '@/components/BookService.vue';
 
-import UserProfile from '@/components/UserProfile.vue';
+import UserProfile from '@/components/profile/UserProfile.vue';
 import DoctorDetail from '@/components/DoctorDetail.vue';
 
-import ChangePassword from '@/components/ChangePassword.vue';
-import HistoryBooking from '@/components/HistoryBooking.vue';
+import ChangePassword from '@/components/profile/ChangePassword.vue';
+import HistoryBooking from '@/components/profile/HistoryBooking.vue';
 import BookingSuccessPage from '@/components/BookingSuccessPage.vue';
 
 
@@ -31,6 +31,7 @@ import AddDepartment from '@/components/admin/AddDepartment.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import AddDoctorService from '@/components/employee/AddDoctorService.vue';
 import TimeOffManagement from '@/components/employee/TimeOffManagement.vue';
+import TimeworkManagement from '@/components/employee/TimeworkManagement.vue';
 import ListDoctorServices from '@/components/employee/ListDoctorServices.vue';
 
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
@@ -40,6 +41,7 @@ import BusyManagement from '@/components/doctor/BusyManagement.vue';
 import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
 
 import NotFound from '@/components/NotFound.vue';
+import TestVue from '@/components/TestVue.vue';
 import TestUploadImage from '@/components/TestUploadImage.vue';
 import TestUploadMultipleImages from '@/components/TestUploadMultipleImages.vue';
 
@@ -195,11 +197,16 @@ const routes = [
     path: '/employee',
     name: 'EmployeeDashboard',
     component: EmployeeDashboard,
-    redirect: '/employee/add-doctor-service',
+    redirect: '/employee/timework-management',
     children: [
       {
         path: 'time-off-management',
         component: TimeOffManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'timework-management',
+        component: TimeworkManagement,
         meta: { requiresAuth: true },
       },
       {
@@ -252,6 +259,12 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
+  },
+
+  {
+    path: '/test',
+    name: 'TestVue',
+    component: TestVue,
   },
 
   {
