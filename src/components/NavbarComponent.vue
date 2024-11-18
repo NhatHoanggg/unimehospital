@@ -40,7 +40,7 @@
             <div class="container">
               <span>Xin chào! {{ authStore.user.username }}</span>
               <div class="user-icon" @click="toggleDropdown">
-                <img src="@/assets/user.png" alt="User Icon" />
+                <img :src="imageSrc" alt="User Icon" />
               </div>
             </div>
 
@@ -49,8 +49,6 @@
               <router-link to="/history-booking"> <i class="fas fa-history"></i>  Lịch sử</router-link>
               <router-link to="/change-password"> <i class="fas fa-cog"></i>   Cài đặt</router-link>
               <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i>   Đăng xuất</a>
-
-              <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </div>
           </li>
         </ul>
@@ -74,6 +72,20 @@ import { useRouter } from 'vue-router';
 
 export default {
   name: "NavbarComponent",
+  data() {
+    return {
+      imageSrc: '@/assets/user.png', 
+    };
+  },
+  mounted() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user.image) {
+        this.imageSrc = user.image; 
+      }
+    }
+  },
   setup() {
     const isMenuOpen = ref(false);
     const showDropdown = ref(false);

@@ -55,7 +55,7 @@ export default {
   
 <style scoped>
 .booking-confirmation {
-  margin-top: 70px;
+  margin-top: 64px;
   display: flex;
   justify-content: center;
   align-items: center;

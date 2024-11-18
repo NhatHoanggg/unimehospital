@@ -1,13 +1,13 @@
-<template>
+<template> 
   <div class="doctor-container">
     <div class="doctor-list">
       <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
         <div class="doctor-image">
-          <img :src="doctor.avatar" alt="Doctor Image" />
+          <img :src="doctor.doctorImage" alt="Doctor Image" />
         </div>
         <div class="doctor-info">
-          <h3>{{ doctor.name }}</h3>
-          <p><strong>Khoa: </strong>{{ doctor.specitalty }}</p>
+          <h3>{{ doctor.doctorName }}</h3>
+          <p><strong>Khoa: </strong>{{ doctor.departmentName }}</p>
           <p>{{ doctor.info }}</p>
           <div class="doctor-actions">
             <button class="btn view-more" @click="viewMore(doctor)">Xem thêm</button>
@@ -47,9 +47,9 @@ export default {
     async fetchDoctors() {
       try {
         const response = await axios.get(
-          `https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors?page=${this.currentPage}&limit=${this.itemsPerPage}`
+          `https://api.unime.site/UNIME/doctors/get/doctorList?page=${this.currentPage}&limit=${this.itemsPerPage}`
         );
-        this.doctors = response.data;
+        this.doctors = response.data.result;
       } catch (error) {
         console.error("Error fetching doctors:", error);
       }
@@ -66,12 +66,12 @@ export default {
       this.$router.push({ query: { page } }); 
     },
     viewMore(doctor) {
-    this.$router.push({ name: "DoctorDetail", params: { id: doctor.id } });
-    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+      this.$router.push({ name: "DoctorDetail", params: { id: doctor.doctorId } });
+      localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
     bookDoctor(doctor) {
-    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.id } });
-    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+      this.$router.push({ name: "BookDoctorPage", params: { id: doctor.doctorId } });
+      localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
   },
   mounted() {
@@ -181,4 +181,3 @@ export default {
     font-size: 24px;
   }
   </style>
-  

@@ -3,12 +3,12 @@
     <div class="doctor-detail-container">
     <div class="doctor-header">
       <div class="doctor-image">
-        <img :src="doctor.avatar" alt="Doctor Image" />
+        <img :src="doctor.doctorImage" alt="Doctor Image" />
       </div>
       <div class="doctor-info">
-        <h2>{{ doctor.name }}</h2>
-        <p><strong>Chuyên khoa:</strong> {{ doctor.specitalty }}</p>
-        <p><strong>Địa chỉ:</strong> {{ doctor.address }}</p>
+        <h2>{{ doctor.doctorName }}</h2>
+        <p><strong>Chuyên khoa:</strong> {{ doctor.departmentName }}</p>
+        <p><strong>Địa chỉ:</strong> {{ doctor.doctorAddress }}</p>
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@ export default {
 
   if (doctorData) {
     const doctor = JSON.parse(doctorData);
-    if (doctor.id === doctorId) {
+    if (doctor.doctorId == doctorId) {
       this.doctor = doctor;
     } else {
       this.fetchDoctorData(doctorId);
@@ -103,11 +103,11 @@ export default {
         return;
       }
       const appointment_info = {
-        doctor_name: this.doctor.name,
-        doctor_specialty: this.doctor.specitalty,
+        doctor_name: this.doctor.doctorName,
+        doctor_specialty: this.doctor.departmentName,
         date: this.selectedDate,
         time: this.selectedTime,
-        doctor_address: this.doctor.address,
+        doctor_address: this.doctor.doctorAddress,
         service: this.selectedService,
         note: this.noteText,
         price: this.servicePrice,

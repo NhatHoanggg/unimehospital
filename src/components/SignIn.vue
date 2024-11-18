@@ -104,6 +104,7 @@ export default {
         console.log("token: ", token.payload)
 
         authStore.login(token.payload); 
+        localStorage.setItem("token", JSON.stringify(data.result.token));
 
         const userData = localStorage.getItem("user");
         const user = JSON.parse(userData);

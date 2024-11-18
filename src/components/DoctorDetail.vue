@@ -2,19 +2,19 @@
   <div class="doctor-detail-container">
     <div class="doctor-header">
       <div class="doctor-image">
-        <img :src="doctor.avatar" alt="Doctor Image" />
+        <img :src="doctor.doctorImage" alt="Doctor Image" />
       </div>
       <div class="doctor-info">
-        <h2>{{ doctor.name }}</h2>
-        <p><strong>Chuyên khoa:</strong> {{ doctor.specitalty }}</p>
-        <p><strong>Địa chỉ:</strong> {{ doctor.address }}</p>
+        <h2>{{ doctor.doctorName }}</h2>
+        <p><strong>Chuyên khoa:</strong> {{ doctor.departmentName }}</p>
+        <p><strong>Địa chỉ:</strong> {{ doctor.doctorAddress }}</p>
         <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
       </div>
     </div>
 
     <div class="doctor-highlight">
       <h3>Đặc điểm nổi bật</h3>
-      <p>{{ doctor.info }}</p>
+      <p>{{ doctor.doctordetailExperience }}</p>
     </div>
   </div>
 </template>
@@ -33,10 +33,9 @@ export default {
   mounted() {
   const doctorId = this.$route.params.id;
   const doctorData = localStorage.getItem("selectedDoctor");
-
   if (doctorData) {
     const doctor = JSON.parse(doctorData);
-    if (doctor.id === doctorId) {
+    if (doctor.doctorId == doctorId) {
       this.doctor = doctor;
     } else {
       this.fetchDoctorData(doctorId);
@@ -55,7 +54,7 @@ methods: {
     }
   },
   bookDoctor(doctor) {
-    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.id } });
+    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.doctorId } });
     localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
 }

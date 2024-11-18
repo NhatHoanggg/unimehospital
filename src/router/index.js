@@ -220,7 +220,7 @@ const routes = [
     path: '/doctor',
     name: 'DoctorDashboard',
     component: DoctorDashboard,
-    redirect: '/doctor/schedule',
+    redirect: '/doctor/next-appointments',
     children: [
       {
         path: 'next-appointments',

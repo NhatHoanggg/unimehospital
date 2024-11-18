@@ -1,12 +1,11 @@
 <template>
     <div class="user-management">
-      <h1>Quản lý người dùng</h1>
+      <h1>Busy</h1>
     </div>
   </template>
   
   <script>
   export default {
-    name: 'UserManagement',
     data() {
       return {
       };

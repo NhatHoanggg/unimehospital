@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      selectedItem: "Thêm dịch vụ",
+      selectedItem: "Quản lý ca",
     };
   },
   methods: {

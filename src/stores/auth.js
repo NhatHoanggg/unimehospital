@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = {
       username: payload.sub, 
       scope: payload.scope,  
+      image: payload.image,
     };
     token.value = payload;
 
@@ -19,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
     
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('user', JSON.stringify(user.value));
-    localStorage.setItem('token', JSON.stringify(token.value));
+    // localStorage.setItem('token', JSON.stringify(token.value));
   };
 
   const logout = () => {
