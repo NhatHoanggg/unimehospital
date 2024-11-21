@@ -245,7 +245,8 @@ export default {
   display: flex;
   justify-content: center;
   padding: 40px;
-  background-color: #f4f4f9;
+  /* background-color: #f4f4f9; */
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   height: 800px;
   overflow: hidden;
 }

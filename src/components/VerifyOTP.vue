@@ -65,18 +65,42 @@
   </div>
 </template>
 
-
 <script>
+import axios from "axios";
+
 export default {
   name: "SendOTP",
   data() {
     return {
-      otp: ["", "", "", ""], 
+      otp: ["", "", "", ""],
       errorMessage: "",
-      email: this.$route.query.email || "", 
+      email: this.$route.query.email || "",
     };
   },
+  created() {
+    this.sendOTP();
+  },
   methods: {
+    async sendOTP() {
+      alert("Đã gửi mã OTP vào email của bạn.");
+      try {
+        const response = await axios.post(
+          "https://api.unime.site/UNIME/sendOtp",
+          {
+            email: this.email,
+          }
+        );
+        if (response.data.code === 1000) {
+          this.code = response.data.result; // Lưu OTP từ API
+        } else {
+          this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+        }
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+      }
+    },
+
     moveFocus(index) {
       if (this.otp[index].length === 1 && index < 3) {
         this.$refs[`otpInput${index + 1}`].focus();
@@ -84,32 +108,31 @@ export default {
         this.$refs[`otpInput${index - 1}`].focus();
       }
     },
+
     submitOTP() {
-      const otpString = this.otp.join('');
+      const otpString = this.otp.join("");
       const otpPattern = /^\d{4}$/;
+
       if (!otpPattern.test(otpString)) {
         this.errorMessage = "Mã OTP phải là 4 chữ số.";
         return;
       }
 
-      // Kiểm tra mã OTP tạm thời
-      if (otpString === "8888") {
-        this.$router.push({ 
-          path: "/sign-up", 
-          query: { email: this.email } 
+      if (otpString === this.code) {
+        this.$router.push({
+          path: "/sign-up",
+          query: { email: this.email },
         });
       } else {
         this.errorMessage = "Mã OTP không hợp lệ.";
       }
     },
     resendOTP() {
-      alert("Đã gửi lại mã OTP vào email của bạn.");
+      this.sendOTP();
     },
   },
 };
 </script>
-
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -234,7 +257,7 @@ h2 {
 
 .input-group input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem; 
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
   border: 1px solid var(--input-border);
   border-radius: 8px;
   font-size: 1rem;
