@@ -88,6 +88,8 @@ export default {
       serviceImage: null,
       previewImage: null,
       imageUrl: "",
+      isLoading: true,
+      data: "",
       departments: [
         { label: "Răng-Hàm-Mặt", value: "Răng-Hàm-Mặt" },
         { label: "Tim Mạch", value: "Tim Mạch" },
@@ -197,6 +199,20 @@ export default {
       this.serviceImage = null;
       this.previewImage = null;
       this.imageUrl = "";
+    },
+    fetchDepartment() {
+      this.isLoading = true;
+      axios
+        .get("https://api.unime.site/UNIME/departments/get/departmentList")
+        .then((response) => {
+          this.departments = response.data.result;
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
   },
 };

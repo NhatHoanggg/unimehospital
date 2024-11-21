@@ -3,49 +3,62 @@
     <div class="edit-profile-card">
       <form @submit.prevent="updateProfile">
         <div class="avatar-container">
-          <UploadAvatar :value="user.avatar" @change="onAvatarChange" />
+          <div class="avatar-wrapper">
+            <img class="profile-pic" :src="avatar || defaultAvatar" alt="Avatar" />
+            <div class="upload-button" @click="triggerFileUpload">
+              <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+            </div>
+            <input
+              class="file-upload"
+              type="file"
+              accept="image/*"
+              ref="fileInput"
+              @change="onFileChange"
+            />
+          </div>
         </div>
 
+        <!-- Các trường form -->
         <div class="form-group">
           <label for="fullName">Họ và tên</label>
-          <input type="text" id="fullName" v-model="user.fullName" required />
+          <input type="text" id="fullName" v-model="patientName" required />
         </div>
 
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" v-model="user.username" required />
+          <input type="text" id="username" v-model="patientUsername" readonly />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" v-model="user.email" required />
+          <input type="email" id="email" v-model="patientEmail" readonly />
         </div>
 
         <div class="form-group">
           <label>Giới tính</label>
           <div class="gender-options">
             <label>
-              <input type="radio" v-model="user.gender" value="male" /> Nam
+              <input type="radio" v-model="patientGender" value="true" /> Nam
             </label>
             <label>
-              <input type="radio" v-model="user.gender" value="female" /> Nữ
+              <input type="radio" v-model="patientGender" value="false" /> Nữ
             </label>
           </div>
         </div>
 
         <div class="form-group">
           <label for="dob">Ngày sinh</label>
-          <input type="date" id="dob" v-model="user.dob" required />
+          <input type="date" id="dob" v-model="patientDateOfBirth" required />
         </div>
 
         <div class="form-group">
           <label for="phone">Số điện thoại</label>
-          <input type="text" id="phone" v-model="user.phone" required />
+          <input type="text" id="phone" v-model="patientPhoneNumber" required />
         </div>
 
         <div class="form-group">
           <label for="address">Địa chỉ</label>
-          <textarea id="address" v-model="user.address" required></textarea>
+          <textarea id="address" v-model="patientAddress" required></textarea>
         </div>
 
         <div class="form-group">
@@ -57,38 +70,176 @@
 </template>
 
 <script>
-import UploadAvatar from './UploadAvatar.vue';
+import axios from "axios";
 
 export default {
-  components: {
-    UploadAvatar,
-  },
   data() {
     return {
-      user: {
-        avatar: "",
-        fullName: "",
-        username: "",
-        email: "",
-        gender: "male",
-        dob: "",
-        phone: "",
-        address: "",
-      },
+      avatar: null,
+      defaultAvatar: "https://via.placeholder.com/200",
+      patientId: "",
+      userId: "",
+      patientUsername: "",
+      // patientPassword: "",
+      patientEmail: "",
+      patientImage: "",
+      patientName: "",
+      patientAddress: "",
+      patientPhoneNumber: "",
+      patientGender: "",
+      patientDateOfBirth: "",
     };
   },
   methods: {
-    onAvatarChange(avatarData) {
-      this.user.avatar = avatarData;
+    triggerFileUpload() {
+      this.$refs.fileInput.click();
     },
-    updateProfile() {
-      console.log("Cập nhật thông tin người dùng:", this.user);
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.avatar = e.target.result;
+          this.patientImage = file; 
+        };
+        reader.readAsDataURL(file);
+      }
     },
+    async updateProfile() {
+      try {
+        if (this.patientImage && typeof this.patientImage !== "string") {
+          const formData = new FormData();
+          formData.append("file", this.patientImage);
+          formData.append("upload_preset", process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET);
+
+          const uploadResponse = await axios.post(
+            `https://api.cloudinary.com/v1_1/${process.env.VUE_APP_CLOUD_NAME}/image/upload`,
+            formData
+          );
+          this.patientImage = uploadResponse.data.secure_url;
+        }
+
+        // Tạo object dữ liệu cập nhật
+        const updatedUser = {
+          patientId: this.patientId,
+          userId: this.userId,
+          patientUsername: this.patientUsername,
+          // patientPassword: this.patientPassword,
+          patientEmail: this.patientEmail,
+          patientImage: this.patientImage,
+          patientName: this.patientName,
+          patientAddress: this.patientAddress,
+          patientPhoneNumber: this.patientPhoneNumber,
+          patientGender: this.patientGender,
+          patientDateOfBirth: this.patientDateOfBirth,
+        };
+        console.log(updatedUser);
+        const token = localStorage.getItem("token");
+        await axios.put(
+          `https://api.unime.site/UNIME/patients/update`,
+          updatedUser,
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          }
+        );
+
+        alert("Cập nhật thành công!");
+      } catch (error) {
+        console.error("Lỗi cập nhật:", error);
+        alert("Cập nhật thất bại!");
+      }
+    },
+    fetchUserData() {
+      const token = localStorage.getItem("token");
+      axios
+        .get(`https://api.unime.site/UNIME/patients/myInfo`, {
+          headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+        })
+        .then((response) => {
+          if (response.data.code === 1000) {
+            const user = response.data.result;
+            this.patientId = user.patientId;
+            this.userId = user.userId;
+            this.patientUsername = user.patientUsername;
+            this.patientPassword = user.patientPassword;
+            this.patientEmail = user.patientEmail;
+            this.patientImage = user.patientImage;
+            this.patientName = user.patientName;
+            this.patientAddress = user.patientAddress;
+            this.patientPhoneNumber = user.patientPhoneNumber;
+            this.patientGender = user.patientGender;
+            this.patientDateOfBirth = user.patientDateOfBirth;
+            this.avatar = user.patientImage || this.defaultAvatar;
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi tải dữ liệu:", error);
+        });
+    },
+  },
+  created() {
+    this.fetchUserData();
   },
 };
 </script>
 
 <style scoped>
+.avatar-wrapper {
+    position: relative;
+    height: 200px;
+    width: 200px;
+    margin: auto;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 1px 1px 15px -5px black;
+    transition: all 0.3s ease;
+  }
+  
+  .avatar-wrapper:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+  
+  .avatar-wrapper:hover .profile-pic {
+    opacity: 0.5;
+  }
+  
+  .profile-pic {
+    height: 100%;
+    width: 100%;
+    transition: all 0.3s ease;
+    object-fit: cover;
+  }
+  
+  .upload-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .upload-button .fa-arrow-circle-up {
+    font-size: 50px;
+    color: #34495e;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .upload-button:hover .fa-arrow-circle-up {
+    opacity: 0.9;
+  }
+  
+  .file-upload {
+    display: none;
+  }
+
+
 .edit-profile-container {
   margin-top: 64px;
   display: flex;

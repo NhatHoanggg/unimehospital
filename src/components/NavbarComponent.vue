@@ -23,17 +23,24 @@
         <!------------------->
         <template v-else>
         <ul :class="['navbar-menu', { 'active': isMenuOpen }]">
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn"><router-link
-              to="/">Trang chủ</router-link></li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn"><router-link
-              to="/about-us">Giới thiệu</router-link></li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn"><router-link
-              to="/booking">Đặt lịch khám</router-link></li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
+            <router-link to="/">Trang chủ</router-link>
+          </li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
+            <router-link to="/about-us">Giới thiệu</router-link>
+          </li>
+          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
+            <router-link to="/booking">Đặt lịch khám</router-link>
+          </li>
 
-          <li v-if="!authStore.isLoggedIn">
+          <!-- <li v-if="!authStore.isLoggedIn">
             <router-link to="/sign-in" class="button">Đăng nhập</router-link>
           </li>
           <li v-if="!authStore.isLoggedIn">
+            <router-link to="/send-otp" class="button">Đăng kí</router-link>
+          </li> -->
+          <li v-if="!authStore.isLoggedIn" class = "button-container">
+            <router-link to="/sign-in" class="button">Đăng nhập</router-link>
             <router-link to="/send-otp" class="button">Đăng kí</router-link>
           </li>
           <li v-else class="user-menu">
@@ -230,6 +237,8 @@ export default {
   display: flex;
   align-items: space-between;
   gap: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 .navbar-right {
@@ -241,10 +250,13 @@ export default {
   list-style: none;
   display: flex;
   gap: 25px;
-  margin: 0;
+  margin: 0;  justify-content: center;
+  align-items: center;
   padding: 0;
   transition: max-height 0.3s ease-in-out;
+
 }
+
 
 .navbar-menu li a {
   text-decoration: none;
@@ -259,9 +271,15 @@ export default {
   /* color: #001c80; */
   border-bottom: 2px solid #001c80;
 }
-
+.button-container {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
 .button {
   padding: 8px 20px;
+  width: 110px;
   border: 2px solid #003a9e;
   border-radius: 25px;
   color: #003a9e;
