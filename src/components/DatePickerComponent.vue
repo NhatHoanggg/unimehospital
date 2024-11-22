@@ -51,8 +51,9 @@
 </template>
 
 <script>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
+import axios from "axios";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 export default {
   data() {
@@ -61,14 +62,9 @@ export default {
       currentIndex: 0,
       selectedDay: 0,
       visibleItems: 7,
-      // schedules: {
-      //   "30/10/2024": ["8:30-9:00", "9:30-10:00", "10:00-10:30"],
-      //   "31/10/2024": ["9:00-9:30", "10:30-11:00", "14:00-14:30"],
-      //   "1/11/2024": ["8:30-9:00", "10:00-10:30", "15:30-16:00"],
-      // },
-      schedules: {},
+      schedules: {}, 
       isCollapsed: false,
-      selectedShift: null, 
+      selectedShift: null,
     };
   },
   computed: {
@@ -88,6 +84,7 @@ export default {
     this.generateDays();
     this.updateSchedules();
   },
+
   methods: {
     generateDays() {
       const today = new Date();
@@ -107,22 +104,75 @@ export default {
 
       this.days = daysList;
     },
+    async updateSchedules() {
+      const doctorId = this.$route.params.id;
+      console.log(doctorId);
+      try {
+        const response = await axios.get(
+          `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${doctorId}`
+        );
+
+        if (response.data.code === 1000) {
+          const result = response.data.result;
+          // console.log(result);
+          result.forEach((shift) => {
+            const date = this.formatDateFromApi(
+              shift.doctortimeworkYear,
+              shift.weekOfYear,
+              shift.dayOfWeek
+            );
+            const timeRange = `${shift.startTime}-${shift.endTime}`;
+
+            if (!this.schedules[date]) {
+              this.schedules[date] = [];
+            }
+
+            this.schedules[date].push(timeRange);
+          });
+          console.log(this.schedules);
+          console.log("->load done!")
+        } else {
+          console.error("Failed to fetch schedules", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      }
+    },
+    formatDateFromApi(year, week, dayOfWeek) {
+      const dayNames = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+      const dayIndex = dayNames.indexOf(dayOfWeek);
+
+      const firstDayOfYear = new Date(year, 0, 1);
+      const daysOffset = (week - 1) * 7 + dayIndex - firstDayOfYear.getDay();
+
+      const targetDate = new Date(firstDayOfYear);
+      targetDate.setDate(firstDayOfYear.getDate() + daysOffset);
+
+      const day = targetDate.getDate();
+      const month = targetDate.getMonth() + 1;
+      const formattedDate = `${day}/${month}/${year}`;
+
+      return formattedDate;
+    },
     prevSlide() {
       if (this.currentIndex > 0 && this.days.length > this.visibleItems) {
         this.currentIndex--;
       }
     },
     nextSlide() {
-      if (this.currentIndex < this.days.length - this.visibleItems && this.days.length > this.visibleItems) {
+      if (
+        this.currentIndex < this.days.length - this.visibleItems &&
+        this.days.length > this.visibleItems
+      ) {
         this.currentIndex++;
       }
     },
     selectDay(index) {
       this.selectedDay = index;
-      this.selectedShift = null; 
+      this.selectedShift = null;
     },
     selectShift(shift) {
-      this.selectedShift = shift; 
+      this.selectedShift = shift;
     },
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
@@ -130,37 +180,25 @@ export default {
     confirmSelection() {
       if (this.selectedShift) {
         const selectedDate = this.days[this.selectedDay];
-        this.$emit('date-selected', { date: selectedDate, time: this.selectedShift });
+        this.$emit("date-selected", {
+          date: selectedDate,
+          time: this.selectedShift,
+        });
         this.isCollapsed = !this.isCollapsed;
-        toast.success(`Chọn giờ khám thành công!\nNgày ${selectedDate}\nGiờ ${this.selectedShift}`,
-            {
-              rtl: false,
-              limit: 3,
-              position: toast.POSITION.TOP_RIGHT,
-            },);  
+        toast.success(
+          `Chọn giờ khám thành công!\nNgày ${selectedDate}\nGiờ ${this.selectedShift}`,
+          {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
       } else {
-        toast.warning('Vui lòng chọn giờ khám trước khi tiếp tục!',
-            {
-              rtl: false,
-              limit: 3,
-              position: toast.POSITION.TOP_RIGHT,
-            },);   
-      }
-    },
-    updateSchedules() {
-    const today = new Date();
-    this.schedules = {};
-
-    for (let i = 0; i < 7; i++) {
-      const newDate = new Date(today);
-      newDate.setDate(today.getDate() + i);
-
-      const day = newDate.getDate();
-      const month = newDate.getMonth() + 1;
-      const year = newDate.getFullYear();
-      const formattedDate = `${day}/${month}/${year}`;
-
-      this.schedules[formattedDate] = ["8:30-9:00", "9:30-10:00", "10:00-10:30"];
+        toast.warning("Vui lòng chọn giờ khám trước khi tiếp tục!", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     },
   },

@@ -4,9 +4,9 @@
       <div class="register-image">
         <img src="@/assets/Doctor_intro.png" alt="register Image" />
       </div>
-      <div class="forgot-password-card">
-        <h2>Quên mật khẩu</h2>
-        <form @submit.prevent="submitForgotPassword">
+      <div class="register-card">
+        <h2>Nhập Email</h2>
+        <form @submit.prevent="submitregister">
           <div class="input-field">
             <div class="input-group">
               <i class="fas fa-envelope"></i>
@@ -20,51 +20,41 @@
               />
             </div>
           </div>
-          
+
           <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
           </div>
-          <button type="submit" class="forgot-password-button">Gửi yêu cầu</button>
+          <button type="submit" class="sendOTP-button">GỬI OTP</button>
         </form>
         <div class="extra-options">
-          <router-link to="/sign-in">Quay lại đăng nhập</router-link>
+          <router-link to="/sign-in">Đã có tài khoản? Đăng nhập</router-link>
         </div>
       </div>
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
 
+<script>
 export default {
+  name: "SendOTP",
   data() {
     return {
-      newPassword: "",
-      confirmPassword: "",
+      email: "",
       errorMessage: "",
     };
   },
   methods: {
-    async submitResetPassword() {
-      if (this.newPassword !== this.confirmPassword) {
-        this.errorMessage = "Mật khẩu không khớp.";
-        return;
-      }
-
-      try {
-        const response = await axios.post('http://localhost:8888/UNIME/reset-password', {
-          email: this.$route.params.email, 
-          password: this.newPassword,
+    submitregister() {
+      if (this.email) {
+        this.$router.push({ 
+          path: "/verify-otp", 
+          query: { email: this.email } 
         });
-        
-        console.log(response.data);
-        this.$router.push("/sign-in");
-      } catch (error) {
-        this.errorMessage = "Không thể đặt lại mật khẩu. Vui lòng thử lại.";
-        console.error(error);
+      } else {
+        this.errorMessage = "Vui lòng nhập email hợp lệ";
       }
     },
-  },
+  }
 };
 </script>
 
@@ -220,24 +210,49 @@ h2 {
 }
 
 .sendOTP-button {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 8px;
-  width: 50%;
+  background: #fff;
+  box-shadow: 4px 4px #3b82f6, 9px 9px #151515;
+  color: #151515;
+  text-transform: lowercase;
+  border: solid 2px #151515;
+
+  text-decoration: none;
+
+  padding: 18px 32px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  overflow: hidden;
+  transition-delay: 0s !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px;
+  font-family: sans-serif;
 }
-
+.sendOTP-button::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 0;
+  width: 0%;
+  height: 100%;
+  background: #151515;
+  z-index: -1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.sendOTP-button:hover::before {
+  width: 100%;
+  left: 0;
+  right: unset;
+}
 .sendOTP-button:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-2px);
+  box-shadow: 0 0 #3b82f6, 0 0 #151515;
+  color: white;
 }
-
 .extra-options {
   display: flex;
   justify-content: space-between;

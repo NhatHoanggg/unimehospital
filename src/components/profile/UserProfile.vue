@@ -145,6 +145,14 @@ export default {
           }
         );
 
+        const userLocal = {
+          username : this.patientUsername,
+          image : this.patientImage,
+          scope : 'PATIENT'
+        }
+
+        localStorage.setItem("user", JSON.stringify(userLocal));
+
         alert("Cập nhật thành công!");
       } catch (error) {
         console.error("Lỗi cập nhật:", error);

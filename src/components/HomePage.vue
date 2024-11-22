@@ -25,6 +25,7 @@
         </div>
       </div>
     </section>
+    <ChatBot />
 
     <!-- Testimonials Section -->
     <section class="testimonials">
@@ -42,10 +43,13 @@
 
 <script>
 
+import ChatBot from "./ChatBot.vue";
 
 export default {
   name: "HomePage",
-  
+  components: {
+    ChatBot,
+  },
   data() {
     return {
       isMenuOpen: false,
