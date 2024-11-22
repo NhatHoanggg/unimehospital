@@ -289,4 +289,6 @@ export default {
 .chat-input-container button:disabled {
   color: #ccc;
 }
+
+
 </style>

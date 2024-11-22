@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "ChangePassword",
   data() {
@@ -58,12 +60,51 @@ export default {
     };
   },
   methods: {
-    handleChangePassword() {
+    resetForm() {
+      this.currentPassword = "";
+      this.newPassword = "";
+      this.confirmPassword = "";
+    },
+    
+    async handleChangePassword() {
       if (this.newPassword !== this.confirmPassword) {
         alert("Mật khẩu xác nhận không khớp!");
         return;
       }
+
+      if (this.currentPassword === this.confirmPassword) {
+        alert("Mật khẩu mới không được trùng với mật khẩu cũ!");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      const data = {
+        oldPassword: this.currentPassword,
+        newPassword: this.newPassword,
+      };
+
+      try {
+        const response = await axios.get(
+          `https://api.unime.site/UNIME/password`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          }
+        );
+
+        if (response.data.code !== 1000) {
+          alert("Mật khẩu hiện tại không đúng!");
+          return;
+        }
+        
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+
       alert("Mật khẩu đã được đổi thành công!");
+      this.resetForm();
     },
     handleCancel() {
       this.currentPassword = "";
