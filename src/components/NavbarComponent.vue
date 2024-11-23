@@ -12,85 +12,116 @@
       <div class="navbar-right">
         <!-- Admin navbar -->
         <template v-if="authStore.user && authStore.user.scope === 'ADMIN'">
-        <div class="admin-profile" v-if="isAdmin">
-          <img src="@/assets/Admin-avt.jpg" alt="Admin Avatar" class="admin-avatar"/>
-          <span class="admin-label">Admin</span>
-        </div>
-        <button @click="handleLogout" class="logout-button">
-          Logout <i class="fas fa-sign-out-alt"></i>
-        </button>
-      </template>
+          <div class="admin-profile" v-if="isAdmin">
+            <img
+              src="@/assets/Admin-avt.jpg"
+              alt="Admin Avatar"
+              class="admin-avatar"
+            />
+            <span class="admin-label">Admin</span>
+          </div>
+          <button @click="handleLogout" class="logout-button">
+            Logout <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </template>
         <!------------------->
         <template v-else>
-        <ul :class="['navbar-menu', { 'active': isMenuOpen }]">
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
-            <router-link to="/">Trang chủ</router-link>
-          </li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
-            <router-link to="/about-us">Giới thiệu</router-link>
-          </li>
-          <li v-if="(authStore.isLoggedIn && authStore.user.scope === 'PATIENT') || !authStore.isLoggedIn">
-            <router-link to="/booking">Đặt lịch khám</router-link>
-          </li>
+          <ul :class="['navbar-menu', { active: isMenuOpen }]">
+            <li
+              v-if="
+                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
+                !authStore.isLoggedIn
+              "
+            >
+              <router-link to="/">Trang chủ</router-link>
+            </li>
+            <li
+              v-if="
+                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
+                !authStore.isLoggedIn
+              "
+            >
+              <router-link to="/about-us">Giới thiệu</router-link>
+            </li>
+            <li
+              v-if="
+                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
+                !authStore.isLoggedIn
+              "
+            >
+              <router-link to="/booking">Đặt lịch khám</router-link>
+            </li>
 
-          <!-- <li v-if="!authStore.isLoggedIn">
+            <!-- <li v-if="!authStore.isLoggedIn">
             <router-link to="/sign-in" class="button">Đăng nhập</router-link>
           </li>
           <li v-if="!authStore.isLoggedIn">
             <router-link to="/send-otp" class="button">Đăng kí</router-link>
           </li> -->
-          <li v-if="!authStore.isLoggedIn" class = "button-container">
-            <router-link to="/sign-in" class="button">Đăng nhập</router-link>
-            <router-link to="/send-otp" class="button">Đăng kí</router-link>
-          </li>
-          <li v-else class="user-menu">
-            <div class="container">
-              <span>Xin chào! {{ authStore.user.username }}</span>
-              <div class="user-icon" @click="toggleDropdown">
-                <img :src="imageSrc" alt="User Icon" />
+            <!-- <button @click="toggleDarkMode" class="dark-mode-toggle">
+              <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+            </button> -->
+            <li v-if="!authStore.isLoggedIn" class="button-container">
+              <router-link to="/sign-in" class="button">Đăng nhập</router-link>
+              <router-link to="/send-otp" class="button">Đăng kí</router-link>
+            </li>
+            <li v-else class="user-menu">
+              <div class="container">
+                <span>Xin chào! {{ authStore.user.username }}</span>
+                <div class="user-icon" @click="toggleDropdown">
+                  <img :src="imageSrc" alt="User Icon" />
+                </div>
               </div>
-            </div>
 
-            <div v-if="showDropdown" class="dropdown">
-              <router-link to="/profile"> <i class="fas fa-user"></i>  Hồ sơ</router-link>
-              <router-link to="/history-booking"> <i class="fas fa-history"></i>  Lịch sử</router-link>
-              <router-link to="/next-appointment"> <i class="fas fa-history"></i>  Lịch hẹn sắp tới</router-link>
-              <router-link to="/change-password"> <i class="fas fa-cog"></i>   Cài đặt</router-link>
-              <a href="#" @click.prevent="handleLogout"><i class="fas fa-sign-out-alt"></i>   Đăng xuất</a>
-            </div>
-          </li>
-        </ul>
-      
-        <div class="hamburger" @click="toggleMenu">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </div>
-      </template>
+              <div v-if="showDropdown" class="dropdown">
+                <router-link to="/profile">
+                  <i class="fas fa-user"></i> Hồ sơ</router-link
+                >
+                <router-link to="/history-booking">
+                  <i class="fas fa-history"></i> Lịch sử</router-link
+                >
+                <router-link to="/next-appointment">
+                  <i class="far fa-calendar-check"></i> Lịch hẹn sắp tới</router-link
+                >
+                <router-link to="/change-password">
+                  <i class="fas fa-cog"></i> Cài đặt</router-link
+                >
+                <a href="#" @click.prevent="handleLogout"
+                  ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+                >
+              </div>
+            </li>
+          </ul>
+
+          <div class="hamburger" @click="toggleMenu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </template>
       </div>
-      
     </nav>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 export default {
   name: "NavbarComponent",
   data() {
     return {
-      imageSrc: '@/assets/user.png', 
+      imageSrc: "@/assets/user.png",
     };
   },
   created() {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
       if (user.image) {
-        this.imageSrc = user.image; 
+        this.imageSrc = user.image;
       }
     }
   },
@@ -101,12 +132,13 @@ export default {
     const router = useRouter();
     const isAdmin = ref(false);
     const isEmployee = ref(false);
+    const isDarkMode = ref(false);
 
-    if (authStore.isLoggedIn && authStore.user.scope === 'ADMIN') {
+    if (authStore.isLoggedIn && authStore.user.scope === "ADMIN") {
       isAdmin.value = true;
     }
 
-    if (authStore.isLoggedIn && authStore.user.scope === 'ADMIN') {
+    if (authStore.isLoggedIn && authStore.user.scope === "ADMIN") {
       isEmployee.value = true;
     }
 
@@ -118,11 +150,16 @@ export default {
       showDropdown.value = !showDropdown.value;
     };
 
+    const toggleDarkMode = () => {
+      isDarkMode.value = !isDarkMode.value;
+      document.body.classList.toggle("dark", isDarkMode.value);
+    };
+
     const handleLogout = () => {
       authStore.logout();
       showDropdown.value = false;
       localStorage.clear();
-      router.push('/');
+      router.push("/");
     };
 
     return {
@@ -132,22 +169,25 @@ export default {
       authStore,
       showDropdown,
       toggleDropdown,
-      handleLogout
+      handleLogout,
+      toggleDarkMode,
+      isDarkMode,
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 .navbar-container {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
+  background-color: var(--background);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
@@ -181,10 +221,9 @@ export default {
   display: flex;
   align-items: center;
   padding: 5px 10px;
-  border: 1px solid #000000; 
+  border: 1px solid #000000;
   border-radius: 10px;
   gap: 8px;
-  
 }
 
 .admin-avatar {
@@ -199,7 +238,7 @@ export default {
 }
 
 .logout-button {
-  background-color: #4285F4; 
+  background-color: #4285f4;
   color: #ffffff;
   border: none;
   padding: 13px 15px;
@@ -217,7 +256,7 @@ export default {
 }
 
 .logout-button:hover {
-  background-color: #357ae8; 
+  background-color: #357ae8;
 }
 
 .hospital-name h1 {
@@ -251,13 +290,12 @@ export default {
   list-style: none;
   display: flex;
   gap: 25px;
-  margin: 0;  justify-content: center;
+  margin: 0;
+  justify-content: center;
   align-items: center;
   padding: 0;
   transition: max-height 0.3s ease-in-out;
-
 }
-
 
 .navbar-menu li a {
   text-decoration: none;
@@ -346,6 +384,24 @@ export default {
 
 .dropdown a:hover {
   background-color: #f0f0f0;
+}
+
+.navbar-container.dark .logo {
+  filter: brightness(0.8);
+}
+
+.dark-mode-toggle {
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 20px;
+  color: inherit;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dark-mode-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Styles */

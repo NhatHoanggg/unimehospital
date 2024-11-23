@@ -151,6 +151,9 @@ label {
   margin-bottom: 8px;
   font-size: 16px;
   color: #555;
+  width: 95%;
+  text-align: left;
+  text-indent: 20px;
 }
 
 input {

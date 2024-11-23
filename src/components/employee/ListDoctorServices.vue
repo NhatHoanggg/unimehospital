@@ -4,76 +4,106 @@
       <h1>Danh sách dịch vụ</h1>
 
       <div v-if="isLoading" class="loading">
-        <p>Đang tải dữ liệu</p>
-         <LoadingComponent />
+        <p>Đang tải dữ liệu...</p>
+        <LoadingComponent />
       </div>
 
       <div v-else>
         <div class="controls">
-          <input type="text" v-model="searchQuery" placeholder="Search by name" />
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Tìm kiếm dịch vụ"
+          />
           <select v-model="rowsPerPage">
-            <option v-for="option in rowsOptions" :key="option" :value="option">
-              {{ option }} rows
+            <option
+              v-for="option in rowsOptions"
+              :key="option"
+              :value="option"
+            >
+              {{ option }} hàng
             </option>
           </select>
         </div>
 
-        <table border="1" cellpadding="10">
+        <!-- Service Table -->
+        <table>
           <thead>
             <tr>
-              <th style="width: 30px;">#</th>
-              <th style="width: 500px;">Tên dịch vụ</th>
-              <th style="width: 200px;">Chuyên khoa</th>
-              <th style="width: 200px;">Giá dịch vụ</th>
-              <th style="width: 200px;"></th>
+              <th>#</th>
+              <th>Tên dịch vụ</th>
+              <th>Chuyên khoa</th>
+              <th>Giá dịch vụ</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(service, index) in filteredServices"
+              v-for="(service, index) in paginatedServices"
               :key="service.serviceId"
             >
               <td>{{ index + 1 + (currentPage - 1) * rowsPerPage }}</td>
               <td>{{ service.serviceName }}</td>
               <td>{{ service.departmentName }}</td>
-              <td>{{ service.servicePrice }} VND</td>
+              <td>{{ service.servicePrice.toLocaleString() }} VND</td>
               <td class="action-container">
-                <button @click="scheduleService(service.serviceId)">
-                  Detail
+                <button @click="showDoctorList(service.serviceId)">
+                  Danh sách bác sĩ
                 </button>
-                <button @click="cancelService(service.serviceId)">Cancel</button>
+                <button @click="serviceDetail(service)">Chi tiết</button>
               </td>
             </tr>
           </tbody>
         </table>
 
+        <!-- Pagination -->
         <div class="pagination">
           <button
             :disabled="currentPage === 1"
             @click="goToPage(currentPage - 1)"
           >
-            Previous
+            Trước
           </button>
-          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <span>Trang {{ currentPage }} / {{ totalPages }}</span>
           <button
             :disabled="currentPage === totalPages"
             @click="goToPage(currentPage + 1)"
           >
-            Next
+            Sau
           </button>
         </div>
       </div>
+
+      <!-- Modals -->
+      <ListDoctorByService
+        v-if="isDoctorListVisible"
+        :serviceId="selectedServiceId"
+        @close="isDoctorListVisible = false"
+      />
+
+      <ServiceDetailModal
+        v-if="isServiceDetailVisible"
+        :serviceDetail="selectedService"
+        @close="isServiceDetailVisible = false"
+      />
     </div>
   </div>
 </template>
 
+
+
 <script>
 import axios from "axios";
 import LoadingComponent from "../LoadingComponent.vue";
+// import DoctorListModal from "../DoctorListModal.vue";
+import ListDoctorByService from "./ListDoctorByService.vue";
+import ServiceDetailModal from "./ServiceDetailModal.vue";
 
 export default {
   components: {
     LoadingComponent,
+    ListDoctorByService,
+    ServiceDetailModal,
   },
   data() {
     return {
@@ -82,32 +112,32 @@ export default {
       currentPage: 1,
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
-      isLoading: true, // Trạng thái chờ loading
+      isLoading: true,
+      selectedServiceId: null,
+      selectedService: null,
+      isDoctorListVisible: false,
+      isServiceDetailVisible: false,
     };
   },
   computed: {
     filteredServices() {
-      const filtered = this.services.filter((service) =>
+      return this.services.filter((service) =>
         service.serviceName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase())
       );
-
+    },
+    paginatedServices() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
-      return filtered.slice(start, start + this.rowsPerPage);
+      return this.filteredServices.slice(start, start + this.rowsPerPage);
     },
     totalPages() {
-      const filtered = this.services.filter((service) =>
-        service.serviceName
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase())
-      );
-      return Math.ceil(filtered.length / this.rowsPerPage);
+      return Math.ceil(this.filteredServices.length / this.rowsPerPage);
     },
   },
   methods: {
     fetchData() {
-      this.isLoading = true; // Bắt đầu hiển thị loading
+      this.isLoading = true;
       axios
         .get("https://api.unime.site/UNIME/services/get/serviceList")
         .then((response) => {
@@ -117,14 +147,16 @@ export default {
           console.error("Error fetching data: ", error);
         })
         .finally(() => {
-          this.isLoading = false; 
+          this.isLoading = false;
         });
     },
-    scheduleService(id) {
-      console.log(`Scheduling Service with id: ${id}`);
+    showDoctorList(serviceId) {
+      this.selectedServiceId = serviceId;
+      this.isDoctorListVisible = true;
     },
-    cancelService(id) {
-      console.log(`Cancelling Service with id: ${id}`);
+    serviceDetail(service) {
+      this.selectedService = service;
+      this.isServiceDetailVisible = true;
     },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
@@ -137,6 +169,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .wrapper {
   display: flex;
