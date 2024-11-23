@@ -67,7 +67,7 @@
 
 <script>
 import axios from "axios";
-import LoadingComponent from "../LoadingComponent.vue";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
   components: {

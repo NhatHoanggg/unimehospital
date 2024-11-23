@@ -94,7 +94,7 @@
 
 <script>
 import axios from "axios";
-import LoadingComponent from "../LoadingComponent.vue";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 // import DoctorListModal from "../DoctorListModal.vue";
 import ListDoctorByService from "./ListDoctorByService.vue";
 import ServiceDetailModal from "./ServiceDetailModal.vue";

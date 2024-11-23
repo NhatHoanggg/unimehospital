@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '@/components/HomePage.vue';
-import SignIn from '@/components/SignIn.vue';
-import SendOTP from '@/components/SendOTP.vue';
-import VerifyOTP from '@/components/VerifyOTP.vue';
-import SignUp from '@/components/SignUp.vue';
-import ForgotPassword from '@/components/ForgotPassword.vue'; 
-import AboutUs from '@/components/AboutUs.vue';
-import BookingPage from '@/components/BookingPage.vue';
+import HomePage from '@/components/base/HomePage.vue';
+import SignIn from '@/components/login/SignIn.vue';
+import SendOTP from '@/components/login/SendOTP.vue';
+import VerifyOTP from '@/components/login/VerifyOTP.vue';
+import SignUp from '@/components/login/SignUp.vue';
+import ForgotPassword from '@/components/login/ForgotPassword.vue'; 
+import AboutUs from '@/components/base/AboutUs.vue';
+import BookingPage from '@/components/base/BookingPage.vue';
 import BookDoctor from '@/components/BookDoctor.vue';
 import BookDoctorPage from '@/components/BookDoctorPage.vue';
 import BookService from '@/components/BookService.vue';
@@ -40,10 +40,10 @@ import NextAppointments from '@/components/doctor/NextAppointments.vue';
 import BusyManagement from '@/components/doctor/BusyManagement.vue';
 import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
 
-import NotFound from '@/components/NotFound.vue';
-import TestVue from '@/components/TestVue.vue';
-import TestUploadImage from '@/components/TestUploadImage.vue';
-import TestUploadMultipleImages from '@/components/TestUploadMultipleImages.vue';
+import NotFound from '@/components/tools/NotFound.vue';
+import TestVue from '@/components/tools/TestVue.vue';
+import TestUploadImage from '@/components/tools/TestUploadImage.vue';
+import TestUploadMultipleImages from '@/components/tools/TestUploadMultipleImages.vue';
 
 import { useAuthStore } from '@/stores/auth';
 
