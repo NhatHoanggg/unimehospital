@@ -85,13 +85,10 @@ export default {
       alert("Đã gửi mã OTP vào email của bạn.");
       try {
         const response = await axios.post(
-          "https://api.unime.site/UNIME/sendOtp",
-          {
-            email: this.email,
-          }
+          `http://localhost:8888/UNIME/mail/sendOTP?mail=${this.email}`
         );
         if (response.data.code === 1000) {
-          this.code = response.data.result; // Lưu OTP từ API
+          this.code = response.data.result; 
         } else {
           this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
         }

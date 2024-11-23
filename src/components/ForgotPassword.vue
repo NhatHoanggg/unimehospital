@@ -24,7 +24,7 @@
           <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
           </div>
-          <button type="submit" class="sendOTP-button">GỬI OTP</button>
+          <button type="submit" class="button">Xác nhận</button>
         </form>
         <div class="extra-options">
           <router-link to="/sign-in">Đã có tài khoản? Đăng nhập</router-link>
@@ -35,8 +35,9 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: "SendOTP",
   data() {
     return {
       email: "",
@@ -44,10 +45,24 @@ export default {
     };
   },
   methods: {
-    submitregister() {
+    async submitregister() {
       if (this.email) {
+        try {
+          const response = await axios.post(
+            `http://localhost:8888/UNIME/mail/sendPassword?mail=${this.email}`
+          );
+          if (response.data.code === 1000) {
+            this.code = response.data.result; 
+          } else {
+            this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+          }
+        } catch (error) {
+          console.error("Error sending OTP:", error);
+          this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+        }
+        alert("Mật khẩu mới đã được gửi vào email của bạn");
         this.$router.push({ 
-          path: "/verify-otp", 
+          path: "/sign-in", 
           query: { email: this.email } 
         });
       } else {
@@ -79,7 +94,7 @@ body,
 .register-wrapper,
 .register-card,
 .input-field,
-.sendOTP-button,
+.button,
 .extra-options a {
   font-family: "Poppins", sans-serif;
 }
@@ -104,6 +119,7 @@ body,
 }
 
 .register-card {
+  /* border: 1px solid black; */
   background-color: #a0c4ff;
   border-radius: 20px;
   padding: 2rem;
@@ -209,7 +225,7 @@ h2 {
   text-align: left;
 }
 
-.sendOTP-button {
+.button {
   background: #fff;
   box-shadow: 4px 4px #3b82f6, 9px 9px #151515;
   color: #151515;
@@ -233,7 +249,7 @@ h2 {
   letter-spacing: 1.5px;
   font-family: sans-serif;
 }
-.sendOTP-button::before {
+.button::before {
   position: absolute;
   content: "";
   top: 0;
@@ -244,12 +260,12 @@ h2 {
   z-index: -1;
   transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
-.sendOTP-button:hover::before {
+.button:hover::before {
   width: 100%;
   left: 0;
   right: unset;
 }
-.sendOTP-button:hover {
+.button:hover {
   box-shadow: 0 0 #3b82f6, 0 0 #151515;
   color: white;
 }
