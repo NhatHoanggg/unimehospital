@@ -27,6 +27,8 @@ import DepartmentManagement from '@/components/admin/DepartmentManagement.vue';
 import ServiceManagement from '@/components/admin/ServiceManagement.vue';
 import AddService from '@/components/admin/AddService.vue';
 import AddDepartment from '@/components/admin/AddDepartment.vue';
+import AddDoctor from '@/components/admin/AddDoctor.vue';
+import AddEmployee from '@/components/admin/AddEmployee.vue';
 
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import AddDoctorService from '@/components/employee/AddDoctorService.vue';
@@ -187,6 +189,18 @@ const routes = [
       {
         path: 'add-service',
         component: AddService,
+        meta: { requiresAuth: true },
+      },
+
+      {
+        path: 'add-employee',
+        component: AddEmployee,
+        meta: { requiresAuth: true },
+      },
+
+      {
+        path: 'add-doctor',
+        component: AddDoctor,
         meta: { requiresAuth: true },
       },
     ],

@@ -9,14 +9,16 @@
         :content="modalContent"
         @action="handleModalAction"
       />
+      <DepartmentListComponentVue />
     </div>
   </template>
   
   <script>
   import AlertModal from "./AlertModal.vue";
-  
+import DepartmentListComponentVue from './DepartmentListComponent.vue';
+
   export default {
-    components: { AlertModal },
+    components: { AlertModal, DepartmentListComponentVue },
     data() {
       return {
         isModalVisible: false, 
