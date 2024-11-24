@@ -116,7 +116,7 @@ export default {
       imageSrc: "@/assets/user.png",
     };
   },
-  created() {
+  mounted() {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);

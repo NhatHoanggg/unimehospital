@@ -23,7 +23,7 @@
               <p><strong>Address:</strong> {{ doctor.doctorAddress }}</p>
             </div>
             <button
-              @click="removeDoctor(doctor.doctorId)"
+              @click="confirmRemoveDoctor(doctor.doctorId)"
               class="delete-button"
             >
               Xóa
@@ -31,6 +31,13 @@
           </div>
         </div>
       </div>
+      <AlertModal
+        :isVisible="isModalVisible"
+        :type="modalType"
+        :title="modalTitle"
+        :content="modalContent"
+        @action="handleModalAction"
+      />
       <button class="close-button" @click="closeModal">
         <i class="fas fa-times"></i>
       </button>
@@ -40,8 +47,10 @@
 
 <script>
 import axios from "axios";
+import AlertModal from "../tools/AlertModal.vue";
 
 export default {
+  components: { AlertModal },
   props: {
     serviceId: {
       type: Number,
@@ -52,6 +61,11 @@ export default {
     return {
       doctors: [],
       isLoading: true,
+      isModalVisible: false,
+      modalType: "info",
+      modalTitle: "",
+      modalContent: "",
+      pendingDoctorId: null,
     };
   },
   methods: {
@@ -71,11 +85,57 @@ export default {
           this.isLoading = false;
         });
     },
-    removeDoctor(doctorId) {
-      this.doctors = this.doctors.filter(
-        (doctor) => doctor.doctorId !== doctorId
-      );
+    confirmRemoveDoctor(doctorId) {
+      this.pendingDoctorId = doctorId;
+      this.modalType = "warning";
+      this.modalTitle = "Xác nhận xóa bác sĩ";
+      this.modalContent = "Bạn có chắc chắn muốn xóa bác sĩ này không?";
+      this.isModalVisible = true;
     },
+    handleModalAction(action) {
+      const BEARER_TOKEN = localStorage.getItem("token");
+
+      if (action === "OK" && this.pendingDoctorId !== null) {
+        const doctorServiceData = {
+          doctorID: this.pendingDoctorId,
+          serviceID: this.serviceId,
+        };
+
+        console.log(doctorServiceData);
+
+        if (!BEARER_TOKEN) {
+          console.error("Token is missing or invalid.");
+          return;
+        }
+
+        axios
+          .delete(`https://api.unime.site/UNIME/doctorservice`, {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+            data: doctorServiceData,
+          })
+          .then(() => {
+            this.doctors = this.doctors.filter(
+              (doctor) => doctor.doctorId !== this.pendingDoctorId
+            );
+            this.pendingDoctorId = null;
+            this.isModalVisible = false;
+          })
+          .catch((error) => {
+            if (error.response) {
+              console.error("Error response:", error.response.data);
+              alert(`Error: ${error.response.data.message}`);
+            } else {
+              console.error("Error:", error);
+            }
+          });
+      } else {
+        this.pendingDoctorId = null;
+        this.isModalVisible = false;
+      }
+    },
+
     closeModal() {
       this.$emit("close");
     },

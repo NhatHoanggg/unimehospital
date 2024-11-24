@@ -86,7 +86,7 @@ export default {
       try {
         const response = await axios.post(
           // `http://localhost:8888/UNIME/mail/sendOTP?mail=${this.email}`
-          `http://api.unime.site/UNIME/mail/sendOTP?mail=${this.email}`
+          `https://api.unime.site/UNIME/mail/sendOTP?mail=${this.email}`
         );
         if (response.data.code === 1000) {
           this.code = response.data.result; 
