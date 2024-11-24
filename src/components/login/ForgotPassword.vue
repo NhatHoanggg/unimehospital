@@ -49,7 +49,8 @@ export default {
       if (this.email) {
         try {
           const response = await axios.post(
-            `http://localhost:8888/UNIME/mail/sendPassword?mail=${this.email}`
+            // `http://localhost:8888/UNIME/mail/sendPassword?mail=${this.email}`
+            `http://api.unime.site/UNIME/mail/sendPassword?mail=${this.email}`
           );
           if (response.data.code === 1000) {
             this.code = response.data.result; 

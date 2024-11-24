@@ -225,7 +225,8 @@ export default {
   border: 3px solid #0047ba;
   border-radius: 20px;
   background-color: white;
-  height: auto;
+  /* height: auto; */
+  height: 700px;
   transition: height 1s ease;
 }
 
@@ -347,7 +348,7 @@ export default {
 
 .button {
   position: absolute; 
-  bottom: 50px;       
+  /* bottom: 50px;        */
   right: 114px;        
   min-width: 192px;
   padding: 15px 20px;
