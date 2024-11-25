@@ -50,6 +50,7 @@
           );
           if (response.data.code === 1000) {
             this.services = response.data.result.map((service) => ({
+              id: service.serviceId, 
               value: service.servicePrice, 
               label: service.serviceName, 
             }));

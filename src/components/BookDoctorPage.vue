@@ -44,6 +44,7 @@ export default {
       noteText: '',
       doctor: {},
       doctorTimeworkId: '',
+      serviceId: '',
     };
   },
   mounted() {
@@ -72,10 +73,12 @@ export default {
     },
 
     handleServiceSelected(selection) {
-      const { service, price } = selection;
+      const { id, service, price } = selection;
+      this.serviceId = id 
       this.selectedService = service;
       this.servicePrice = price;
       console.log(`Dịch vụ: ${this.selectedService}, Giá: ${this.servicePrice}`);
+      console.log(`Service id: ${this.serviceId}`);
     },
 
     handleAddNote(selection) {

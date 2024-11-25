@@ -88,6 +88,7 @@ export default {
       ],
       selectedService: "",
       servicePrice: "",
+      serviceId: "",
     };
   },
   mounted() {
@@ -109,6 +110,7 @@ export default {
   methods: {
     handleServiceSelected(payload) {
       console.log("received service:", payload.service.value);
+      this.serviceId = payload.service.id;
       this.servicePrice = payload.service.value;
       this.selectedService = payload.service.label;
     },
@@ -122,9 +124,11 @@ export default {
         // alert(`Dịch vụ vào ngày ${this.selectedDate} lúc ${this.selectedTime} đã được xác nhận.`);
         this.isCollapsed = !this.isCollapsed;
         this.$emit("service", {
+          id: this.serviceId,
           service: this.selectedService,
           price: this.servicePrice,
         });
+
         toast.success(`Chọn dịch vụ thành công`, {
           rtl: false,
           limit: 3,
