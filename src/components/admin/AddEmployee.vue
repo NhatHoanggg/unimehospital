@@ -54,7 +54,7 @@
 
         <div class="form-row">
           <label for="department">Khoa:</label>
-          <DepartmentListComponentVue style = "width: 340px;"/>  
+          <DepartmentListComponentVue style="width: 340px" />
         </div>
 
         <div class="form-group">
@@ -67,7 +67,7 @@
 
 <script>
 import axios from "axios";
-import DepartmentListComponentVue from '../tools/DepartmentListComponent.vue';
+import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
 
 export default {
   components: { DepartmentListComponentVue },
@@ -77,14 +77,62 @@ export default {
       employeeGender: null,
       defaultAvatar: "https://via.placeholder.com/200",
       formFields: [
-        { id: "employeeName", label: "Họ và Tên", type: "text", model: "", placeholder: "Nhập tên quản lý", required: true },
-        { id: "employeeUsername", label: "Username", type: "text", model: "", placeholder: "Nhập username", required: true },
-        { id: "employeePassword", label: "Mật Khẩu", type: "password", model: "", placeholder: "Nhập mật khẩu", required: true },
-        { id: "employeeEmail", label: "Email", type: "email", model: "", placeholder: "Nhập email", required: true },
+        {
+          id: "employeeName",
+          label: "Họ và Tên",
+          type: "text",
+          model: "",
+          placeholder: "Nhập tên quản lý",
+          required: true,
+        },
+        {
+          id: "employeeUsername",
+          label: "Username",
+          type: "text",
+          model: "",
+          placeholder: "Nhập username",
+          required: true,
+        },
+        {
+          id: "employeePassword",
+          label: "Mật Khẩu",
+          type: "password",
+          model: "",
+          placeholder: "Nhập mật khẩu",
+          required: true,
+        },
+        {
+          id: "employeeEmail",
+          label: "Email",
+          type: "email",
+          model: "",
+          placeholder: "Nhập email",
+          required: true,
+        },
         { id: "employeeGender", label: "Giới Tính", type: "radio" },
-        { id: "employeeDateOfBirth", label: "Ngày Sinh", type: "date", model: "", required: true },
-        { id: "employeePhoneNumber", label: "Số Điện Thoại", type: "tel", model: "", placeholder: "Nhập số điện thoại", required: true },
-        { id: "employeeAddress", label: "Địa Chỉ", type: "textarea", model: "", placeholder: "Nhập địa chỉ", required: true },
+        {
+          id: "employeeDateOfBirth",
+          label: "Ngày Sinh",
+          type: "date",
+          model: "",
+          required: true,
+        },
+        {
+          id: "employeePhoneNumber",
+          label: "Số Điện Thoại",
+          type: "tel",
+          model: "",
+          placeholder: "Nhập số điện thoại",
+          required: true,
+        },
+        {
+          id: "employeeAddress",
+          label: "Địa Chỉ",
+          type: "textarea",
+          model: "",
+          placeholder: "Nhập địa chỉ",
+          required: true,
+        },
       ],
     };
   },
@@ -95,7 +143,7 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
-        this.employeeImage = file; 
+        this.employeeImage = file;
       } else {
         console.error("Không có file nào được chọn!");
       }
@@ -105,7 +153,10 @@ export default {
         if (this.employeeImage && typeof this.employeeImage !== "string") {
           const formData = new FormData();
           formData.append("file", this.employeeImage);
-          formData.append("upload_preset", process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET);
+          formData.append(
+            "upload_preset",
+            process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET
+          );
 
           const uploadResponse = await axios.post(
             `https://api.cloudinary.com/v1_1/${process.env.VUE_APP_CLOUD_NAME}/image/upload`,
@@ -113,13 +164,16 @@ export default {
             { headers: { "Content-Type": "multipart/form-data" } }
           );
 
-          this.employeeImage = uploadResponse.data.secure_url; 
+          this.employeeImage = uploadResponse.data.secure_url;
           console.log("URL ảnh đã upload:", this.employeeImage);
         }
 
         alert("Upload thành công!");
       } catch (error) {
-        console.error("Có lỗi xảy ra trong quá trình upload ảnh:", error.response?.data || error.message);
+        console.error(
+          "Có lỗi xảy ra trong quá trình upload ảnh:",
+          error.response?.data || error.message
+        );
       }
     },
   },

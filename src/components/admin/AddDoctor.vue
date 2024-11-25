@@ -53,7 +53,7 @@
         </div>
         <div class="form-row">
           <label for="department">Khoa:</label>
-          <DepartmentListComponentVue style = "width: 340px;"/>  
+          <DepartmentListComponentVue style="width: 340px"  @department-selected="handleDepartmentSelected" />
         </div>
 
         <div class="form-group">
@@ -75,6 +75,7 @@ export default {
     return {
       doctorImage: null,
       doctorGender: null,
+      selectedDepartment: null,
       defaultAvatar: "https://via.placeholder.com/200",
       formFields: [
         {
@@ -133,14 +134,6 @@ export default {
           placeholder: "Nhập địa chỉ",
           required: true,
         },
-        {
-          id: "departmentName",
-          label: "Tên Khoa",
-          type: "text",
-          model: "",
-          placeholder: "Nhập tên khoa",
-          required: true,
-        },
       ],
     };
   },
@@ -148,6 +141,7 @@ export default {
     triggerFileUpload() {
       this.$refs.fileInput.click();
     },
+
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
@@ -155,6 +149,10 @@ export default {
       } else {
         console.error("Không có file nào được chọn!");
       }
+    },
+
+    handleDepartmentSelected(payload) {
+      this.selectedDepartment =  payload.department.label;
     },
 
     async addDoctor() {
@@ -176,6 +174,35 @@ export default {
           this.doctorImage = uploadResponse.data.secure_url;
           console.log("URL ảnh đã upload:", this.doctorImage);
         }
+
+        const doctorData = {
+          doctorUsername: this.formFields.find((field) => field.id === "doctorUsername").model,
+          doctorPassword: this.formFields.find((field) => field.id === "doctorPassword").model,
+          doctorEmail: this.formFields.find((field) => field.id === "doctorEmail").model,
+          doctorImage: this.doctorImage,
+          doctorName: this.formFields.find((field) => field.id === "doctorName").model,
+          doctorAddress: this.formFields.find((field) => field.id === "doctorAddress").model,
+          doctorPhoneNumber: this.formFields.find((field) => field.id === "doctorPhoneNumber").model,
+          doctorGender: this.doctorGender === "true", 
+          doctorDateOfBirth: this.formFields.find((field) => field.id === "doctorDateOfBirth").model,
+          departmentName: this.selectedDepartment, 
+        };
+
+        console.log("Dữ liệu gửi đi:", doctorData);
+        
+        const BEARER_TOKEN = localStorage.getItem("token");
+
+      const response = await axios.post("https://api.unime.site/UNIME/doctors", doctorData, {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          });
+
+      if (response.data?.code === 1000) {
+        alert("Thêm bác sĩ thành công!");
+      } else {
+        alert("Có lỗi xảy ra: " + (response.data?.message || "Không rõ nguyên nhân"));
+      }
 
         alert("Upload thành công!");
       } catch (error) {
