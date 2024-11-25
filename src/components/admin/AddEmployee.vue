@@ -8,7 +8,7 @@
           <div class="avatar-wrapper">
             <img
               class="profile-pic"
-              :src="employeeImage || defaultAvatar"
+              :src="avatar || defaultAvatar"
               alt="Employee Avatar"
             />
             <div class="upload-button" @click="triggerFileUpload">
@@ -54,7 +54,10 @@
 
         <div class="form-row">
           <label for="department">Khoa:</label>
-          <DepartmentListComponentVue style="width: 340px" />
+          <DepartmentListComponentVue
+            style="width: 340px"
+            @department-selected="handleDepartmentSelected"
+          />
         </div>
 
         <div class="form-group">
@@ -73,8 +76,10 @@ export default {
   components: { DepartmentListComponentVue },
   data() {
     return {
+      avatar: null,
       employeeImage: null,
       employeeGender: null,
+      selectedDepartment: null,
       defaultAvatar: "https://via.placeholder.com/200",
       formFields: [
         {
@@ -143,11 +148,19 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
-        this.employeeImage = file;
-      } else {
-        console.error("Không có file nào được chọn!");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.avatar = e.target.result;
+          this.employeeImage = file; 
+        };
+        reader.readAsDataURL(file);
       }
     },
+
+    handleDepartmentSelected(payload) {
+      this.selectedDepartment = payload.department.label;
+    },
+
     async addEmployee() {
       try {
         if (this.employeeImage && typeof this.employeeImage !== "string") {
@@ -168,7 +181,55 @@ export default {
           console.log("URL ảnh đã upload:", this.employeeImage);
         }
 
-        alert("Upload thành công!");
+        const employeeData = {
+          employeeUsername: this.formFields.find(
+            (field) => field.id === "employeeUsername"
+          ).model,
+          employeePassword: this.formFields.find(
+            (field) => field.id === "employeePassword"
+          ).model,
+          employeeEmail: this.formFields.find(
+            (field) => field.id === "employeeEmail"
+          ).model,
+          employeeImage: this.employeeImage,
+          employeeName: this.formFields.find(
+            (field) => field.id === "employeeName"
+          ).model,
+          employeeAddress: this.formFields.find(
+            (field) => field.id === "employeeAddress"
+          ).model,
+          employeePhoneNumber: this.formFields.find(
+            (field) => field.id === "employeePhoneNumber"
+          ).model,
+          employeeGender: this.employeeGender === "true",
+          employeeDateOfBirth: this.formFields.find(
+            (field) => field.id === "employeeDateOfBirth"
+          ).model,
+          departmentName: this.selectedDepartment,
+        };
+
+        console.log("emloyee data", employeeData);
+
+        const BEARER_TOKEN = localStorage.getItem("token");
+
+        const response = await axios.post(
+          "https://api.unime.site/UNIME/employees",
+          employeeData,
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          }
+        );
+
+        if (response.data?.code === 1000) {
+          alert("Thêm quản lý thành công!");
+        } else {
+          alert(
+            "Có lỗi xảy ra: " +
+              (response.data?.message || "Không rõ nguyên nhân")
+          );
+        }
       } catch (error) {
         console.error(
           "Có lỗi xảy ra trong quá trình upload ảnh:",

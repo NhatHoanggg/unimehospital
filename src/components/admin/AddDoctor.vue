@@ -8,7 +8,7 @@
           <div class="avatar-wrapper">
             <img
               class="profile-pic"
-              :src="doctorImage || defaultAvatar"
+              :src="avatar || defaultAvatar"
               alt="Doctor Avatar"
             />
             <div class="upload-button" @click="triggerFileUpload">
@@ -53,7 +53,10 @@
         </div>
         <div class="form-row">
           <label for="department">Khoa:</label>
-          <DepartmentListComponentVue style="width: 340px"  @department-selected="handleDepartmentSelected" />
+          <DepartmentListComponentVue
+            style="width: 340px"
+            @department-selected="handleDepartmentSelected"
+          />
         </div>
 
         <div class="form-group">
@@ -73,6 +76,7 @@ export default {
 
   data() {
     return {
+      avatar: null,
       doctorImage: null,
       doctorGender: null,
       selectedDepartment: null,
@@ -144,15 +148,23 @@ export default {
 
     onFileChange(event) {
       const file = event.target.files[0];
+      // if (file) {
+      //   this.doctorImage = file;
+      // } else {
+      //   console.error("Không có file nào được chọn!");
+      // }
       if (file) {
-        this.doctorImage = file;
-      } else {
-        console.error("Không có file nào được chọn!");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.avatar = e.target.result;
+          this.doctorImage = file; 
+        };
+        reader.readAsDataURL(file);
       }
     },
 
     handleDepartmentSelected(payload) {
-      this.selectedDepartment =  payload.department.label;
+      this.selectedDepartment = payload.department.label;
     },
 
     async addDoctor() {
@@ -176,35 +188,53 @@ export default {
         }
 
         const doctorData = {
-          doctorUsername: this.formFields.find((field) => field.id === "doctorUsername").model,
-          doctorPassword: this.formFields.find((field) => field.id === "doctorPassword").model,
-          doctorEmail: this.formFields.find((field) => field.id === "doctorEmail").model,
+          doctorUsername: this.formFields.find(
+            (field) => field.id === "doctorUsername"
+          ).model,
+          doctorPassword: this.formFields.find(
+            (field) => field.id === "doctorPassword"
+          ).model,
+          doctorEmail: this.formFields.find(
+            (field) => field.id === "doctorEmail"
+          ).model,
           doctorImage: this.doctorImage,
-          doctorName: this.formFields.find((field) => field.id === "doctorName").model,
-          doctorAddress: this.formFields.find((field) => field.id === "doctorAddress").model,
-          doctorPhoneNumber: this.formFields.find((field) => field.id === "doctorPhoneNumber").model,
-          doctorGender: this.doctorGender === "true", 
-          doctorDateOfBirth: this.formFields.find((field) => field.id === "doctorDateOfBirth").model,
-          departmentName: this.selectedDepartment, 
+          doctorName: this.formFields.find((field) => field.id === "doctorName")
+            .model,
+          doctorAddress: this.formFields.find(
+            (field) => field.id === "doctorAddress"
+          ).model,
+          doctorPhoneNumber: this.formFields.find(
+            (field) => field.id === "doctorPhoneNumber"
+          ).model,
+          doctorGender: this.doctorGender === "true",
+          doctorDateOfBirth: this.formFields.find(
+            (field) => field.id === "doctorDateOfBirth"
+          ).model,
+          departmentName: this.selectedDepartment,
         };
 
         console.log("Dữ liệu gửi đi:", doctorData);
-        
+
         const BEARER_TOKEN = localStorage.getItem("token");
 
-      const response = await axios.post("https://api.unime.site/UNIME/doctors", doctorData, {
+        const response = await axios.post(
+          "https://api.unime.site/UNIME/doctors",
+          doctorData,
+          {
             headers: {
               Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
             },
-          });
+          }
+        );
 
-      if (response.data?.code === 1000) {
-        alert("Thêm bác sĩ thành công!");
-      } else {
-        alert("Có lỗi xảy ra: " + (response.data?.message || "Không rõ nguyên nhân"));
-      }
-
-        alert("Upload thành công!");
+        if (response.data?.code === 1000) {
+          alert("Thêm bác sĩ thành công!");
+        } else {
+          alert(
+            "Có lỗi xảy ra: " +
+              (response.data?.message || "Không rõ nguyên nhân")
+          );
+        }
       } catch (error) {
         console.error(
           "Có lỗi xảy ra trong quá trình upload ảnh:",
