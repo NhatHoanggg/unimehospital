@@ -35,7 +35,7 @@
                 @click="selectShift(shift)"
                 :class="{ active: selectedShift === shift }"
               >
-                {{ shift }}
+                {{ shift.time }}
               </li>
             </ul>
             <button class="button" @click="confirmSelection">Tiếp tục</button>
@@ -62,7 +62,7 @@ export default {
       currentIndex: 0,
       selectedDay: 0,
       visibleItems: 7,
-      schedules: {}, 
+      schedules: {}, // Lưu trữ lịch khám
       isCollapsed: false,
       selectedShift: null,
     };
@@ -84,7 +84,6 @@ export default {
     this.generateDays();
     this.updateSchedules();
   },
-
   methods: {
     generateDays() {
       const today = new Date();
@@ -106,7 +105,6 @@ export default {
     },
     async updateSchedules() {
       const doctorId = this.$route.params.id;
-      console.log(doctorId);
       try {
         const response = await axios.get(
           `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${doctorId}`
@@ -114,23 +112,25 @@ export default {
 
         if (response.data.code === 1000) {
           const result = response.data.result;
-          // console.log(result);
-          result.forEach((shift) => {
+
+          result
+          .filter((shift) => shift.doctortimeworkStatus === "Available") 
+          .forEach((shift) => {
             const date = this.formatDateFromApi(
               shift.doctortimeworkYear,
               shift.weekOfYear,
               shift.dayOfWeek
             );
-            const timeRange = `${shift.startTime}-${shift.endTime}`;
 
             if (!this.schedules[date]) {
               this.schedules[date] = [];
             }
 
-            this.schedules[date].push(timeRange);
+            this.schedules[date].push({
+              time: `${shift.startTime}-${shift.endTime}`,
+              doctorTimeworkId: shift.doctorTimeworkId,
+            });
           });
-          console.log(this.schedules);
-          console.log("->load done!")
         } else {
           console.error("Failed to fetch schedules", response.data.message);
         }
@@ -179,14 +179,18 @@ export default {
     },
     confirmSelection() {
       if (this.selectedShift) {
+        console.log("Selected Shift:", this.selectedShift);
         const selectedDate = this.days[this.selectedDay];
         this.$emit("date-selected", {
           date: selectedDate,
-          time: this.selectedShift,
+          time: this.selectedShift.time,
+          doctorTimeworkId: this.selectedShift.doctorTimeworkId,
         });
+
         this.isCollapsed = !this.isCollapsed;
+
         toast.success(
-          `Chọn giờ khám thành công!\nNgày ${selectedDate}\nGiờ ${this.selectedShift}`,
+          `Chọn giờ khám thành công!\nNgày ${selectedDate}\nGiờ ${this.selectedShift.time}`,
           {
             rtl: false,
             limit: 3,

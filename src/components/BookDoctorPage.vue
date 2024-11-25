@@ -43,6 +43,7 @@ export default {
       servicePrice: '',
       noteText: '',
       doctor: {},
+      doctorTimeworkId: '',
     };
   },
   mounted() {
@@ -61,11 +62,13 @@ export default {
   }
   },
   methods: {
-    handleDateSelected(selection) {
-      const { date, time } = selection;
-      this.selectedDate = date;
-      this.selectedTime = time;
-      console.log(`Ngày: ${date}, Giờ: ${time}`);
+    handleDateSelected(data) {
+      console.log("doctor timework id:", data.doctorTimeworkId);
+      this.selectedDate = data.date;
+      this.selectedTime = data.time;
+      this.doctorTimeworkId = data.doctorTimeworkId;
+      console.log(`Ngày: ${this.selectedDate}, Giờ: ${this.selectedTime}`);
+      console.log(`Doctor timework id: ${this.doctorTimeworkId}`);
     },
 
     handleServiceSelected(selection) {
