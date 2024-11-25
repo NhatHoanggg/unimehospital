@@ -225,8 +225,8 @@ export default {
   border: 3px solid #0047ba;
   border-radius: 20px;
   background-color: white;
-  /* height: auto; */
-  height: 700px;
+  height: auto;
+  /* height: 700px; */
   transition: height 1s ease;
 }
 
@@ -300,7 +300,8 @@ export default {
   justify-content: center;
   position: relative;
   width: 100%;
-  height: 400px;
+  /* height: 400px; */
+  height: 564px;
   gap: 20px;
   transition: all 0.3s ease;
 }
