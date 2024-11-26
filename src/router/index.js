@@ -41,6 +41,7 @@ import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
 import NextAppointments from '@/components/doctor/NextAppointments.vue';
 import BusyManagement from '@/components/doctor/BusyManagement.vue';
 import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
+import EditProfile from '@/components/doctor/EditProfile.vue';
 
 import NotFound from '@/components/tools/NotFound.vue';
 import TestVue from '@/components/tools/TestVue.vue';
@@ -263,6 +264,11 @@ const routes = [
       {
         path: 'busy',
         component: BusyManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'profile',
+        component: EditProfile,
         meta: { requiresAuth: true },
       },
     ],

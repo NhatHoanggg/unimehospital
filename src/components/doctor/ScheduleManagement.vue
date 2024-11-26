@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -153,14 +155,14 @@ export default {
       return dayMap[dayIndex];
     },
 
-    sendData() {
+    async sendData() {
       const formattedData = [];
 
       this.dates.forEach((date, dayIndex) => {
         this.periods.forEach((period) => {
           formattedData.push({
             doctorTimeworkYear: new Date().getFullYear(),
-            weekOfYear: this.weekNumber,
+            weekOfYear: this.weekNumber -1 ,
             dayOfWeek: this.getDayOfWeek(dayIndex),
             startTime: this.shifts[period].split("-")[0],
             endTime: this.shifts[period].split("-")[1],
@@ -172,6 +174,31 @@ export default {
       });
 
       console.log(JSON.stringify(formattedData, null, 2));
+      // const myschedule = JSON.stringify(formattedData, null, 2);
+      const BEARER_TOKEN = localStorage.getItem("token");
+
+      try {
+        const response = await axios.post(
+          "https://api.unime.site/UNIME/doctortimework",
+          formattedData,
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Thêm timework thành công", response.data);
+          alert("Thêm timework thành công");
+        } else {
+          console.error("Thêm timework thất bại", response.data);
+          alert("Thêm timework thất bại.");
+        }
+      } catch (error) {
+        console.error("Lỗi xảy ra:", error);
+        alert("Có lỗi xảy ra trong quá trình xử lý.");
+      }
     },
   },
 };

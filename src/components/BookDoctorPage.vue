@@ -14,7 +14,7 @@
   </div>
   <DatePickerComponent @date-selected="handleDateSelected" />
   <ChooseServiceComponent :selectedDate="selectedDate" :selectedTime="selectedTime" @service="handleServiceSelected" />
-  <AddNoteComponent @note="handleAddNote"/>
+  <!-- <AddNoteComponent @note="handleAddNote"/> -->
   <button class="button" @click="confirmAppoinment()">Xác nhận đặt lịch</button>
   </div>
   
@@ -23,7 +23,7 @@
 <script>
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import ChooseServiceComponent from "@/components/ChooseServiceComponent.vue";
-import AddNoteComponent from "@/components/AddNoteComponent.vue";
+// import AddNoteComponent from "@/components/AddNoteComponent.vue";
 import axios from "axios";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -32,7 +32,7 @@ export default {
   components: {
     DatePickerComponent,
     ChooseServiceComponent,
-    AddNoteComponent,
+    // AddNoteComponent,
   },
   name: "BookingPage",
   data() {
@@ -81,15 +81,14 @@ export default {
       console.log(`Service id: ${this.serviceId}`);
     },
 
-    handleAddNote(selection) {
-      const { note } = selection;
-      this.noteText = note;
-      console.log(`Ghi chú: ${note}`);
-    },
+    // handleAddNote(selection) {
+    //   const { note } = selection;
+    //   this.noteText = note;
+    //   console.log(`Ghi chú: ${note}`);
+    // },
 
     confirmAppoinment(){
       if (!this.selectedDate || !this.selectedTime) {
-        // alert("Vui lòng chọn ngày, giờ trước khi xác nhận đặt lịch.");
         toast.warning(`Vui lòng chọn ngày, giờ trước khi xác nhận đặt lịch.`,
             {
               rtl: false,
@@ -99,7 +98,6 @@ export default {
         return;
       }
       if (!this.selectedDate || !this.selectedTime || !this.selectedService) {
-        // alert("Vui lòng chọn dịch vụ trước khi xác nhận đặt lịch.");
         toast.warning(`Vui lòng chọn dịch vụ trước khi xác nhận đặt lịch.`,
             {
               rtl: false,
@@ -117,7 +115,7 @@ export default {
         time: this.selectedTime,
         doctor_address: this.doctor.doctorAddress,
         service: this.selectedService,
-        note: this.noteText,
+        // note: this.noteText,
         price: this.servicePrice,
       }
       localStorage.setItem("appointment-info", JSON.stringify(appointment_info));

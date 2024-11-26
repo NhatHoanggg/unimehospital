@@ -18,10 +18,10 @@
           <i class="fa fa-map-marker-alt"></i> Địa chỉ: {{ appointment_info.doctor_address }} 
         </p>
         <p>
-          <i class="fa fa-stethoscope"></i> Dịch vụ: <strong>{{ appointment_info.service }}</strong>
+          <i class="fa fa-stethoscope"></i> Dịch vụ: <strong> {{ appointment_info.service }}</strong>
         </p>
         <p>
-          <i class="fa fa-sticky-note"></i> Ghi chú: {{ appointment_info.note }}
+          <!-- <i class="fa fa-sticky-note"></i> Ghi chú: {{ appointment_info.note }} -->
         </p>
         <p>
           <i class="fa fa-dollar-sign"></i> Giá tiền: {{ appointment_info.price }}₫

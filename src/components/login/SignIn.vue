@@ -112,6 +112,8 @@ export default {
           router.push("/admin");
         } else if (user.scope === "EMPLOYEE") {
           router.push("/employee");
+        } else if (user.scope === "DOCTOR") {
+          router.push("/doctor");
         } else if (user.scope === "PATIENT") {
           router.push("/");
         }
