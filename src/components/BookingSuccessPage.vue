@@ -33,21 +33,60 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   data() {
     return {
       appointment_info: {},
+      serviceId: '',
+      doctorTimeworkId: '',
     };
   },
   methods: {
     goHome() {
       this.$router.push('/');
+    },
+    async addAppointment(){
+      const BEARER_TOKEN = localStorage.getItem("token");
+      const data = {
+        doctorserviceId: this.serviceId,
+        doctortimeworkId: this.doctorTimeworkId,
+      }
+      // console.log(data)
+      try {
+        const response = await axios.post(
+          "https://api.unime.site/UNIME/appointments",
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Đặt lịch thành công:", response.data);
+          alert("Đặt lịch thành công!");
+        } else {
+          console.error("Lỗi khi đặt lịch:", response.data);
+          alert("Đặt lịch thất bại.");
+        }
+      } catch (error) {
+        console.error("Lỗi xảy ra:", error);
+        alert("Có lỗi xảy ra trong quá trình xử lý.");
+      }
     }
   },
   mounted() {
     const appointmentData = localStorage.getItem('appointment-info');
     if (appointmentData) {
       this.appointment_info = JSON.parse(appointmentData);
+      this.doctorTimeworkId = this.appointment_info.doctorTimeworkId;
+      this.serviceId = this.appointment_info.serviceId;
+      // console.log(this.appointment_info.doctorTimeworkId);
+      this.addAppointment();
     }
   }
 };

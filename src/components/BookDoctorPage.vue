@@ -109,6 +109,8 @@ export default {
         return;
       }
       const appointment_info = {
+        serviceId: this.serviceId,
+        doctorTimeworkId: this.doctorTimeworkId,
         doctor_name: this.doctor.doctorName,
         doctor_specialty: this.doctor.departmentName,
         date: this.selectedDate,
