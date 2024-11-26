@@ -35,6 +35,7 @@ import AddDoctorService from '@/components/employee/AddDoctorService.vue';
 import TimeOffManagement from '@/components/employee/TimeOffManagement.vue';
 import TimeworkManagement from '@/components/employee/TimeworkManagement.vue';
 import ListDoctorServices from '@/components/employee/ListDoctorServices.vue';
+import EditEmployee from '@/components/employee/EditEmployee.vue';
 
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
 import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
@@ -232,6 +233,11 @@ const routes = [
       {
         path: 'list-services',
         component: ListDoctorServices,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'profile',
+        component: EditEmployee,
         meta: { requiresAuth: true },
       },
     ]

@@ -27,6 +27,8 @@
           { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
           { text: 'Request', icon: require('@/assets/request.png'), path: '/time-off-management' },
           { text: 'Dịch vụ', icon: require('@/assets/list-service.png'), path: '/list-services' },
+          { text: 'Hồ sơ', icon: require('@/assets/User-icon.png'), path: '/profile' },
+          { text: 'Đăng xuất', icon: require('@/assets/logout.png'), path: '/logout' },
           // { text: 'Thêm dịch vụ', icon: require('@/assets/add-doctor-service.png'), path: '/add-doctor-service' },
         ],
       };

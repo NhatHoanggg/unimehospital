@@ -21,66 +21,36 @@
           <!-- Các trường form -->
           <div class="form-group">
             <label for="fullName">Họ và tên</label>
-            <input type="text" id="fullName" v-model="doctorName" required />
+            <input type="text" id="fullName" v-model="employeeName" required />
           </div>
   
           <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" id="username" v-model="username" readonly />
+            <input type="text" id="username" v-model="employeeUsername" readonly />
           </div>
   
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" v-model="email" readonly />
-          </div>
-
-          <div class="form-group">
-            <label for="depart">Chuyên khoa</label>
-            <input type="text" id="depart" v-model="departmentName" readonly />
+            <input type="email" id="email" v-model="employeeEmail" readonly />
           </div>
   
           <div class="form-group">
             <label>Giới tính</label>
             <div class="gender-options">
               <label>
-                <input type="radio" v-model="doctorGender" value="true" /> Nam
+                <input type="radio" v-model="employeeGender" value="true" /> Nam
               </label>
               <label>
-                <input type="radio" v-model="doctorGender" value="false" /> Nữ
+                <input type="radio" v-model="employeeGender" value="false" /> Nữ
               </label>
             </div>
           </div>
   
           <div class="form-group">
-            <label for="dob">Ngày sinh</label>
-            <input type="date" id="dob" v-model="doctorDateOfBirth" required />
-          </div>
-  
-          <div class="form-group">
             <label for="phone">Số điện thoại</label>
-            <input type="text" id="phone" v-model="doctorPhoneNumber" required />
-          </div>
-  
-          <div class="form-group">
-            <label for="address">Địa chỉ</label>
-            <textarea id="address" v-model="doctorAddress" required></textarea>
+            <input type="text" id="phone" v-model="employeePhoneNumber" required />
           </div>
 
-          <div class="form-group">
-            <label for="detailInformation">Chi tiết</label>
-            <textarea id="detailInformation" v-model="doctordetailInformation" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="exp">Kinh nghiệm</label>
-            <textarea id="exp" v-model="doctordetailExperience" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="award">Giải thưởng</label>
-            <textarea id="award" v-model="doctordetailAwardRecognization" required></textarea>
-          </div>
-  
           <div class="form-group">
             <button type="submit" class="update-button">Cập nhật</button>
           </div>
@@ -98,20 +68,14 @@
         avatar: null,
         defaultAvatar: "https://via.placeholder.com/200",
 
-        doctorId: "",
-        username: "",
-        email: "",
-        doctorImage: "",
-        doctorName: "",
-        doctorAddress: "",
-        doctorPhoneNumber: "",
-        doctorGender: "",
-        doctorDateOfBirth: "",
-        departmentName: "",
-        doctorStatus: "",
-        doctordetailInformation: "",
-        doctordetailExperience: "",
-        doctordetailAwardRecognization: "",
+        employeeUsername: "",
+        employeeImage: "",
+        employeePassword: "",
+        employeeEmail: "",
+        employeeName: "",
+        employeePhoneNumber: "",
+        employeeGender: "",
+        employeeDateOfBirth: "",
       };
     },
     methods: {
@@ -124,44 +88,41 @@
           const reader = new FileReader();
           reader.onload = (e) => {
             this.avatar = e.target.result;
-            this.doctorImage = file; 
+            this.employeeImage = file; 
           };
           reader.readAsDataURL(file);
         }
       },
       async updateProfile() {
         try {
-          if (this.doctorImage && typeof this.doctorImage !== "string") {
+          if (this.employeeImage && typeof this.employeeImage !== "string") {
             const formData = new FormData();
-            formData.append("file", this.doctorImage);
+            formData.append("file", this.employeeImage);
             formData.append("upload_preset", process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET);
   
             const uploadResponse = await axios.post(
               `https://api.cloudinary.com/v1_1/${process.env.VUE_APP_CLOUD_NAME}/image/upload`,
               formData
             );
-            this.doctorImage = uploadResponse.data.secure_url;
+            this.employeeImage = uploadResponse.data.secure_url;
           }
   
           // Tạo object dữ liệu cập nhật
           const updatedUser = {
-            doctorUsername: this.username,
-            doctorEmail: this.email,
-            doctorImage: this.doctorImage,
-            doctorName: this.doctorName,
-            doctorAddress: this.doctorAddress,
-            doctorPhoneNumber: this.doctorPhoneNumber,
-            doctorGender: this.doctorGender,
-            doctorDateOfBirth: this.doctorDateOfBirth,
-            doctordetailInformation: this.doctordetailInformation,
-            doctordetailExperience: this.doctordetailExperience,
-            doctordetailAwardRecognization: this.doctordetailAwardRecognization, 
+            employeeUsername: this.employeeUsername,
+            employeeImage: this.employeeImage,
+            employeePassword: this.employeePassword,
+            employeeEmail: this.employeeEmail,
+            employeeName: this.employeeName,
+            employeePhoneNumber: this.employeePhoneNumber,
+            employeeGender: this.employeeGender,
+            // employeeDateOfBirth: "2003-10-06"
           };
 
-          console.log(updatedUser);
+          console.log(JSON.stringify(updatedUser));
           const token = localStorage.getItem("token");
           await axios.put(
-            `https://api.unime.site/UNIME/doctors/update/myInfo`,
+            `https://api.unime.site/UNIME/employees/update/myInfo`,
             updatedUser,
             {
               headers: {
@@ -171,9 +132,9 @@
           );
   
           const userLocal = {
-            username : this.username,
-            image : this.doctorImage,
-            scope : 'DOCTOR'
+            username : this.employeeUsername,
+            image : this.employeeImage,
+            scope : 'EMPLOYEE'
           }
   
           localStorage.setItem("user", JSON.stringify(userLocal));
@@ -187,27 +148,22 @@
       fetchUserData() {
         const token = localStorage.getItem("token");
         axios
-          .get(`https://api.unime.site/UNIME/doctors/myInfo`, {
+          .get(`https://api.unime.site/UNIME/employees/myInfo`, {
             headers: { Authorization: `Bearer ${JSON.parse(token)}` },
           })
           .then((response) => {
             if (response.data.code === 1000) {
                 const user = response.data.result;
 
-                this.doctorId = user.doctorId;
-                this.username = user.username;
-                this.email = user.email;
-                this.doctorImage = user.doctorImage;
-                this.doctorName = user.doctorName ;
-                this.doctorAddress = user.doctorAddress;
-                this.doctorPhoneNumber = user.doctorPhoneNumber;
-                this.doctorGender = user.doctorGender;
-                this.doctorDateOfBirth = user.doctorDateOfBirth;
-                this.departmentName = user.departmentName;
-                this.doctordetailInformation = user.doctordetailInformation; 
-                this.doctordetailExperience = user.doctordetailExperience; 
-                this.doctordetailAwardRecognization = user.doctordetailAwardRecognization; 
-                this.avatar = user.doctorImage || this.defaultAvatar;
+                this.employeeUsername= user.employeeUsername,
+                this.employeeImage= user.employeeImage,
+                this.employeePassword= user.employeePassword,
+                this.employeeEmail= user.employeeEmail,
+                this.employeeName= user.employeeName,
+                this.employeePhoneNumber= user.employeePhoneNumber,
+                this.employeeGender= user.employeeGender,
+                this.employeeDateOfBirth= user.employeeDateOfBirth
+                this.avatar = user.employeeImage || this.defaultAvatar;
             }
           })
           .catch((error) => {

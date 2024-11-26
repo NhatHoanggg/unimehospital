@@ -162,7 +162,7 @@ export default {
         this.periods.forEach((period) => {
           formattedData.push({
             doctorTimeworkYear: new Date().getFullYear(),
-            weekOfYear: this.weekNumber -1 ,
+            weekOfYear: this.weekNumber ,
             dayOfWeek: this.getDayOfWeek(dayIndex),
             startTime: this.shifts[period].split("-")[0],
             endTime: this.shifts[period].split("-")[1],
