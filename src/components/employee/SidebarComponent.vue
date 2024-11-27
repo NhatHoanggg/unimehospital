@@ -9,11 +9,14 @@
       >
         <img :src="item.icon" alt="Icon" class="menu-icon" />
         <span>{{ item.text }}</span>
-      </div>
+      </div>      
     </div>
   </template>
   
   <script>
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
   export default {
     props: {
       selectedItem: {
@@ -23,6 +26,8 @@
     },
     data() {
       return {
+        authStore : useAuthStore(),
+        router : useRouter(),
         menuItems: [
           { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
           { text: 'Request', icon: require('@/assets/request.png'), path: '/time-off-management' },
@@ -37,7 +42,19 @@
       selectItem(item) {
         // console.log(`Clicked Item: ${item.text}`); 
         this.$emit('select', item.text); 
-        this.$router.push({ path: `/employee${item.path}` }); 
+        // this.$router.push({ path: `/employee${item.path}` });
+        if (item.text === 'Đăng xuất') {
+          this.handleLogout();
+        }
+        else {
+          this.$router.push({ path: `/employee${item.path}` });
+        } 
+      },
+
+      handleLogout() {
+        this.authStore.logout();
+        localStorage.clear();
+        this.router.push("/");
       },
     },
   };

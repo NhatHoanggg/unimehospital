@@ -1,7 +1,7 @@
 <template>
   <div class="service-container">
     <div class="service-list">
-      <div class="service-card" v-for="service in services" :key="service.serviceId">
+      <div class="service-card" v-for="service in paginatedServices" :key="service.serviceId">
         <div class="service-image">
           <img :src="service.serviceImage" alt="Service Image" />
         </div>
@@ -17,11 +17,20 @@
         </div>
       </div>
     </div>
-
     <div class="pagination">
-      <button class="pagination-btn" @click="prevPage" :disabled="currentPage === 1">◀</button>
-      <span class="page-indicator">{{ currentPage }}</span>
-      <button class="pagination-btn" @click="nextPage">▶</button>
+      <button 
+        class="pagination-btn" 
+        @click="changePage(-1)" 
+        :disabled="currentPage === 1">
+        Previous
+      </button>
+      <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+      <button 
+        class="pagination-btn" 
+        @click="changePage(1)" 
+        :disabled="currentPage === totalPages">
+        Next
+      </button>
     </div>
   </div>
 </template>
@@ -34,41 +43,33 @@ export default {
   data() {
     return {
       services: [],
-      currentPage: Number(this.$route.query.page) || 1,
-      itemsPerPage: 5, 
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalPages: 1,
     };
   },
-  watch: {
-    "$route.query.page"(newPage) {
-      this.currentPage = Number(newPage) || 1;
-      this.fetchServices();
+  computed: {
+    paginatedServices() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.services.slice(start, end);
     },
   },
   methods: {
     async fetchServices() {
       try {
         const response = await axios.get(
-          `https://api.unime.site/UNIME/services/get/serviceList?page=${this.currentPage}&limit=${this.itemsPerPage}`
+          `https://api.unime.site/UNIME/services/get/serviceList`
         );
         if (response.data.code === 1000) {
-          this.services = response.data.result;
+          this.services = response.data.result || [];
+          this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
         } else {
           console.error("Failed to fetch services. Code:", response.data.code);
         }
       } catch (error) {
         console.error("Error fetching services:", error);
       }
-    },
-    nextPage() {
-      this.updatePage(this.currentPage + 1);
-    },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.updatePage(this.currentPage - 1);
-      }
-    },
-    updatePage(page) {
-      this.$router.push({ query: { page } });
     },
     viewMore(service) {
       this.$router.push({ name: "ServiceDetail", params: { id: service.serviceId } });
@@ -78,12 +79,16 @@ export default {
       this.$router.push({ name: "BookServicePage", params: { id: service.serviceId } });
       localStorage.setItem("selectedService", JSON.stringify(service));
     },
+    changePage(direction) {
+      this.currentPage += direction;
+    },
   },
   mounted() {
     this.fetchServices();
   },
 };
 </script>
+
 
 <style scoped>
 .service-container {

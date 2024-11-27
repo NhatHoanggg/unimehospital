@@ -73,7 +73,7 @@
                 </div>
               </div>
 
-              <div v-if="showDropdown" class="dropdown">
+              <div v-if="showDropdown && authStore.user && authStore.user.scope === 'PATIENT'" class="dropdown">
                 <router-link to="/profile">
                   <i class="fas fa-user"></i> Hồ sơ</router-link
                 >

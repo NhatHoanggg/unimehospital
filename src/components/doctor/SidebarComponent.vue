@@ -14,6 +14,9 @@
   </template>
   
   <script>
+  import { useAuthStore } from "@/stores/auth";
+  import { useRouter } from "vue-router";
+  
   export default {
     props: {
       selectedItem: {
@@ -23,6 +26,8 @@
     },
     data() {
       return {
+        authStore : useAuthStore(),
+        router : useRouter(),
         menuItems: [
           { text: 'Lịch hẹn sắp tới', icon: require('@/assets/next-appointment.png'), path: '/next-appointments' },
           { text: 'Lịch làm việc', icon: require('@/assets/calendar.png'), path: '/schedule' },
@@ -36,7 +41,19 @@
       selectItem(item) {
         // console.log(`Clicked Item: ${item.text}`); 
         this.$emit('select', item.text); 
-        this.$router.push({ path: `/doctor${item.path}` }); 
+        // this.$router.push({ path: `/doctor${item.path}` }); 
+        if (item.text === 'Đăng xuất') {
+          this.handleLogout();
+        }
+        else {
+          this.$router.push({ path: `/doctor${item.path}` }); 
+        }
+      },
+      
+      handleLogout() {
+        this.authStore.logout();
+        localStorage.clear();
+        this.router.push("/");
       },
     },
   };

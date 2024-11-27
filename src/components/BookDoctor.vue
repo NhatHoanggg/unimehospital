@@ -1,14 +1,14 @@
-<template> 
+<template>
   <div class="doctor-container">
     <div class="doctor-list">
-      <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
+      <div class="doctor-card" v-for="doctor in paginatedDoctors" :key="doctor.doctorId">
         <div class="doctor-image">
           <img :src="doctor.doctorImage" alt="Doctor Image" />
         </div>
         <div class="doctor-info">
           <h3>{{ doctor.doctorName }}</h3>
           <p><strong>Khoa: </strong>{{ doctor.departmentName }}</p>
-          <p>{{ doctor.info }}</p>
+          <p>{{ doctor.doctordetailInformation }}</p>
           <div class="doctor-actions">
             <button class="btn view-more" @click="viewMore(doctor)">Xem thêm</button>
             <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
@@ -16,11 +16,20 @@
         </div>
       </div>
     </div>
-
     <div class="pagination">
-      <button class="pagination-btn" @click="prevPage" :disabled="currentPage === 1">◀</button>
-      <span class="page-indicator">{{ currentPage }}</span>
-      <button class="pagination-btn" @click="nextPage">▶</button>
+      <button 
+        class="pagination-btn" 
+        @click="changePage(-1)" 
+        :disabled="currentPage === 1">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+      <button 
+        class="pagination-btn" 
+        @click="changePage(1)" 
+        :disabled="currentPage === totalPages">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -33,37 +42,27 @@ export default {
   data() {
     return {
       doctors: [],
-      currentPage: Number(this.$route.query.page) || 1, 
-      itemsPerPage: 10,
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalPages: 1,
     };
   },
-  watch: {
-    "$route.query.page"(newPage) {
-      this.currentPage = Number(newPage) || 1;
-      this.fetchDoctors();
+  computed: {
+    paginatedDoctors() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.doctors.slice(start, end);
     },
   },
   methods: {
     async fetchDoctors() {
       try {
-        const response = await axios.get(
-          `https://api.unime.site/UNIME/doctors/get/doctorList?page=${this.currentPage}&limit=${this.itemsPerPage}`
-        );
-        this.doctors = response.data.result;
+        const response = await axios.get(`https://api.unime.site/UNIME/doctors/get/doctorList`);
+        this.doctors = response.data.result || [];
+        this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
       } catch (error) {
         console.error("Error fetching doctors:", error);
       }
-    },
-    nextPage() {
-      this.updatePage(this.currentPage + 1);
-    },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.updatePage(this.currentPage - 1);
-      }
-    },
-    updatePage(page) {
-      this.$router.push({ query: { page } }); 
     },
     viewMore(doctor) {
       this.$router.push({ name: "DoctorDetail", params: { id: doctor.doctorId } });
@@ -73,12 +72,14 @@ export default {
       this.$router.push({ name: "BookDoctorPage", params: { id: doctor.doctorId } });
       localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
+    changePage(direction) {
+      this.currentPage += direction;
+    },
   },
   mounted() {
     this.fetchDoctors();
   },
 };
-
 </script>
 
 
