@@ -1,7 +1,7 @@
 <template>
   <div class="homepage">
 
-
+    <SliderSection/>
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
@@ -44,11 +44,13 @@
 <script>
 
 import ChatBot from "./ChatBot.vue";
+import SliderSection from "../tools/SliderSection.vue";
 
 export default {
   name: "HomePage",
   components: {
     ChatBot,
+    SliderSection,
   },
   data() {
     return {

@@ -7,7 +7,7 @@
         </div>
         <div class="doctor-info">
           <h3>{{ doctor.doctorName }}</h3>
-          <p><strong>Khoa: </strong>{{ doctor.departmentName }}</p>
+          <!-- <p><strong>Khoa: </strong>{{ doctor.departmentName }}</p> -->
           <p>{{ doctor.doctordetailInformation }}</p>
           <div class="doctor-actions">
             <button class="btn view-more" @click="viewMore(doctor)">Xem thêm</button>
