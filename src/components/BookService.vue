@@ -1,4 +1,36 @@
 <template>
+  <div class="hospital">
+    <img
+      src="@/assets/background-2.jpg"
+      alt="hospital"
+      class="hospital-image"
+    />
+    <div class="search-bar">
+      <DepartmentListComponent
+      style="width: 200px"
+            @department-selected="handleDepartmentSelected"
+      />
+      <input type="text" v-model="searchQuery" placeholder="Tìm kiếm bác sĩ hoặc dịch vụ..." />
+      <button @click="handleSearchClick">Tìm kiếm</button>
+    </div>
+  </div>
+
+  <div class="appointment-page">
+    <div class="tabs">
+      <button
+        :class="{ active: currentTab === 'doctor' }"
+        @click="goToDoctors"
+      >
+        Bác sĩ
+      </button>
+      <button
+        :class="{ active: currentTab === 'service' }"
+        @click="goToServices"
+      >
+        Dịch vụ
+      </button>
+    </div>
+  </div>
   <div class="service-container">
     <div class="service-list">
       <div class="service-card" v-for="service in paginatedServices" :key="service.serviceId">
@@ -36,12 +68,20 @@
 </template>
 
 <script>
+import DepartmentListComponent from "./tools/DepartmentListComponent.vue";
 import axios from "axios";
 
 export default {
   name: "BookService",
+  components: {
+    DepartmentListComponent,
+  },
   data() {
     return {
+      currentTab: "service",
+      selectedDepartment: null,
+      searchQuery: "",
+      
       services: [],
       currentPage: 1,
       itemsPerPage: 5,
@@ -56,6 +96,34 @@ export default {
     },
   },
   methods: {
+    goToDoctors() {
+      this.currentTab = 'doctor';
+      this.$router.push('/booking/doctors');
+    },
+    goToServices() {
+      this.currentTab = 'service';
+      this.$router.push('/booking/services');
+      console.log('Go to services');
+    },
+
+    async handleSearchClick() {
+      const response = await axios.get(`https://api.unime.site/UNIME/services/get/${this.searchQuery}`);
+      this.services = response.data.result || [];
+      this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
+    },
+
+    handleDepartmentSelected(payload) {
+      this.selectedDepartment = {
+        departmentName: payload.department.label,
+        departmentId: payload.department.value
+      }
+      const result = this.services
+      .filter(service => service.departmentName === this.selectedDepartment.departmentName);
+      
+      this.services = result;
+      this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
+    },
+
     async fetchServices() {
       try {
         const response = await axios.get(
@@ -91,6 +159,79 @@ export default {
 
 
 <style scoped>
+.appointment-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.hospital {
+  position: relative;
+  text-align: center;
+}
+
+.hospital-image {
+  width: 1440px;
+  height: 400px;
+  object-fit: cover;
+}
+
+.search-bar {
+  position: absolute;
+  top: 80%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-bar input {
+  padding: 10px;
+  font-size: 16px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #002d72;
+  color: white;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #0056b3;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+
+.tabs button.active {
+  background-color: #002d72;
+  color: #fff;
+}
+
+.tab-content {
+  margin-top: 20px;
+}
+
 .service-container {
   max-width: 1440px;
   margin: 0 auto;

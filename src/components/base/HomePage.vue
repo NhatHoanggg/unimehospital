@@ -44,7 +44,7 @@
 <script>
 
 import ChatBot from "./ChatBot.vue";
-import SliderSection from "../tools/SliderSection.vue";
+import SliderSection from "./SliderSection.vue";
 
 export default {
   name: "HomePage",

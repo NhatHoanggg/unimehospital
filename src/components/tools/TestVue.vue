@@ -16,7 +16,7 @@
 import DepartmentListComponent from "./DepartmentListComponent.vue";
 import DoctorServiceListComponent from "./DoctorServiceListComponent.vue";
 import LoadingComponent from "./LoadingComponent.vue";
-import SliderSection from "./SliderSection.vue";
+import SliderSection from "../base/SliderSection.vue";
 
 export default {
   name: "ParentComponent",
