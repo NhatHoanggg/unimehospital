@@ -149,6 +149,7 @@ export default {
   position: fixed;
   bottom: 50px;
   right: 50px;
+  z-index: 100;
 }
 
 /* Nút toggle */
