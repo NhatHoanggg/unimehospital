@@ -2,13 +2,15 @@
   <div class="doctor-detail-container">
     <div class="doctor-header">
       <div class="doctor-image">
-        <img :src="doctor.doctorImage" alt="Doctor Image" />
+        <img :src="doctor.doctorImage || defaultImage" alt="Doctor Image" />
       </div>
       <div class="doctor-info">
         <h2>{{ doctor.doctorName }}</h2>
         <p><strong>Chuyên khoa:</strong> {{ doctor.departmentName }}</p>
         <p><strong>Địa chỉ:</strong> {{ doctor.doctorAddress }}</p>
-        <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
+        <button class="btn book-appointment" @click="bookDoctor(doctor)">
+          Đặt lịch
+        </button>
       </div>
     </div>
 
@@ -26,38 +28,44 @@ export default {
   name: "DoctorDetail",
   data() {
     return {
+      defaultImage: "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1732272155/ox3qndq1v7iko2rejrex.png",
       doctor: {},
     };
   },
 
   mounted() {
-  const doctorId = this.$route.params.id;
-  const doctorData = localStorage.getItem("selectedDoctor");
-  if (doctorData) {
-    const doctor = JSON.parse(doctorData);
-    if (doctor.doctorId == doctorId) {
-      this.doctor = doctor;
+    const doctorId = this.$route.params.id;
+    const doctorData = localStorage.getItem("selectedDoctor");
+    if (doctorData) {
+      const doctor = JSON.parse(doctorData);
+      if (doctor.doctorId == doctorId) {
+        this.doctor = doctor;
+      } else {
+        this.fetchDoctorData(doctorId);
+      }
     } else {
       this.fetchDoctorData(doctorId);
     }
-  } else {
-    this.fetchDoctorData(doctorId);
-  }
-},
-methods: {
-  async fetchDoctorData(id) {
-    try {
-      const response = await axios.get(`https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`);
-      this.doctor = response.data;
-    } catch (error) {
-      console.error("Error fetching doctor data:", error);
-    }
   },
-  bookDoctor(doctor) {
-    this.$router.push({ name: "BookDoctorPage", params: { id: doctor.doctorId } });
-    localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+  methods: {
+    async fetchDoctorData(id) {
+      try {
+        const response = await axios.get(
+          `https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`
+        );
+        this.doctor = response.data;
+      } catch (error) {
+        console.error("Error fetching doctor data:", error);
+      }
     },
-}
+    bookDoctor(doctor) {
+      this.$router.push({
+        name: "BookDoctorPage",
+        params: { id: doctor.doctorId },
+      });
+      localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+    },
+  },
 };
 </script>
 
@@ -118,6 +126,6 @@ methods: {
 
 .doctor-highlight p {
   color: #333;
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
 }
 </style>

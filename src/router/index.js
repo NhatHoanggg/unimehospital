@@ -10,6 +10,8 @@ import BookingPage from '@/components/base/BookingPage.vue';
 // import BookDoctor from '@/components/BookDoctor.vue';
 import BookDoctorPage from '@/components/BookDoctorPage.vue';
 import BookService from '@/components/BookService.vue';
+import ServiceDetail from '@/components/ServiceDetail.vue';
+import BookServicePage from '@/components/BookServicePage.vue';
 
 import UserProfile from '@/components/profile/UserProfile.vue';
 import DoctorDetail from '@/components/DoctorDetail.vue';
@@ -132,6 +134,20 @@ const routes = [
     path: '/booking/doctors/:id/booking-appointment', 
     name: 'BookDoctorPage',
     component: BookDoctorPage,
+    props: true,
+  },
+
+  {
+    path: '/booking/services/:id', 
+    name: 'ServiceDetail',
+    component: ServiceDetail,
+    props: true,
+  },
+
+  {
+    path: '/booking/services/:id/booking-appointment', 
+    name: 'BookServicePage',
+    component: BookServicePage,
     props: true,
   },
 
