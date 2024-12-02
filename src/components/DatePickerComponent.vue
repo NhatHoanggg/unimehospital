@@ -56,6 +56,13 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
 export default {
+  props: {
+    doctorId: {
+      type: String,
+      required: true,
+    },
+  },
+
   data() {
     return {
       days: [],
@@ -104,10 +111,11 @@ export default {
       this.days = daysList;
     },
     async updateSchedules() {
-      const doctorId = this.$route.params.id;
+      // const doctorId = this.$route.params.id;
+      console.log("doctor id: ->",this.doctorId)
       try {
         const response = await axios.get(
-          `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${doctorId}`
+          `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${Number(this.doctorId)}`
         );
 
         if (response.data.code === 1000) {
@@ -115,6 +123,7 @@ export default {
 
           result
           .filter((shift) => shift.doctortimeworkStatus === "Available") 
+          // .filter((shift) => shift.doctorId == this.doctorId) 
           .forEach((shift) => {
             const date = this.formatDateFromApi(
               shift.doctortimeworkYear,

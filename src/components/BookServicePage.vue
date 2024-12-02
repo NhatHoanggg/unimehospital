@@ -27,7 +27,12 @@
           </div>
           <div class="step2">
             <h1>2. Chọn ngày khám</h1>
-            <!-- <ChooseDoctor /> -->
+            <div v-if="doctorId">
+              <DatePickerComponent :doctorId="doctorId" @date-selected="handleDateSelected" />
+            </div>
+            <div v-else>
+              <p>Vui lòng chọn bác sĩ trước khi chọn ngày khám</p>
+            </div>
           </div>
           
         </div>
@@ -41,22 +46,27 @@
 
 <script>
 import axios from "axios";
-// import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify';
 import ChooseDoctor from "./ChooseDoctor.vue";
+import DatePickerComponent from "./DatePickerComponent.vue";
 
 export default {
   data() {
     return {
       serviceId: "",
-      doctorId: "",
+      doctorId: '',
       doctorImage: "",
       doctorInfo: false,
       doctor: {},
       service: {},
+      selectedDate: '',
+      selectedTime: '',
+      doctorTimeworkId: '',
     };
   },
   components: {
     ChooseDoctor,
+    DatePickerComponent,
   },
   mounted() {
     const serviceId = this.$route.params.id;
@@ -94,13 +104,41 @@ export default {
       // console.log("doctor:", this.doctor.doctorId);
     },
 
+    handleDateSelected(data) {
+      console.log("doctor timework id:", data.doctorTimeworkId);
+      this.selectedDate = data.date;
+      this.selectedTime = data.time;
+      this.doctorTimeworkId = data.doctorTimeworkId;
+      console.log(`Ngày: ${this.selectedDate}, Giờ: ${this.selectedTime}`);
+      console.log(`Doctor timework id: ${this.doctorTimeworkId}`);
+    },
+
     confirmAppoinment() {
-      this.$router.push({
-        name: "BookingPage",
-        params: {
-          id: this.serviceId,
-        },
-      });
+      console.log("Service ID:", this.service.serviceId);
+      if (!this.selectedDate || !this.selectedTime) {
+        toast.warning(`Vui lòng chọn ngày, giờ trước khi xác nhận đặt lịch.`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            },);  
+        return;
+      }
+      
+      const appointment_info = {
+        serviceId: this.serviceId,
+        doctorTimeworkId: this.doctorTimeworkId,
+        doctor_name: this.doctor.doctorName,
+        doctor_specialty: this.doctor.departmentName,
+        date: this.selectedDate,
+        time: this.selectedTime,
+        doctor_address: this.doctor.doctorAddress,
+        service: this.service.serviceName,
+        // note: this.noteText,
+        price: this.service.servicePrice,
+      }
+      localStorage.setItem("appointment-info", JSON.stringify(appointment_info));
+      this.$router.push({ name: 'BookingSuccess' });
     },
   },
 };

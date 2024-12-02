@@ -12,7 +12,7 @@
       </div>
     </div>
   </div>
-  <DatePickerComponent @date-selected="handleDateSelected" />
+  <DatePickerComponent :doctorId="doctorId" @date-selected="handleDateSelected" />
   <ChooseServiceComponent :selectedDate="selectedDate" :selectedTime="selectedTime" @service="handleServiceSelected" />
   <!-- <AddNoteComponent @note="handleAddNote"/> -->
   <button class="button" @click="confirmAppoinment()">Xác nhận đặt lịch</button>
@@ -45,22 +45,22 @@ export default {
       doctor: {},
       doctorTimeworkId: '',
       serviceId: '',
+      doctorId: this.$route.params.id,
     };
   },
   mounted() {
-  const doctorId = this.$route.params.id;
-  const doctorData = localStorage.getItem("selectedDoctor");
+    const doctorData = localStorage.getItem("selectedDoctor");
 
-  if (doctorData) {
-    const doctor = JSON.parse(doctorData);
-    if (doctor.doctorId == doctorId) {
-      this.doctor = doctor;
+    if (doctorData) {
+      const doctor = JSON.parse(doctorData);
+      if (doctor.doctorId == this.doctorId) {
+        this.doctor = doctor;
+      } else {
+        this.fetchDoctorData(this.doctorId);
+      }
     } else {
-      this.fetchDoctorData(doctorId);
+      this.fetchDoctorData(this.doctorId);
     }
-  } else {
-    this.fetchDoctorData(doctorId);
-  }
   },
   methods: {
     handleDateSelected(data) {
