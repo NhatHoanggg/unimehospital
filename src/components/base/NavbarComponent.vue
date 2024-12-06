@@ -48,14 +48,32 @@
               <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
             </button>
 
-            <button @click="handleNotificationClick" class="navbar-icon">
+            <!-- <button @click="handleNotificationClick" class="navbar-icon">
               <i class="far fa-bell"></i>
               <span
                 v-if="notifications.length > 0"
                 class="notification-count"
                 >{{ notifications.length }}</span
               >
+            </button> -->
+
+            <button @click="toggleNotifications" class="navbar-icon">
+              <i class="far fa-bell"></i>
+              <span v-if="notifications.length" class="notification-count">
+                {{ notifications.length }}
+              </span>
             </button>
+
+          <!-- Danh sách thông báo -->
+            <div v-if="showNotifications" class="notification-list">
+              <p v-if="notifications.length === 0">Không có thông báo.</p>
+              <ul v-else>
+                <li v-for="(notification, index) in notifications" :key="index">
+                  <span>{{ notification.title }}</span>
+                  <p>{{ notification.body }}</p>
+                </li>
+              </ul>
+            </div>
           
             <li v-if="!authStore.isLoggedIn" class="button-container">
               <router-link to="/sign-in" class="button">Đăng nhập</router-link>
@@ -119,6 +137,8 @@ export default {
       imageSrc:
         "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733478703/user_cnv7fx.png",
       notifications: [],
+      showNotifications: false,
+      isDarkMode: false,
     };
   },
   mounted() {
@@ -170,6 +190,14 @@ export default {
       }
       return false;
     },
+    toggleNotifications() {
+      this.showNotifications = !this.showNotifications;
+    },
+    toggleDarkMode(){
+      this.isDarkMode = !this.isDarkMode;
+      // document.body.classList.toggle("dark", isDarkMode.value);
+      console.log("Click vào chế độ tối");
+    },
   },
   setup() {
     const showDropdown = ref(false);
@@ -177,8 +205,6 @@ export default {
     const authStore = useAuthStore();
     const isAdmin = ref(authStore.user?.scope === "ADMIN");
     // const showNotifications = ref(false);
-    const isDarkMode = ref(false);
-
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
     };
@@ -188,17 +214,11 @@ export default {
       console.log("Click vào thông báo");
     };
 
-    const toggleDarkMode = () => {
-      isDarkMode.value = !isDarkMode.value;
-      // document.body.classList.toggle("dark", isDarkMode.value);
-      console.log("Click vào chế độ tối");
-    };
-
+    
     return {
       handleNotificationClick,
       isMenuOpen,
       toggleMenu,
-      toggleDarkMode,
       showDropdown,
       authStore,
       isAdmin,
@@ -469,6 +489,59 @@ export default {
   border-radius: 50%;
   border: 1px solid black;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.notification-list {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 10px;
+  text-align: left;
+}
+
+.notification-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-list li {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-list li:last-child {
+  border-bottom: none;
+}
+
+.notification-list li:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.notification-list span {
+  font-weight: bold;
+  color: #003a9e;
+}
+
+.notification-list p {
+  font-size: 14px;
+  color: #666666;
+  margin: 5px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Số dòng hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 /* Responsive Styles */
