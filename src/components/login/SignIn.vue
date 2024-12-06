@@ -76,6 +76,7 @@ export default {
 
       try {
         const response = await fetch("https://api.unime.site/UNIME/auth/token", {
+        // const response = await fetch("http://localhost:8888/UNIME/auth/token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

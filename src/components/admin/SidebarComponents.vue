@@ -30,23 +30,23 @@
       </div>
       <div
         class="submenu-item"
-        @click="selectItem('Quản lý', '/user-management/employees')"
+        @click="selectItem('Nhân viên', '/user-management/employees')"
       >
-        <span>Quản lý</span>
+        <span>Nhân viên</span>
       </div>
     </div>
 
     <div
       class="menu-item"
-      :class="{ selected: selectedItem === 'Thêm quản lý' }"
-      @click="selectItem('Thêm quản lý', '/add-employee')"
+      :class="{ selected: selectedItem === 'Thêm nhân viên' }"
+      @click="selectItem('Thêm nhân viên', '/add-employee')"
     >
       <img
         src="@/assets/add-user-1.png"
         alt="ADD EMPLOYEE"
         class="menu-icon"
       />
-      <span>Thêm quản lý</span>
+      <span>Thêm Nhân Viên</span>
     </div>
 
     <div

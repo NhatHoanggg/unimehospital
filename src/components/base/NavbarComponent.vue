@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="navbar-right">
-        <!-- Admin navbar -->
+        <!-- Navbar cho Admin -->
         <template v-if="authStore.user && authStore.user.scope === 'ADMIN'">
           <div class="admin-profile" v-if="isAdmin">
             <img
@@ -24,31 +24,17 @@
             Logout <i class="fas fa-sign-out-alt"></i>
           </button>
         </template>
-        <!------------------->
+
+        <!-- Navbar cho bệnh nhân -->
         <template v-else>
           <ul :class="['navbar-menu', { active: isMenuOpen }]">
-            <li
-              v-if="
-                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
-                !authStore.isLoggedIn
-              "
-            >
+            <li v-if="showNavItem('home')">
               <router-link to="/">Trang chủ</router-link>
             </li>
-            <li
-              v-if="
-                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
-                !authStore.isLoggedIn
-              "
-            >
+            <li v-if="showNavItem('about-us')">
               <router-link to="/about-us">Giới thiệu</router-link>
             </li>
-            <li
-              v-if="
-                (authStore.isLoggedIn && authStore.user.scope === 'PATIENT') ||
-                !authStore.isLoggedIn
-              "
-            >
+            <li v-if="showNavItem('booking')">
               <router-link to="/booking">Đặt lịch khám</router-link>
             </li>
 
@@ -58,13 +44,24 @@
           <li v-if="!authStore.isLoggedIn">
             <router-link to="/send-otp" class="button">Đăng kí</router-link>
           </li> -->
-            <!-- <button @click="toggleDarkMode" class="dark-mode-toggle">
+            <button @click="toggleDarkMode" class="dark-mode-toggle">
               <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
-            </button> -->
+            </button>
+
+            <button @click="handleNotificationClick" class="navbar-icon">
+              <i class="far fa-bell"></i>
+              <span
+                v-if="notifications.length > 0"
+                class="notification-count"
+                >{{ notifications.length }}</span
+              >
+            </button>
+          
             <li v-if="!authStore.isLoggedIn" class="button-container">
               <router-link to="/sign-in" class="button">Đăng nhập</router-link>
-              <router-link to="/send-otp" class="button">Đăng kí</router-link>
+              <router-link to="/send-otp" class="button">Đăng ký</router-link>
             </li>
+
             <li v-else class="user-menu">
               <div class="container">
                 <span>Xin chào! {{ authStore.user.username }}</span>
@@ -72,23 +69,29 @@
                   <img :src="imageSrc" alt="User Icon" />
                 </div>
               </div>
-
-              <div v-if="showDropdown && authStore.user && authStore.user.scope === 'PATIENT'" class="dropdown">
+              <div
+                v-if="
+                  showDropdown &&
+                  authStore.user &&
+                  authStore.user.scope === 'PATIENT'
+                "
+                class="dropdown"
+              >
                 <router-link to="/profile">
-                  <i class="fas fa-user"></i> Hồ sơ</router-link
-                >
+                  <i class="fas fa-user"></i> Hồ sơ
+                </router-link>
                 <router-link to="/history-booking">
-                  <i class="fas fa-history"></i> Lịch sử</router-link
-                >
+                  <i class="fas fa-history"></i> Lịch sử
+                </router-link>
                 <router-link to="/next-appointment">
-                  <i class="far fa-calendar-check"></i> Lịch hẹn sắp tới</router-link
-                >
+                  <i class="far fa-calendar-check"></i> Lịch hẹn sắp tới
+                </router-link>
                 <router-link to="/change-password">
-                  <i class="fas fa-cog"></i> Cài đặt</router-link
-                >
-                <a href="#" @click.prevent="handleLogout"
-                  ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
-                >
+                  <i class="fas fa-cog"></i> Cài đặt
+                </router-link>
+                <a href="#" @click.prevent="handleLogout">
+                  <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
               </div>
             </li>
           </ul>
@@ -113,7 +116,9 @@ export default {
   name: "NavbarComponent",
   data() {
     return {
-      imageSrc: "@/assets/user.png",
+      imageSrc:
+        "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733478703/user_cnv7fx.png",
+      notifications: [],
     };
   },
   mounted() {
@@ -124,54 +129,79 @@ export default {
         this.imageSrc = user.image;
       }
     }
+
+    this.fetchNotifications();
+
+    this.startPolling();
+  },
+  beforeUnmount() {
+    clearInterval(this.pollingInterval);
+  },
+  methods: {
+    fetchNotifications() {
+      fetch("https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/notifications")
+        .then((response) => response.json())
+        .then((data) => {
+          this.notifications = data || [];
+        })
+        .catch((error) => console.error("Lỗi khi tải thông báo:", error));
+    },
+    startPolling() {
+      this.pollingInterval = setInterval(() => {
+        this.fetchNotifications();
+      }, 10000);
+    },
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
+    handleLogout() {
+      const authStore = useAuthStore();
+      authStore.logout();
+      this.showDropdown = false;
+      localStorage.clear();
+      const router = useRouter();
+      router.push("/");
+    },
+    showNavItem(item) {
+      const authStore = useAuthStore();
+      if (!authStore.isLoggedIn) return true;
+      if (authStore.user.scope === "PATIENT") {
+        return ["home", "about-us", "booking"].includes(item);
+      }
+      return false;
+    },
   },
   setup() {
-    const isMenuOpen = ref(false);
     const showDropdown = ref(false);
+    const isMenuOpen = ref(false);
     const authStore = useAuthStore();
-    const router = useRouter();
-    const isAdmin = ref(false);
-    const isEmployee = ref(false);
+    const isAdmin = ref(authStore.user?.scope === "ADMIN");
+    // const showNotifications = ref(false);
     const isDarkMode = ref(false);
-
-    if (authStore.isLoggedIn && authStore.user.scope === "ADMIN") {
-      isAdmin.value = true;
-    }
-
-    if (authStore.isLoggedIn && authStore.user.scope === "ADMIN") {
-      isEmployee.value = true;
-    }
 
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
     };
 
-    const toggleDropdown = () => {
-      showDropdown.value = !showDropdown.value;
+    const handleNotificationClick = () => {
+      // showNotifications.value = !showNotifications.value;
+      console.log("Click vào thông báo");
     };
 
     const toggleDarkMode = () => {
       isDarkMode.value = !isDarkMode.value;
-      document.body.classList.toggle("dark", isDarkMode.value);
-    };
-
-    const handleLogout = () => {
-      authStore.logout();
-      showDropdown.value = false;
-      localStorage.clear();
-      router.push("/");
+      // document.body.classList.toggle("dark", isDarkMode.value);
+      console.log("Click vào chế độ tối");
     };
 
     return {
-      isAdmin,
+      handleNotificationClick,
       isMenuOpen,
       toggleMenu,
-      authStore,
-      showDropdown,
-      toggleDropdown,
-      handleLogout,
       toggleDarkMode,
-      isDarkMode,
+      showDropdown,
+      authStore,
+      isAdmin,
     };
   },
 };
@@ -346,7 +376,6 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* Dropdown Menu Styles */
 .user-menu {
   position: relative;
 }
@@ -390,6 +419,20 @@ export default {
   filter: brightness(0.8);
 }
 
+.navbar-icon {
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 20px;
+  color: inherit;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.navbar-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .dark-mode-toggle {
   background: none;
   border: 1px solid currentColor;
@@ -402,6 +445,30 @@ export default {
 
 .dark-mode-toggle:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.navbar-icon {
+  position: relative;
+  font-size: 14px;
+  color: inherit;
+  cursor: pointer;
+  border: 1px solid currentColor;
+  border-radius: 20px;
+  padding: 8px 15px;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: #ff4d4d;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid black;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive Styles */

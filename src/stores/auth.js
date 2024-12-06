@@ -4,23 +4,21 @@ import { ref } from 'vue';
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false);
   const user = ref(null);
-  const token = ref(null); 
+  const token = ref(null);
 
   const login = (payload) => {
-    
     user.value = {
-      username: payload.sub, 
-      scope: payload.scope,  
+      username: payload.sub,
+      scope: payload.scope,
       image: payload.image,
     };
     token.value = payload;
 
     isLoggedIn.value = true;
 
-    
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('user', JSON.stringify(user.value));
-    // localStorage.setItem('token', JSON.stringify(token.value));
+    localStorage.setItem('token', JSON.stringify(token.value));
   };
 
   const logout = () => {

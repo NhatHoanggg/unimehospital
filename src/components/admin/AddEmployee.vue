@@ -1,7 +1,7 @@
 <template>
   <div class="add-employee-container">
     <div class="add-employee-card">
-      <h2 class="card-title">Thêm Quản lý</h2>
+      <h2 class="card-title">Thêm Nhân Viên</h2>
       <form @submit.prevent="addEmployee">
         <!-- Upload Avatar -->
         <div class="avatar-container">
@@ -61,7 +61,7 @@
         </div>
 
         <div class="form-group">
-          <button type="submit" class="add-button">Thêm Quản lý</button>
+          <button type="submit" class="add-button">Thêm Nhân Viên</button>
         </div>
       </form>
     </div>
@@ -87,7 +87,7 @@ export default {
           label: "Họ và Tên",
           type: "text",
           model: "",
-          placeholder: "Nhập tên quản lý",
+          placeholder: "Nhập tên nhân viên",
           required: true,
         },
         {
@@ -223,7 +223,7 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          alert("Thêm quản lý thành công!");
+          alert("Thêm nhân viên thành công!");
         } else {
           alert(
             "Có lỗi xảy ra: " +
