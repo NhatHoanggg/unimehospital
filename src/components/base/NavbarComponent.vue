@@ -128,7 +128,6 @@
 <script>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { useRouter } from "vue-router";
 
 export default {
   name: "NavbarComponent",
@@ -179,8 +178,9 @@ export default {
       authStore.logout();
       this.showDropdown = false;
       localStorage.clear();
-      const router = useRouter();
-      router.push("/");
+
+      this.$router.push("/");
+      
     },
     showNavItem(item) {
       const authStore = useAuthStore();
