@@ -128,6 +128,7 @@
 <script>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "NavbarComponent",
@@ -138,6 +139,7 @@ export default {
       notifications: [],
       showNotifications: false,
       isDarkMode: false,
+      previousNotificationCount: 0,
     };
   },
   mounted() {
@@ -153,6 +155,32 @@ export default {
 
     this.startPolling();
   },
+  watch: {
+  notifications: {
+    handler(newNotifications) {
+      const newCount = newNotifications.length;
+
+      if (newCount !== this.previousNotificationCount) {
+
+        if (newCount > this.previousNotificationCount) {
+          // this.showNotificationPopup(newCount - this.previousNotificationCount);
+          toast.info(
+            `Bạn có ${newCount} thông báo mới!`,
+            {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.BOTTOM_RIGHT,
+            }
+          );
+        }
+        this.previousNotificationCount = newCount;
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
   beforeUnmount() {
     clearInterval(this.pollingInterval);
   },
@@ -189,6 +217,9 @@ export default {
         return ["home", "about-us", "booking"].includes(item);
       }
       return false;
+    },
+    showNotificationPopup(newNotificationsCount) {
+      alert(`Bạn có ${newNotificationsCount} thông báo mới!`);
     },
     toggleNotifications() {
       this.showNotifications = !this.showNotifications;
