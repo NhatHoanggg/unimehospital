@@ -111,22 +111,19 @@ export default {
       this.days = daysList;
     },
     async updateSchedules() {
-      // const doctorId = this.$route.params.id;
       console.log("doctor id: ->",this.doctorId)
       try {
         const response = await axios.get(
-          `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${Number(this.doctorId)}`
+          `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${this.doctorId}`
         );
 
         if (response.data.code === 1000) {
           const result = response.data.result;
-
           result
-          .filter((shift) => shift.doctortimeworkStatus === "Available") 
-          // .filter((shift) => shift.doctorId == this.doctorId) 
+          .filter((shift) => shift.doctorTimeworkStatus === "Available") 
           .forEach((shift) => {
             const date = this.formatDateFromApi(
-              shift.doctortimeworkYear,
+              shift.doctorTimeworkYear,
               shift.weekOfYear,
               shift.dayOfWeek
             );
@@ -136,8 +133,8 @@ export default {
             }
 
             this.schedules[date].push({
-              time: `${shift.startTime}-${shift.endTime}`,
-              doctorTimeworkId: shift.doctorTimeworkId,
+              time: `${shift.startTime.slice(0,-3)}-${shift.endTime.slice(0,-3)}`,
+              doctorTimeworkId: shift.doctorTimeworkId, 
             });
           });
         } else {

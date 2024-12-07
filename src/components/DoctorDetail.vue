@@ -51,9 +51,9 @@ export default {
     async fetchDoctorData(id) {
       try {
         const response = await axios.get(
-          `https://6720cd2f98bbb4d93ca61a67.mockapi.io/api/v1/doctors/${id}`
+          `https://api.unime.site/UNIME/doctors/get/getDetail/${id}`
         );
-        this.doctor = response.data;
+        this.doctor = response.data.result;
       } catch (error) {
         console.error("Error fetching doctor data:", error);
       }
