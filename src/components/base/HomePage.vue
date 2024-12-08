@@ -1,13 +1,20 @@
 <template>
   <div class="homepage">
-
-    <SliderSection/>
+    <SliderSection />
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
-        <h1>Đặt Lịch Khám <br/> Nhanh Chóng và Dễ Dàng</h1>
-        <p>Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ chuyên nghiệp.</p>
-        <router-link to="/booking" class="cta-button">Đặt Lịch Ngay</router-link>
+        <h1>
+          Đặt Lịch Khám <br />
+          Nhanh Chóng và Dễ Dàng
+        </h1>
+        <p>
+          Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ
+          chuyên nghiệp.
+        </p>
+        <router-link to="/booking" class="cta-button"
+          >Đặt Lịch Ngay</router-link
+        >
       </div>
       <div class="hero-image">
         <img src="@/assets/doctor-hero1.png" alt="Doctor Illustration" />
@@ -31,26 +38,42 @@
     <section class="testimonials">
       <h2>Phản Hồi Từ Khách Hàng</h2>
       <div class="testimonials-container">
-        <div class="testimonial-card" v-for="testimonial in testimonials" :key="testimonial.id">
+        <div
+          class="testimonial-card"
+          v-for="testimonial in testimonials"
+          :key="testimonial.id"
+        >
           <p>"{{ testimonial.feedback }}"</p>
           <h4>{{ testimonial.name }}</h4>
           <span>{{ testimonial.role }}</span>
         </div>
       </div>
     </section>
+    <section class="doctor-container">
+      <h2>Danh Sách Bác Sĩ</h2>
+      <div class="card-container">
+        <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
+          <DoctorCard :doctor="doctor" />
+        </div>
+      </div>
+    </section>
+    <!-- <CardSlider /> -->
   </div>
 </template>
 
 <script>
-
 import ChatBot from "./ChatBot.vue";
 import SliderSection from "./SliderSection.vue";
+import DoctorCard from "./DoctorCard.vue";
+// import CardSlider from "../tools/CardSlider.vue";
 
 export default {
   name: "HomePage",
   components: {
     ChatBot,
     SliderSection,
+    DoctorCard,
+    // CardSlider
   },
   data() {
     return {
@@ -60,55 +83,86 @@ export default {
           id: 1,
           icon: "fas fa-stethoscope",
           title: "Khám Tổng Quát",
-          description: "Dịch vụ khám sức khỏe tổng quát bởi các bác sĩ chuyên nghiệp."
+          description:
+            "Dịch vụ khám sức khỏe tổng quát bởi các bác sĩ chuyên nghiệp.",
         },
         {
           id: 2,
           icon: "fas fa-heartbeat",
           title: "Chuyên Khoa Tim Mạch",
-          description: "Phòng khám chuyên khoa tim mạch với trang thiết bị hiện đại."
+          description:
+            "Phòng khám chuyên khoa tim mạch với trang thiết bị hiện đại.",
         },
         {
           id: 3,
           icon: "fas fa-brain",
           title: "Chuyên Khoa Thần Kinh",
-          description: "Điều trị các bệnh lý liên quan đến hệ thần kinh."
+          description: "Điều trị các bệnh lý liên quan đến hệ thần kinh.",
         },
       ],
       testimonials: [
         {
           id: 1,
-          feedback: "Dịch vụ tuyệt vời! Tôi đã đặt lịch và nhận được sự hỗ trợ nhanh chóng.",
+          feedback:
+            "Dịch vụ tuyệt vời! Tôi đã đặt lịch và nhận được sự hỗ trợ nhanh chóng.",
           name: "Nguyễn Văn A",
-          role: "Khách hàng"
+          role: "Khách hàng",
         },
         {
           id: 2,
-          feedback: "Bác sĩ rất tận tâm và chuyên nghiệp. Tôi rất hài lòng với dịch vụ.",
+          feedback:
+            "Bác sĩ rất tận tâm và chuyên nghiệp. Tôi rất hài lòng với dịch vụ.",
           name: "Trần Thị B",
-          role: "Khách hàng"
+          role: "Khách hàng",
         },
         {
           id: 3,
-          feedback: "Giao diện đặt lịch rất dễ sử dụng. Rất tiện lợi cho người dùng.",
+          feedback:
+            "Giao diện đặt lịch rất dễ sử dụng. Rất tiện lợi cho người dùng.",
           name: "Lê Văn C",
-          role: "Khách hàng"
+          role: "Khách hàng",
         },
-      ]
+      ],
+      doctors: [
+        {
+          id: 1,
+          name: "Bác sĩ Đinh Yên Lục",
+          image:
+            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1731241976/doc3_uwcvzl.jpg",
+          speciality: "Mắt",
+          experience: "10",
+        },
+        {
+          id: 2,
+          name: "Bác sĩ Phạm Hữu Tùng",
+          image:
+            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733683197/bs-luc-dnd-1_r3jyut.webp",
+          speciality: "Tim Mạch",
+          experience: "15",
+        },
+        {
+          id: 3,
+          name: "Bác sĩ Nguyễn Thị Hương",
+          image:
+            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1731241976/doc8_rzalke.jpg",
+          speciality: "Da Liễu",
+          experience: "8",
+        },
+      ],
     };
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 :root {
   --primary-color: #3b82f6;
@@ -124,7 +178,7 @@ export default {
 }
 
 .homepage {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: var(--text-color);
   background-color: #3b82f6;
 }
@@ -174,7 +228,6 @@ export default {
   color: #ffffff;
   cursor: pointer;
 }
-
 
 .hero-image img {
   width: 100%;
@@ -255,8 +308,26 @@ export default {
   gap: 2rem;
 }
 
+.doctor-container {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.doctor-container h2 {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
 .testimonial-card {
-  background-color: #ffffff;  
+  background-color: #ffffff;
   border-radius: 15px;
   padding: 2rem;
   width: 300px;
