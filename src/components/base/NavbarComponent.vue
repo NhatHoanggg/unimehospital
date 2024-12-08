@@ -57,7 +57,7 @@
               >
             </button> -->
 
-            <button @click="toggleNotifications" class="navbar-icon">
+            <button v-if="authStore.user" @click="toggleNotifications" class="navbar-icon">
               <i class="far fa-bell"></i>
               <span v-if="notifications.length" class="notification-count">
                 {{ notifications.length }}
@@ -154,10 +154,13 @@ export default {
     this.fetchNotifications();
 
     this.startPolling();
+
+    this.getLocalUser();
   },
   watch: {
   notifications: {
     handler(newNotifications) {
+      if (!this.authStore.user) return;
       const newCount = newNotifications.length;
 
       if (newCount !== this.previousNotificationCount) {
@@ -198,6 +201,14 @@ export default {
         this.fetchNotifications();
       }, 10000);
     },
+
+    getLocalUser() {
+      this.pollingInterval = setInterval(() => {
+        const storedUser = localStorage.getItem("user");
+        this.imageSrc = JSON.parse(storedUser).image;
+      }, 3000);
+    },
+
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
     },

@@ -66,6 +66,7 @@ export default {
       periods: [1, 2, 3, 4, 5, 6, 7, 8],
       selectedSlots: [],
       weekNumber: 0,
+      timeworkList:[],
     };
   },
   computed: {
@@ -79,8 +80,38 @@ export default {
   },
   created() {
     this.updateWeekDates();
+    this.getTimeworkList();
   },
   methods: {
+    convertToTimeworkId(dayOfWeek, startTime, endTime){
+      const timework = this.timeworkList.find(
+        (timework) =>
+          timework.dayOfWeek === dayOfWeek &&
+          timework.startTime === startTime &&
+          timework.endTime === endTime
+      );
+      // console.log("timework id: ", timework.timeworkId);
+      return timework.timeworkId;
+    },
+
+    async getTimeworkList() {
+      try {
+        const response = await axios.get(
+          "https://api.unime.site/UNIME/timeworks/get/timewordList"
+        );
+
+        if (response.status === 200) {
+          this.timeworkList = response.data.result;
+          console.log("Lấy danh sách timework thành công");
+        } else {
+          console.error("Lấy danh sách timework thất bại");
+          alert("Lấy danh sách timework thất bại.");
+        }
+      } catch (error) {
+        console.error("Lỗi xảy ra:", error);
+        alert("Có lỗi xảy ra trong quá trình xử lý.");
+      }
+    },
     updateWeekDates() {
       const today = new Date();
       const dayOfWeek = today.getDay();
@@ -160,12 +191,20 @@ export default {
 
       this.dates.forEach((date, dayIndex) => {
         this.periods.forEach((period) => {
+
+          const timeworkId = this.convertToTimeworkId(
+            this.getDayOfWeek(dayIndex),
+            this.shifts[period].split("-")[0],
+            this.shifts[period].split("-")[1]
+          );
+
           formattedData.push({
             doctorTimeworkYear: new Date().getFullYear(),
             weekOfYear: this.weekNumber ,
-            dayOfWeek: this.getDayOfWeek(dayIndex),
-            startTime: this.shifts[period].split("-")[0],
-            endTime: this.shifts[period].split("-")[1],
+            // dayOfWeek: this.getDayOfWeek(dayIndex),
+            // startTime: this.shifts[period].split("-")[0],
+            // endTime: this.shifts[period].split("-")[1],
+            timework_id: timeworkId,
             doctorTimeworkStatus: this.isSelected(dayIndex, period)
               ? "Busy"
               : "Available",
