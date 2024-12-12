@@ -2,7 +2,7 @@
   <div class="navbar-container">
     <nav class="navbar">
       <div class="navbar-left">
-        <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo" />
+        <img src="@/assets/logoUnime.jpg" alt="Unime Logo" class="logo" @click="returnHome"/>
         <div class="hospital-name">
           <h1 v-if="!isAdmin">BỆNH VIỆN UNIME</h1>
           <h1 v-else>DASHBOARD ADMIN</h1>
@@ -82,7 +82,7 @@
 
             <li v-else class="user-menu">
               <div class="container">
-                <span>Xin chào! {{ authStore.user.username }}</span>
+                <span>Xin chào! {{ patientName }}</span>
                 <div class="user-icon" @click="toggleDropdown">
                   <img :src="imageSrc" alt="User Icon" />
                 </div>
@@ -129,6 +129,7 @@
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { toast } from "vue3-toastify";
+import axios from "axios";
 
 export default {
   name: "NavbarComponent",
@@ -143,19 +144,19 @@ export default {
     };
   },
   mounted() {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (user.image) {
-        this.imageSrc = user.image;
-      }
-    }
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) {
+    //   const user = JSON.parse(storedUser);
+    //   if (user.image) {
+    //     this.imageSrc = user.image;
+    //   }
+    // }
 
     this.fetchNotifications();
 
     this.startPolling();
 
-    this.getLocalUser();
+    this.fetchUserData();
   },
   watch: {
   notifications: {
@@ -202,11 +203,32 @@ export default {
       }, 10000);
     },
 
-    getLocalUser() {
-      this.pollingInterval = setInterval(() => {
-        const storedUser = localStorage.getItem("user");
-        this.imageSrc = JSON.parse(storedUser).image;
-      }, 3000);
+    async fetchUserData() {
+      const token = localStorage.getItem("token");
+      await axios
+        .get(`https://api.unime.site/UNIME/patients/myInfo`, {
+          headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+        })
+        .then((response) => {
+          if (response.data.code === 1000) {
+            const user = response.data.result;
+            this.patientId = user.patientId;
+            this.userId = user.userId;
+            this.patientUsername = user.patientUsername;
+            this.patientPassword = user.patientPassword;
+            this.patientEmail = user.patientEmail;
+            this.patientImage = user.patientImage;
+            this.patientName = user.patientName;
+            this.patientAddress = user.patientAddress;
+            this.patientPhoneNumber = user.patientPhoneNumber;
+            this.patientGender = user.patientGender;
+            this.patientDateOfBirth = user.patientDateOfBirth;
+            this.imageSrc = user.patientImage || this.defaultAvatar;
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi tải dữ liệu:", error);
+        });
     },
 
     toggleDropdown() {
@@ -240,6 +262,9 @@ export default {
       // document.body.classList.toggle("dark", isDarkMode.value);
       console.log("Click vào chế độ tối");
     },
+    returnHome() {
+      this.$router.push("/");
+    },  
   },
   setup() {
     const showDropdown = ref(false);
