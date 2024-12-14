@@ -7,20 +7,21 @@
     />
     <div class="search-bar">
       <DepartmentListComponent
-      style="width: 200px"
-            @department-selected="handleDepartmentSelected"
+        style="width: 200px"
+        @department-selected="handleDepartmentSelected"
       />
-      <input type="text" v-model="searchQuery" placeholder="Tìm kiếm bác sĩ hoặc dịch vụ..."/>
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Tìm kiếm bác sĩ hoặc dịch vụ..."
+      />
       <button @click="handleSearchClick">Tìm kiếm</button>
     </div>
   </div>
 
   <div class="appointment-page">
     <div class="tabs">
-      <button
-        :class="{ active: currentTab === 'doctor' }"
-        @click="goToDoctors"
-      >
+      <button :class="{ active: currentTab === 'doctor' }" @click="goToDoctors">
         Bác sĩ
       </button>
       <button
@@ -33,45 +34,59 @@
   </div>
 
   <div class="doctor-container">
-    <div class="doctor-list">
-      <div class="doctor-card" v-for="doctor in paginatedDoctors" :key="doctor.doctorId">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+
+    <div v-else class="doctor-list">
+      <div
+        class="doctor-card"
+        v-for="doctor in paginatedDoctors"
+        :key="doctor.doctorId"
+      >
         <div class="doctor-image">
           <img :src="doctor.doctorImage" alt="Doctor Image" />
         </div>
         <div class="doctor-info">
           <h3>{{ doctor.doctorName }}</h3>
-          <!-- <p><strong>Khoa: </strong>{{ doctor.departmentName }}</p> -->
-          <p>{{ doctor.doctordetailInformation }}</p>
+          <p>{{ doctor.doctorPhoneNumber }}</p>
+          <p>{{ doctor.doctorDescription }}</p>
           <div class="doctor-actions">
-            <button class="btn view-more" @click="viewMore(doctor)">Xem thêm</button>
-            <button class="btn book-appointment" @click="bookDoctor(doctor)">Đặt lịch</button>
+            <button class="btn view-more" @click="viewMore(doctor)">
+              Xem thêm
+            </button>
+            <button class="btn book-appointment" @click="bookDoctor(doctor)">
+              Đặt lịch
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div class="pagination">
-      <button 
-        class="pagination-btn" 
-        @click="changePage(-1)" 
-        :disabled="currentPage === 1">
+      <button
+        class="pagination-btn"
+        @click="changePage(-1)"
+        :disabled="currentPage === 1"
+      >
         <i class="fas fa-chevron-left"></i>
       </button>
       <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
-      <button 
-        class="pagination-btn" 
-        @click="changePage(1)" 
-        :disabled="currentPage === totalPages">
+      <button
+        class="pagination-btn"
+        @click="changePage(1)"
+        :disabled="currentPage === totalPages"
+      >
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
   </div>
-
 </template>
 
 <script>
-
 import DepartmentListComponent from "../tools/DepartmentListComponent.vue";
 import axios from "axios";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
   data() {
@@ -79,9 +94,12 @@ export default {
       currentTab: "doctor",
       selectedDepartment: null,
       searchQuery: "",
-      // departmentId: null,
 
+      departmentId: null,
       doctors: [],
+      doctorsTmp: [],
+      isLoading: true,
+
       currentPage: 1,
       itemsPerPage: 5,
       totalPages: 1,
@@ -89,6 +107,7 @@ export default {
   },
   components: {
     DepartmentListComponent,
+    LoadingComponent,
   },
 
   computed: {
@@ -103,58 +122,101 @@ export default {
     this.fetchDoctors();
   },
 
-
   methods: {
     goToDoctors() {
-      this.currentTab = 'doctor';
-      this.$router.push('/booking/doctors');
+      this.currentTab = "doctor";
+      this.$router.push("/booking/doctors");
     },
     goToServices() {
-      this.currentTab = 'service';
-      this.$router.push('/booking/services');
-      console.log('Go to services');
+      this.currentTab = "service";
+      this.$router.push("/booking/services");
+      console.log("Go to services");
     },
 
     async handleSearchClick() {
-      const response = await axios.get(`https://api.unime.site/UNIME/doctors/get/${this.searchQuery}`);
-      this.doctors = response.data.result || [];
-      this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
+      this.isLoading = true;
+      await axios
+        .get(
+          `https://api.unime.site/UNIME/doctors/get/byName?doctor_name=${this.searchQuery}`
+        )
+        .then((response) => {
+          this.doctors = response.data.result || [];
+          this.doctorsTmp = this.doctors;
+          this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
 
-    handleDepartmentSelected(payload) {
+    async handleDepartmentSelected(payload) {
       this.selectedDepartment = {
         departmentName: payload.department.label,
-        departmentId: payload.department.value
+        departmentId: payload.department.value,
+      };
+
+      this.departmentId = this.selectedDepartment.departmentId;
+      try {
+        this.isLoading = true;
+        const response = await axios.get(
+          `https://api.unime.site/UNIME/doctors/get/byDepartment?doctor_departmentId=${this.departmentId}`
+        );
+        this.doctors = response.data.result || [];
+        this.doctorsTmp = this.doctors;
+
+        this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      } finally {
+        this.isLoading = false;
       }
-      const result = this.doctors
-      .filter(doctor => doctor.departmentName === this.selectedDepartment.departmentName);
-      
-      this.doctors = result;
-      this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
+      // const result = this.doctors
+      // .filter(doctor => doctor.departmentName === this.selectedDepartment.departmentName);
+
+      // this.doctors = result;
+      // this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
     },
 
     async fetchDoctors() {
       try {
-        const response = await axios.get(`https://api.unime.site/UNIME/doctors/get/doctorList`);
+        this.isLoading = true;
+        const response = await axios.get(
+          `https://api.unime.site/UNIME/doctors/get/doctorList`
+        );
         this.doctors = response.data.result || [];
+        this.doctorsTmp = this.doctors;
+
         this.totalPages = Math.ceil(this.doctors.length / this.itemsPerPage);
       } catch (error) {
         console.error("Error fetching doctors:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
+
     viewMore(doctor) {
-      this.$router.push({ name: "DoctorDetail", params: { id: doctor.doctorId } });
+      this.$router.push({
+        name: "DoctorDetail",
+        params: { id: doctor.doctorId },
+      });
       localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
+
     bookDoctor(doctor) {
-      this.$router.push({ name: "BookDoctorPage", params: { id: doctor.doctorId } });
+      this.$router.push({
+        name: "BookDoctorPage",
+        params: { id: doctor.doctorId },
+      });
       localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
     },
+
     changePage(direction) {
       this.currentPage += direction;
     },
-
-  }
+  },
 };
 </script>
 
@@ -177,9 +239,9 @@ export default {
 
 .search-bar {
   position: absolute;
-  top: 80%; 
-  left: 50%; 
-  transform: translate(-50%, -50%); 
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -233,52 +295,52 @@ export default {
 }
 
 .doctor-container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: left;
-  }
-  
-  .doctor-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-  }
-  
-  .doctor-card {
-    display: flex;
-    border: 2px solid #d0d0d0;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    width: 80%;
-  }
-  
-  .doctor-image img {
-    width: 120px;
-    height: 120px;
-    border-radius: 10px;
-    object-fit: cover;
-  }
-  
-  .doctor-info {
-    margin-left: 20px;
-    flex: 1;
-  }
-  
-  .doctor-info h3 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    color: #002d72;
-  }
-  
-  .doctor-info p {
-    margin: 5px 0;
-    color: #333;
-  }
-  
-  .doctor-info p {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+}
+
+.doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.doctor-card {
+  display: flex;
+  border: 2px solid #d0d0d0;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  width: 80%;
+}
+
+.doctor-image img {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.doctor-info {
+  margin-left: 20px;
+  flex: 1;
+}
+
+.doctor-info h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #002d72;
+}
+
+.doctor-info p {
+  margin: 5px 0;
+  color: #333;
+}
+
+.doctor-info p {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* Số dòng hiển thị */
   -webkit-box-orient: vertical;
@@ -286,48 +348,53 @@ export default {
   text-overflow: ellipsis;
   white-space: normal;
 }
-  
-  .doctor-actions {
-    margin-top: 10px;
-  }
-  
-  .btn {
-    padding: 8px 16px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .view-more {
-    background-color: #009fe3;
-    color: white;
-  }
-  
-  .book-appointment {
-    background-color: #002d72;
-    color: white;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    justify-items: center;
-  }
-  
-  .pagination-btn {
-    background-color: #009fe3;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .page-indicator {
-    margin: 0 10px;
-    font-size: 24px;
-  }
 
+.doctor-actions {
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.view-more {
+  background-color: #009fe3;
+  color: white;
+}
+
+.book-appointment {
+  background-color: #002d72;
+  color: white;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+.pagination-btn {
+  background-color: #009fe3;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.page-indicator {
+  margin: 0 10px;
+  font-size: 24px;
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

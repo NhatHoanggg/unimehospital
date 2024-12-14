@@ -7,7 +7,8 @@
       <div class="doctor-info">
         <h2>{{ doctor.doctorName }}</h2>
         <p><strong>Chuyên khoa:</strong> {{ doctor.departmentName }}</p>
-        <p><strong>Địa chỉ:</strong> {{ doctor.doctorAddress }}</p>
+        <p><strong>Email:</strong> {{ doctor.doctorEmail }}</p>
+        <!-- <p><strong>Địa chỉ:</strong> {{ doctor.doctorAddress }}</p> -->
         <button class="btn book-appointment" @click="bookDoctor(doctor)">
           Đặt lịch
         </button>
@@ -16,8 +17,17 @@
 
     <div class="doctor-highlight">
       <h3>Đặc điểm nổi bật</h3>
+      <p>{{ doctor.doctordetailInformation }}</p>
+    </div>
+    <div class="doctor-highlight">
+      <h3>Kinh nghiệm làm việc</h3>
       <p>{{ doctor.doctordetailExperience }}</p>
     </div>
+    <div class="doctor-highlight">
+      <h3>Giải thưởng, chứng nhận</h3>
+      <p>{{ doctor.doctordetailAwardRecognization }}</p>
+    </div>
+
   </div>
 </template>
 
@@ -35,17 +45,18 @@ export default {
 
   mounted() {
     const doctorId = this.$route.params.id;
-    const doctorData = localStorage.getItem("selectedDoctor");
-    if (doctorData) {
-      const doctor = JSON.parse(doctorData);
-      if (doctor.doctorId == doctorId) {
-        this.doctor = doctor;
-      } else {
-        this.fetchDoctorData(doctorId);
-      }
-    } else {
-      this.fetchDoctorData(doctorId);
-    }
+    this.fetchDoctorData(doctorId);
+    // const doctorData = localStorage.getItem("selectedDoctor");
+    // if (doctorData) {
+    //   const doctor = JSON.parse(doctorData);
+    //   if (doctor.doctorId == doctorId) {
+    //     this.doctor = doctor;
+    //   } else {
+    //     this.fetchDoctorData(doctorId);
+    //   }
+    // } else {
+    //   this.fetchDoctorData(doctorId);
+    // }
   },
   methods: {
     async fetchDoctorData(id) {

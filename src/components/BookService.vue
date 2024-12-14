@@ -32,7 +32,11 @@
     </div>
   </div>
   <div class="service-container">
-    <div class="service-list">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+    <div v-else class="service-list">
       <div class="service-card" v-for="service in paginatedServices" :key="service.serviceId">
         <div class="service-image">
           <img :src="service.serviceImage" alt="Service Image" />
@@ -86,6 +90,7 @@ export default {
       currentPage: 1,
       itemsPerPage: 5,
       totalPages: 1,
+      isLoading: true,
     };
   },
   computed: {

@@ -157,6 +157,7 @@ export default {
     this.startPolling();
 
     this.fetchUserData();
+    this.startUserDataPolling();
   },
   watch: {
   notifications: {
@@ -187,6 +188,7 @@ export default {
 
   beforeUnmount() {
     clearInterval(this.pollingInterval);
+    clearInterval(this.userDataPollingInterval);
   },
   methods: {
     fetchNotifications() {
@@ -202,8 +204,15 @@ export default {
         this.fetchNotifications();
       }, 10000);
     },
+    startUserDataPolling() {
+    this.userDataPollingInterval = setInterval(() => {
+      this.fetchUserData();
+    }, 3000);
+  },
 
     async fetchUserData() {
+      if(!this.authStore.user) return;
+      
       const token = localStorage.getItem("token");
       await axios
         .get(`https://api.unime.site/UNIME/patients/myInfo`, {
