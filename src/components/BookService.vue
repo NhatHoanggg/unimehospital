@@ -112,9 +112,18 @@ export default {
     },
 
     async handleSearchClick() {
-      const response = await axios.get(`https://api.unime.site/UNIME/services/get/${this.searchQuery}`);
-      this.services = response.data.result || [];
-      this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
+      this.isLoading = true;
+      await axios.get(`https://api.unime.site/UNIME/services/get/byName/${this.searchQuery}`)
+      .then((response) => {
+        this.services = response.data.result;
+        this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
+      })
+      .catch((error) => {
+        console.error('Error fetching services:', error);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
     },
 
     handleDepartmentSelected(payload) {
@@ -130,6 +139,7 @@ export default {
     },
 
     async fetchServices() {
+      this.isLoading = true;
       try {
         const response = await axios.get(
           `https://api.unime.site/UNIME/services/get/serviceList`
@@ -142,6 +152,8 @@ export default {
         }
       } catch (error) {
         console.error("Error fetching services:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
     viewMore(service) {
