@@ -69,7 +69,7 @@
               <p v-if="notifications.length === 0">Không có thông báo.</p>
               <ul v-else>
                 <li v-for="(notification, index) in notifications" :key="index">
-                  <span>{{ notification.title }}</span>
+                  <span>{{ notification.title }} hehehee</span>
                   <p>{{ notification.body }}</p>
                 </li>
               </ul>
@@ -82,7 +82,7 @@
 
             <li v-else class="user-menu">
               <div class="container">
-                <span>Xin chào! {{ patientName }}</span>
+                <!-- <span>Xin chào! {{ patientName }}</span> -->
                 <div class="user-icon" @click="toggleDropdown">
                   <img :src="imageSrc" alt="User Icon" />
                 </div>
@@ -135,8 +135,7 @@ export default {
   name: "NavbarComponent",
   data() {
     return {
-      imageSrc:
-        "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733478703/user_cnv7fx.png",
+      imageSrc: "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733478703/user_cnv7fx.png",
       notifications: [],
       showNotifications: false,
       isDarkMode: false,
@@ -212,8 +211,8 @@ export default {
 
     async fetchUserData() {
       if(!this.authStore.user) return;
-      
-      const token = localStorage.getItem("token");
+      if (this.authStore.user.scope === "PATIENT"){
+        const token = localStorage.getItem("token");
       await axios
         .get(`https://api.unime.site/UNIME/patients/myInfo`, {
           headers: { Authorization: `Bearer ${JSON.parse(token)}` },
@@ -238,6 +237,23 @@ export default {
         .catch((error) => {
           console.error("Lỗi tải dữ liệu:", error);
         });
+      } 
+      else if (this.authStore.user.scope === "DOCTOR"){
+        const token = localStorage.getItem("token");
+        await axios
+          .get(`https://api.unime.site/UNIME/doctors/myInfo`, {
+            headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+          })
+          .then((response) => {
+            if (response.data.code === 1000) {
+              const user = response.data.result;
+              this.imageSrc = user.doctorImage || this.defaultAvatar;
+            }
+          })
+          .catch((error) => {
+            console.error("Lỗi tải dữ liệu:", error);
+          });
+      }
     },
 
     toggleDropdown() {
@@ -481,6 +497,7 @@ export default {
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
+  border: 1px solid currentColor;
 }
 
 .dropdown {

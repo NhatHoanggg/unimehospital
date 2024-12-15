@@ -65,6 +65,7 @@
 import ChatBot from "./ChatBot.vue";
 import SliderSection from "./SliderSection.vue";
 import DoctorCard from "./DoctorCard.vue";
+import { useAuthStore } from "@/stores/auth";
 // import CardSlider from "../tools/CardSlider.vue";
 
 export default {
@@ -78,6 +79,7 @@ export default {
   data() {
     return {
       isMenuOpen: false,
+      authStore : useAuthStore(),
       services: [
         {
           id: 1,
@@ -156,6 +158,16 @@ export default {
       this.isMenuOpen = !this.isMenuOpen;
     },
   },
+  created(){
+    console.log(this.authStore?.user);
+    if (this.authStore?.user){
+      if (this.authStore.user.scope === "EMPLOYEE"){
+        this.$router.push('employee')
+      } else if (this.authStore.user.scope === 'DOCTOR'){
+        this.$router.push('/doctor')
+      }
+    }
+  }
 };
 </script>
 

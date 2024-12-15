@@ -23,15 +23,10 @@
             <label for="fullName">Họ và tên</label>
             <input type="text" id="fullName" v-model="doctorName" required />
           </div>
-  
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" v-model="username" readonly />
-          </div>
-  
+
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" v-model="email" readonly />
+            <input type="email" id="email" v-model="doctorEmail" readonly />
           </div>
 
           <div class="form-group">
@@ -72,6 +67,11 @@
           </div>
 
           <div class="form-group">
+            <label for="exp">Mô tả</label>
+            <textarea id="exp" v-model="doctorDescription" required></textarea>
+          </div>
+
+          <div class="form-group">
             <label for="exp">Kinh nghiệm</label>
             <textarea id="exp" v-model="doctordetailExperience" required></textarea>
           </div>
@@ -99,16 +99,15 @@
         defaultAvatar: "https://via.placeholder.com/200",
 
         doctorId: "",
-        username: "",
-        email: "",
         doctorImage: "",
         doctorName: "",
         doctorAddress: "",
         doctorPhoneNumber: "",
         doctorGender: "",
         doctorDateOfBirth: "",
+        doctorDescription: "",
+        doctorEmail: "",
         departmentName: "",
-        doctorStatus: "",
         doctordetailInformation: "",
         doctordetailExperience: "",
         doctordetailAwardRecognization: "",
@@ -145,38 +144,40 @@
   
           // Tạo object dữ liệu cập nhật
           const updatedUser = {
-            doctorUsername: this.username,
-            doctorEmail: this.email,
-            doctorImage: this.doctorImage,
-            doctorName: this.doctorName,
-            doctorAddress: this.doctorAddress,
-            doctorPhoneNumber: this.doctorPhoneNumber,
-            doctorGender: this.doctorGender,
-            doctorDateOfBirth: this.doctorDateOfBirth,
-            doctordetailInformation: this.doctordetailInformation,
-            doctordetailExperience: this.doctordetailExperience,
-            doctordetailAwardRecognization: this.doctordetailAwardRecognization, 
+            doctorId : this.doctorId,
+            doctorImage : this.doctorImage,
+            doctorName : this.doctorName,
+            doctorAddress : this.doctorAddress,
+            doctorPhoneNumber : this.doctorPhoneNumber,
+            doctorGender : this.doctorGender,
+            doctorDateOfBirth : this.doctorDateOfBirth,
+            doctorDescription : this.doctorDescription,
+            doctorEmail : this.doctorEmail,
+            departmentName : this.departmentName,
+            doctordetailInformation : this.doctordetailInformation, 
+            doctordetailExperience : this.doctordetailExperience, 
+            doctordetailAwardRecognization : this.doctordetailAwardRecognization, 
           };
 
           console.log(updatedUser);
-          const token = localStorage.getItem("token");
-          await axios.put(
-            `https://api.unime.site/UNIME/doctors/update/myInfo`,
-            updatedUser,
-            {
-              headers: {
-                Authorization: `Bearer ${JSON.parse(token)}`,
-              },
-            }
-          );
+          // const token = localStorage.getItem("token");
+          // await axios.put(
+          //   `https://api.unime.site/UNIME/doctors/update/myInfo`,
+          //   updatedUser,
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ${JSON.parse(token)}`,
+          //     },
+          //   }
+          // );
   
-          const userLocal = {
-            username : this.username,
-            image : this.doctorImage,
-            scope : 'DOCTOR'
-          }
+          // const userLocal = {
+          //   username : this.username,
+          //   image : this.doctorImage,
+          //   scope : 'DOCTOR'
+          // }
   
-          localStorage.setItem("user", JSON.stringify(userLocal));
+          // localStorage.setItem("user", JSON.stringify(userLocal));
   
           alert("Cập nhật thành công!");
         } catch (error) {
@@ -195,18 +196,19 @@
                 const user = response.data.result;
 
                 this.doctorId = user.doctorId;
-                this.username = user.username;
-                this.email = user.email;
                 this.doctorImage = user.doctorImage;
                 this.doctorName = user.doctorName ;
                 this.doctorAddress = user.doctorAddress;
                 this.doctorPhoneNumber = user.doctorPhoneNumber;
                 this.doctorGender = user.doctorGender;
                 this.doctorDateOfBirth = user.doctorDateOfBirth;
+                this.doctorDescription = user.doctorDescription;
+                this.doctorEmail = user.doctorEmail;
                 this.departmentName = user.departmentName;
                 this.doctordetailInformation = user.doctordetailInformation; 
                 this.doctordetailExperience = user.doctordetailExperience; 
                 this.doctordetailAwardRecognization = user.doctordetailAwardRecognization; 
+
                 this.avatar = user.doctorImage || this.defaultAvatar;
             }
           })
