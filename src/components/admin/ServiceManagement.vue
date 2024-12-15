@@ -290,4 +290,10 @@ button:last-child {
 .modal button:hover {
   background: #0056b3;
 }
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

@@ -9,6 +9,21 @@
 
       <div v-show="!isCollapsed" class="content">
         <div class="slider-container">
+          <div class="slider-wrapper">
+            <div class="slider-track" :style="trackStyle">
+              <div
+                class="slider-item"
+                v-for="(day, index) in dayOfWeek"
+                :key="index"
+                :class="{ active: selectedDay === index, disabled: isDayDisabled(day) }"
+              >
+                {{ day }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slider-container">
           <button @click="prevSlide" class="arrow-button">‹</button>
           <div class="slider-wrapper">
             <div class="slider-track" :style="trackStyle">
@@ -16,8 +31,8 @@
                 class="slider-item"
                 v-for="(day, index) in days"
                 :key="index"
-                @click="selectDay(index)"
-                :class="{ active: selectedDay === index }"
+                @click="!isDayDisabled(day) && selectDay(index)"
+                :class="{ active: selectedDay === index, disabled: isDayDisabled(day) }"
               >
                 {{ day }}
               </div>
@@ -25,8 +40,11 @@
           </div>
           <button @click="nextSlide" class="arrow-button">›</button>
         </div>
-
-        <div class="schedule-container">
+        <div v-if="isLoading" class="loading schedule-container">
+          <p>Đang tải dữ liệu</p>
+            <LoadingComponent />
+        </div>
+        <div v-else class="schedule-container">
           <div class="schedule-wrapper" v-if="selectedDaySchedule.length">
             <ul>
               <li
@@ -54,6 +72,7 @@
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import LoadingComponent from "./tools/LoadingComponent.vue";
 
 export default {
   props: {
@@ -62,6 +81,9 @@ export default {
       required: true,
     },
   },
+  components: {
+    LoadingComponent,
+  },
 
   data() {
     return {
@@ -69,9 +91,11 @@ export default {
       currentIndex: 0,
       selectedDay: 0,
       visibleItems: 7,
-      schedules: {}, // Lưu trữ lịch khám
+      schedules: {},
       isCollapsed: false,
       selectedShift: null,
+      isLoading: true,
+      dayOfWeek: ["T2", "T3", "T4", "T5", "T6", "T7", "CN", "T2", "T3", "T4", "T5", "T6", "T7", "CN"],
     };
   },
   computed: {
@@ -93,25 +117,39 @@ export default {
   },
   methods: {
     generateDays() {
-      const today = new Date();
-      const daysList = [];
+  const today = new Date();
+  const startOfWeek = new Date(today);
 
-      for (let i = 0; i < 14; i++) {
-        const newDate = new Date(today);
-        newDate.setDate(today.getDate() + i);
+  // Xác định ngày bắt đầu từ thứ 2
+  const dayOfWeek = today.getDay();
+  const offsetToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  startOfWeek.setDate(today.getDate() + offsetToMonday);
 
-        const day = newDate.getDate();
-        const month = newDate.getMonth() + 1;
-        const year = newDate.getFullYear();
+  const daysList = [];
+  for (let i = 0; i < 14; i++) { // 2 tuần
+    const newDate = new Date(startOfWeek);
+    newDate.setDate(startOfWeek.getDate() + i);
 
-        const formattedDate = `${day}/${month}/${year}`;
-        daysList.push(formattedDate);
-      }
+    const day = newDate.getDate();
+    const month = newDate.getMonth() + 1;
+    const year = newDate.getFullYear();
 
-      this.days = daysList;
-    },
+    const formattedDate = `${day}/${month}/${year}`;
+    daysList.push(formattedDate);
+  }
+
+  this.days = daysList;
+},
+    isDayDisabled(day) {
+        const [dayPart, monthPart, yearPart] = day.split('/').map(Number);
+        const currentDate = new Date();
+        const checkDate = new Date(yearPart, monthPart - 1, dayPart);
+        return checkDate < new Date(currentDate.setHours(0, 0, 0, 0));
+      },
+
     async updateSchedules() {
       console.log("doctor id: ->",this.doctorId)
+      this.isLoading = true;
       try {
         const response = await axios.get(
           `https://api.unime.site/UNIME/doctortimework/get/listByDoctor/${this.doctorId}`
@@ -142,6 +180,8 @@ export default {
         }
       } catch (error) {
         console.error("Error fetching schedules:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
     formatDateFromApi(year, week, dayOfWeek) {
@@ -162,7 +202,8 @@ export default {
     },
     prevSlide() {
       if (this.currentIndex > 0 && this.days.length > this.visibleItems) {
-        this.currentIndex--;
+        // this.currentIndex--;
+        this.currentIndex = Math.max(0, this.currentIndex - 7);
       }
     },
     nextSlide() {
@@ -170,7 +211,11 @@ export default {
         this.currentIndex < this.days.length - this.visibleItems &&
         this.days.length > this.visibleItems
       ) {
-        this.currentIndex++;
+        // this.currentIndex++;
+        this.currentIndex = Math.min(
+          this.days.length - this.visibleItems,
+          this.currentIndex + 7
+        );
       }
     },
     selectDay(index) {
@@ -269,6 +314,7 @@ export default {
 .slider-track {
   display: flex;
   transition: transform 0.5s ease-in-out;
+  margin-top:0;
 }
 
 .slider-item {
@@ -376,4 +422,16 @@ export default {
   color: #ffffff;
   cursor: pointer;
 }
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.slider-item.disabled {
+  color: #ccc;         
+  text-decoration: line-through; 
+  cursor: not-allowed;
+}
+
 </style>

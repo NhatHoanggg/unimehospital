@@ -58,14 +58,14 @@
         class="pagination-btn" 
         @click="changePage(-1)" 
         :disabled="currentPage === 1">
-        Previous
+        <i class="fas fa-chevron-left"></i>
       </button>
       <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
       <button 
         class="pagination-btn" 
         @click="changePage(1)" 
         :disabled="currentPage === totalPages">
-        Next
+        <i class="fas fa-chevron-right"></i>
       </button>
     </div>
   </div>
@@ -336,5 +336,12 @@ export default {
 .page-indicator {
   margin: 0 10px;
   font-size: 24px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>
