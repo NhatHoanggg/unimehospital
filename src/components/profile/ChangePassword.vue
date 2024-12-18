@@ -49,6 +49,7 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "ChangePassword",
@@ -65,15 +66,25 @@ export default {
       this.newPassword = "";
       this.confirmPassword = "";
     },
-    
+
     async handleChangePassword() {
       if (this.newPassword !== this.confirmPassword) {
-        alert("Mật khẩu xác nhận không khớp!");
+        // alert("Mật khẩu xác nhận không khớp!");
+        toast.error(`Mật khẩu xác nhận không khớp!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
         return;
       }
 
       if (this.currentPassword === this.confirmPassword) {
-        alert("Mật khẩu mới không được trùng với mật khẩu cũ!");
+        // alert("Mật khẩu mới không được trùng với mật khẩu cũ!");
+        toast.error(`Mật khẩu mới không được trùng với mật khẩu cũ!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
         return;
       }
 
@@ -95,15 +106,25 @@ export default {
         );
 
         if (response.data.code !== 1000) {
-          alert("Mật khẩu hiện tại không đúng!");
+          // alert("Mật khẩu hiện tại không đúng!");
+          toast.error(`Mật khẩu hiện tại không đúng!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
           return;
         }
-        
       } catch (error) {
         console.error("Error fetching doctors:", error);
       }
 
-      alert("Mật khẩu đã được đổi thành công!");
+      // alert("Mật khẩu đã được đổi thành công!");
+      toast.success(`Mật khẩu đã được đổi thành công!`, {
+        rtl: false,
+        limit: 3,
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
       this.resetForm();
     },
     handleCancel() {
@@ -122,7 +143,7 @@ export default {
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .form-container {

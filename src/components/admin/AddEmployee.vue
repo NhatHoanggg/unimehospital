@@ -71,6 +71,7 @@
 <script>
 import axios from "axios";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
+import { toast } from "vue3-toastify";
 
 export default {
   components: { DepartmentListComponentVue },
@@ -223,7 +224,12 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          alert("Thêm nhân viên thành công!");
+          // alert("Thêm nhân viên thành công!");
+          toast.success(`Thêm nhân viên thành công!`, {
+            rtl: false,
+            limit: 3,
+            position: this.$toast.POSITION.TOP_RIGHT,
+          });
         } else {
           alert(
             "Có lỗi xảy ra: " +

@@ -35,6 +35,7 @@
 <script>
 
 import axios from 'axios';
+import { toast } from 'vue3-toastify';
 
 export default {
   data() {
@@ -68,14 +69,32 @@ export default {
 
         if (response.status === 200) {
           console.log("Đặt lịch thành công:", response.data);
-          alert("Đặt lịch thành công!");
+          // alert("Đặt lịch thành công!");
+          toast.success(`Đặt lịch thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         } else {
           console.error("Lỗi khi đặt lịch:", response.data);
-          alert("Đặt lịch thất bại.");
-        }
+          // alert("Đặt lịch thất bại.");
+          toast.error(`Đặt lịch thất bại!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
+          }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        alert("Có lỗi xảy ra trong quá trình xử lý.");
+        // alert("Có lỗi xảy ra trong quá trình xử lý.");
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
       }
     }
   },

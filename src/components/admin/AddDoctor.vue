@@ -70,6 +70,7 @@
 <script>
 import axios from "axios";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
+import { toast } from "vue3-toastify";
 
 export default {
   components: { DepartmentListComponentVue },
@@ -239,7 +240,13 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          alert("Thêm bác sĩ thành công!");
+          // alert("Thêm bác sĩ thành công!");
+          toast.success(`Thêm bác sĩ thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         } else {
           alert(
             "Có lỗi xảy ra: " +

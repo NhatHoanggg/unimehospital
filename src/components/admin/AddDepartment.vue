@@ -31,6 +31,7 @@
 
 <script>
 import axios from "axios";
+import {toast} from 'vue3-toastify';
 
 export default {
   data() {
@@ -43,7 +44,13 @@ export default {
   methods: {
     async addDepartment() {
       if (!this.departmentName || !this.departmentDescription) {
-        alert("Vui lòng điền đầy đủ thông tin!");
+        // alert("Vui lòng điền đầy đủ thông tin!");
+        toast.warn(`Vui lòng điền đầy đủ thông tin!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         return;
       }
 
@@ -66,16 +73,33 @@ export default {
         );
 
         if (response.status === 200) {
-          console.log("Chuyên khoa đã được thêm thành công:", response.data);
-          alert("Thêm chuyên khoa thành công!");
+          // console.log("Chuyên khoa đã được thêm thành công:", response.data);
+          toast.success(`Chuyên khoa đã được thêm thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
           this.resetForm();
+
         } else {
           console.error("Lỗi khi thêm chuyên khoa:", response.data);
-          alert("Thêm chuyên khoa thất bại.");
+          toast.error(`Có lỗi xảy ra trong quá trình thêm chuyên khoa!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        alert("Có lỗi xảy ra trong quá trình xử lý.");
+        // alert("Có lỗi xảy ra trong quá trình xử lý.");
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
       }
     },
 

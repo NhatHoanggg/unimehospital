@@ -71,6 +71,7 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
 
 export default {
   data() {
@@ -153,10 +154,20 @@ export default {
 
         localStorage.setItem("user", JSON.stringify(userLocal));
 
-        alert("Cập nhật thành công!");
+        // alert("Cập nhật thành công!");
+        toast.success(`Cập nhật thành công!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       } catch (error) {
         console.error("Lỗi cập nhật:", error);
-        alert("Cập nhật thất bại!");
+        // alert("Cập nhật thất bại!");
+        toast.error(`Cập nhật thất bại!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     },
     fetchUserData() {

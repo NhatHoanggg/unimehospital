@@ -46,7 +46,7 @@
 
 <script>
 import axios from "axios";
-
+import { toast } from "vue3-toastify";
 export default {
   data() {
     return {
@@ -105,11 +105,23 @@ export default {
           console.log("Lấy danh sách timework thành công");
         } else {
           console.error("Lấy danh sách timework thất bại");
-          alert("Lấy danh sách timework thất bại.");
+          // alert("Lấy danh sách timework thất bại.");
+          toast.error(`Lấy danh sách timework thất bại!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        alert("Có lỗi xảy ra trong quá trình xử lý.");
+        // alert("Có lỗi xảy ra trong quá trình xử lý.");
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
       }
     },
     updateWeekDates() {
@@ -229,14 +241,32 @@ export default {
 
         if (response.status === 200) {
           console.log("Thêm timework thành công", response.data);
-          alert("Thêm timework thành công");
+          // alert("Thêm timework thành công");
+          toast.success(`Thêm timework thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         } else {
           console.error("Thêm timework thất bại", response.data);
-          alert("Thêm timework thất bại.");
+          // alert("Thêm timework thất bại.");
+          toast.error(`Thêm timework thất bại!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        alert("Có lỗi xảy ra trong quá trình xử lý.");
+        // alert("Có lỗi xảy ra trong quá trình xử lý.");
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
       }
     },
   },

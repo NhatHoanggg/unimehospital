@@ -75,6 +75,7 @@
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+import { toast } from 'vue3-toastify';
 
 export default {
   components: { Multiselect },
@@ -123,12 +124,24 @@ export default {
 
     async addService() {
       if (!this.isValidForm) {
-        alert("Vui lòng điền đầy đủ thông tin!");
+        // alert("Vui lòng điền đầy đủ thông tin!");
+        toast.warn(`Vui lòng điền đầy đủ thông tin!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         return;
       }
 
       if (!this.serviceImage) {
-        alert("Vui lòng chọn hình ảnh cho dịch vụ!");
+        // alert("Vui lòng chọn hình ảnh cho dịch vụ!");
+        toast.warn(`Vui lòng chọn hình ảnh cho dịch vụ!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         return;
       }
 
@@ -149,7 +162,13 @@ export default {
         const BEARER_TOKEN = localStorage.getItem("token");
 
         if (!BEARER_TOKEN) {
-          alert("Token không hợp lệ hoặc hết hạn!");
+          // alert("Token không hợp lệ hoặc hết hạn!");
+          toast.error(`Token không hợp lệ hoặc hết hạn!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
           return;
         }
 
@@ -171,11 +190,23 @@ export default {
 
         if (serviceResponse.status === 200) {
           console.log("Dịch vụ đã được thêm thành công:", serviceResponse.data);
-          alert("Thêm dịch vụ thành công!");
+          // alert("Thêm dịch vụ thành công!");
+          toast.success(`Thêm dịch vụ thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
           this.resetForm();
         } else {
           console.error("Lỗi khi thêm dịch vụ:", serviceResponse.data);
-          alert("Thêm dịch vụ thất bại.");
+          // alert("Thêm dịch vụ thất bại.");
+          toast.error(`Thêm dịch vụ thất bại!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         }
       } catch (error) {
         if (error.response) {

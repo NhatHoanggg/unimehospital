@@ -67,6 +67,7 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "SendOTP",
@@ -82,7 +83,12 @@ export default {
   },
   methods: {
     async sendOTP() {
-      alert("Đã gửi mã OTP vào email của bạn.");
+      // alert("Đã gửi mã OTP vào email của bạn.");
+      toast.success(`Đã gửi mã OTP vào email của bạn.`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+      });
       try {
         const response = await axios.post(
           // `http://localhost:8888/UNIME/mail/sendOTP?mail=${this.email}`
