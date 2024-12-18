@@ -61,6 +61,19 @@
           <button @click="closeDetail">Đóng</button>
         </div>
       </div>
+
+      <!-- Alert -->
+      <AlertModal
+        :isVisible="isModalVisible"
+        :type="modalType"
+        :title="modalTitle"
+        :content="modalContent"
+        @action="handleModalAction"
+      />
+      <button class="close-button" @click="closeModal">
+        <i class="fas fa-times"></i>
+      </button>
+
     </div>
   </div>
 </template>
@@ -68,10 +81,13 @@
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
+import AlertModal from "../tools/AlertModal.vue";
+import { toast } from 'vue3-toastify';
 
 export default {
   components: {
     LoadingComponent,
+    AlertModal,
   },
   data() {
     return {
@@ -82,6 +98,12 @@ export default {
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
       selectedService: null, 
+
+      isModalVisible: false,
+      modalType: "info",
+      modalTitle: "",
+      modalContent: "",
+      pendingServiceId: null,
     };
   },
   computed: {
@@ -122,8 +144,44 @@ export default {
       this.selectedService = null;
     },
     cancelService(id) {
-      console.log(`Cancelling Service with id: ${id}`);
-    },
+        // console.log(`Cancelling Service with id: ${id}`);
+        this.pendingServiceId = id;
+        this.modalType = "warning";
+        this.modalTitle = "Xác nhận xóa dịch vụ";
+        this.modalContent = "Bạn có chắc chắn muốn xóa dịch vụ này không?";
+        this.isModalVisible = true;
+      },
+      handleModalAction(action) {
+        console.log("Modal action: ", action);
+        const BEARER_TOKEN = localStorage.getItem("token");
+
+        if (action === "OK" && this.pendingServiceId !== null) {
+          // console.log(`Deleting Service with id: ${this.pendingServiceId}`);
+          axios
+            .delete(`https://api.unime.site/UNIME/services/${this.pendingServiceId}`, {
+              headers: {
+                Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              },
+            })
+            .then(() => {
+              this.services = this.services.filter(
+                (service) => service.serviceId !== this.pendingServiceId
+              );
+              this.pendingServiceId = null;
+              this.isModalVisible = false;
+              this.currentPage = 1;
+              toast.success(`Xóa dịch vụ thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
+            })
+            .catch((error) => {
+              console.error("Error deleting service: ", error);
+            });
+        }
+      },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -295,5 +353,17 @@ button:last-child {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

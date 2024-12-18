@@ -138,6 +138,14 @@ export default {
           placeholder: "Nhập địa chỉ",
           required: true,
         },
+        {
+          id: "doctorDescription",
+          label: "Mô Tả",
+          type: "textarea",
+          model: "",
+          placeholder: "Nhập mô tả của bác sĩ",
+          required: true,
+        },
       ],
     };
   },
@@ -210,9 +218,12 @@ export default {
           doctorDateOfBirth: this.formFields.find(
             (field) => field.id === "doctorDateOfBirth"
           ).model,
+          doctorDescription: this.formFields.find(
+            (field) => field.id === "doctorDescription"
+          ).model,
           departmentName: this.selectedDepartment,
         };
-
+        
         console.log("Dữ liệu gửi đi:", doctorData);
 
         const BEARER_TOKEN = localStorage.getItem("token");

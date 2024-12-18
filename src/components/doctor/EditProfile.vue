@@ -160,24 +160,24 @@
           };
 
           console.log(updatedUser);
-          // const token = localStorage.getItem("token");
-          // await axios.put(
-          //   `https://api.unime.site/UNIME/doctors/update/myInfo`,
-          //   updatedUser,
-          //   {
-          //     headers: {
-          //       Authorization: `Bearer ${JSON.parse(token)}`,
-          //     },
-          //   }
-          // );
+          const token = localStorage.getItem("token");
+          await axios.put(
+            `https://api.unime.site/UNIME/doctors/update/myInfo`,
+            updatedUser,
+            {
+              headers: {
+                Authorization: `Bearer ${JSON.parse(token)}`,
+              },
+            }
+          );
   
-          // const userLocal = {
-          //   username : this.username,
-          //   image : this.doctorImage,
-          //   scope : 'DOCTOR'
-          // }
+          const userLocal = {
+            username : this.username,
+            image : this.doctorImage,
+            scope : 'DOCTOR'
+          }
   
-          // localStorage.setItem("user", JSON.stringify(userLocal));
+          localStorage.setItem("user", JSON.stringify(userLocal));
   
           alert("Cập nhật thành công!");
         } catch (error) {
