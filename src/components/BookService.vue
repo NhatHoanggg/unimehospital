@@ -73,12 +73,14 @@
 
 <script>
 import DepartmentListComponent from "./tools/DepartmentListComponent.vue";
+import LoadingComponent from "./tools/LoadingComponent.vue";
 import axios from "axios";
 
 export default {
   name: "BookService",
   components: {
     DepartmentListComponent,
+    LoadingComponent,
   },
   data() {
     return {
