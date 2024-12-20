@@ -22,12 +22,12 @@
       >
         <span>Bệnh nhân</span>
       </div>
-      <div
+      <!-- <div
         class="submenu-item"
         @click="selectItem('Bác sĩ', '/user-management/doctors')"
       >
         <span>Bác sĩ</span>
-      </div>
+      </div> -->
       <div
         class="submenu-item"
         @click="selectItem('Nhân viên', '/user-management/employees')"

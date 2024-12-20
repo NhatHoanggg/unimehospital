@@ -37,9 +37,10 @@
             <td>{{ user.patientPhoneNumber }}</td>
             <td>{{ formatGender(user.patientGender) }}</td>
             <td>
-              <button @click="editUser(user.patientId)" class="edit-btn">
+              <!-- <button @click="editUser(user.patientId)" class="edit-btn">
                 Edit
-              </button>
+              </button> -->
+              <button @click="openDetail(user)" class="edit-btn">Detail</button>
               <button @click="deleteUser(user.patientId)" class="delete-btn">
                 Delete
               </button>
@@ -66,6 +67,45 @@
         </button>
       </div>
     </div>
+
+    <div v-if="selectedUser" class="modal-overlay" @click="closeDetail">
+      <div class="modal" @click.stop>
+        <img :src="selectedUser.patientImage" alt="patient-avt">
+        <div class="details">
+          <div class="detail-item">
+            <span class="label">Username:</span>
+            <span class="value">{{ selectedUser.patientUsername }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tên bệnh nhân:</span>
+            <span class="value">{{ selectedUser.patientName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ selectedUser.patientEmail }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Địa chỉ:</span>
+            <span class="value">{{ selectedUser.patientAddress || 'Không có mô tả' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">SĐT:</span>
+            <span class="value">{{ selectedUser.patientPhoneNumber || 'Không có mô tả' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Giới tính:</span>
+            <span class="value">{{ selectedUser.patientGender ? 'Nam' : 'Nữ' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Ngày sinh:</span>
+            <span class="value">{{ selectedUser.patientDateOfBirth || 'Không có mô tả' }}</span>
+          </div>
+        </div>
+        <button @click="closeDetail">Đóng</button>
+      </div>
+    </div>
+
+
   </div>
 </template>
 
@@ -82,6 +122,7 @@ export default {
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
+      selectedUser: null,
     };
   },
   components: {
@@ -127,6 +168,14 @@ export default {
           this.isLoading = false;
         });
     },
+
+    openDetail(user) {
+      this.selectedUser = user;
+    },
+    closeDetail() {
+      this.selectedUser = null;
+    },
+
     formatGender(gender) {
       return gender ? "Nam" : "Nữ";
     },
@@ -223,6 +272,7 @@ button:hover {
 .edit-btn {
   background-color: #4caf50;
   color: white;
+  margin-right: 20px;
 }
 
 .edit-btn:hover {
@@ -269,4 +319,109 @@ button:hover {
   justify-content: center;
   align-items: center;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  max-width: 500px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center; 
+}
+
+.modal img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+}
+
+/* .modal p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.modal p strong {
+  color: #333;
+} */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  text-align: left;
+}
+
+.value {
+  color: #555;
+  flex: 2;
+  text-align: right;
+}
+
+.modal button {
+  margin-top: 20px;
+  padding: 10px 15px;
+  border: none;
+  background: #28a745; 
+  color: white;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block; 
+  width: 100%; 
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.modal button:hover {
+  background: #218838;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 </style>

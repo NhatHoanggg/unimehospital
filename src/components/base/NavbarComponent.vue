@@ -14,7 +14,7 @@
         <template v-if="authStore.user && authStore.user.scope === 'ADMIN'">
           <div class="admin-profile" v-if="isAdmin">
             <img
-              src="@/assets/Admin-avt.jpg"
+              src="https://res.cloudinary.com/dy8p5yjsd/image/upload/v1734696455/Admin-avt_xwwuay.jpg"
               alt="Admin Avatar"
               class="admin-avatar"
             />
