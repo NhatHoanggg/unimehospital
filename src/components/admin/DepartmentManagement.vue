@@ -99,6 +99,18 @@
           </div>
         </div>
 
+        <!-- Modal -->
+        <AlertModal
+          :isVisible="isModalVisible"
+          :type="modalType"
+          :title="modalTitle"
+          :content="modalContent"
+          @action="handleModalAction"
+        />
+        <button class="close-button" @click="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+
 
       </div>
     </div>
@@ -109,10 +121,12 @@
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
 import {toast} from "vue3-toastify"
+import AlertModal from "../tools/AlertModal.vue";
 
 export default {
   components: {
     LoadingComponent,
+    AlertModal,
   },
   data() {
     return {
@@ -125,6 +139,12 @@ export default {
 
       selectedDepartment: null,
       isEditing: false,
+
+      isModalVisible: false,
+      modalType: "info",
+      modalTitle: "",
+      modalContent: "",
+      pendingDepartmentId: null,
     };
   },
   computed: {
@@ -204,7 +224,45 @@ export default {
     },
 
     cancelDepartment(id) {
-      console.log(`Cancelling Department with id: ${id}`);
+      // console.log(`Cancelling Department with id: ${id}`);
+      this.pendingDepartmentId = id;
+      this.modalType = "warning";
+      this.modalTitle = "Xác nhận xóa dịch vụ";
+      this.modalContent = "Bạn có chắc chắn muốn xóa dịch vụ này không?";
+      this.isModalVisible = true;
+    },
+    handleModalAction(action) {
+      console.log("Modal action: ", action);
+      const BEARER_TOKEN = localStorage.getItem("token");
+
+      if (action === "OK" && this.pendingDepartmentId !== null) {
+        axios
+          .delete(`https://api.unime.site/UNIME/departments/${this.pendingDepartmentId}`, {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          })
+          .then(() => {
+            this.departments = this.departments.filter(
+              (department) => department.departmentId !== this.pendingDepartmentId
+            );
+            this.pendingDepartmentId = null;
+            this.isModalVisible = false;
+            this.currentPage = 1;
+            toast.success(`Xóa chuyên khoa thành công!`,
+                  {
+                    rtl: false,
+                    limit: 3,
+                    position: toast.POSITION.TOP_RIGHT,
+                  },); 
+          })
+          .catch((error) => {
+            console.error("Error deleting department: ", error);
+          });
+      }
+      else if (action === "Cancel") {
+        this.isModalVisible = false;
+      }
     },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
@@ -505,11 +563,23 @@ button:last-child {
 }
 
 .toggle-input:checked + .toggle {
-  background-color: #34d399; /* Emerald color */
+  background-color: #34d399; 
 }
 
 .toggle-input:checked + .toggle .toggle-icon {
   left: 52px;
   transform: rotate(0deg);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
