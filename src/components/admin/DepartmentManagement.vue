@@ -36,7 +36,7 @@
               <td>{{ department.departmentName }}</td>
               <td>{{ department.departmentDescription }}</td>
               <td class="action-container">
-                <button @click="viewDepartmentDetail(department.departmentId)">
+                <button @click="viewDepartmentDetail(department)">
                   Chi tiết
                 </button>
                 <button @click="cancelDepartment(department.departmentId)">Hủy</button>
@@ -60,6 +60,46 @@
             Tiếp
           </button>
         </div>
+
+        <!-- Modal -->
+        <div v-if="selectedDepartment" class="modal-overlay" @click="closeDetail">
+          <div class="modal" @click.stop>
+            <div class="details">
+              <div class="aaa">
+                <h2>{{ !isEditing? 'Xem thông tin' : 'Chỉnh sửa thông tin' }}</h2>
+                <label class="toggle-wrapper">
+                  <input 
+                    type="checkbox" 
+                    v-model="isEditing" 
+                    class="toggle-input" 
+                  />
+                  <div class="toggle">
+                    <span class="toggle-icon" :class="{ 'checked': isChecked }">
+                      {{ isEditing ? '✔️' : '✖️' }}
+                    </span>
+                  </div>
+                </label>
+              </div>
+              <div class="detail-item">
+                <span class="label">Tên chuyên khoa:</span>
+                <!-- <span class="value">{{ selectedDepartment.departmentName }}</span> -->
+                <input class="input-text" type="text" name="departmentname" id="" value="" v-model="selectedDepartment.departmentName" :readonly="!isEditing">
+              </div>
+              <div class="detail-item">
+                <span class="label">Mô tả chuyên khoa:</span>
+                <textarea rows="5" v-model="selectedDepartment.departmentDescription" 
+                          class="textarea-input"
+                          :readonly="!isEditing">
+                </textarea>
+              </div>
+            </div>
+            <button @click="isEditing ? saveChanges() : closeDetail()">
+              {{ isEditing ? 'Lưu thông tin' : 'Đóng' }}
+            </button>
+          </div>
+        </div>
+
+
       </div>
     </div>
   </div>
@@ -68,6 +108,7 @@
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
+import {toast} from "vue3-toastify"
 
 export default {
   components: {
@@ -81,6 +122,9 @@ export default {
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
+
+      selectedDepartment: null,
+      isEditing: false,
     };
   },
   computed: {
@@ -103,6 +147,11 @@ export default {
       return Math.ceil(filtered.length / this.rowsPerPage);
     },
   },
+  watch: {
+    selectedDepartment() {
+      this.isEditing = false;
+    },
+  },
   methods: {
     fetchData() {
       this.isLoading = true;
@@ -118,9 +167,42 @@ export default {
           this.isLoading = false;
         });
     },
-    viewDepartmentDetail(id) {
-      console.log(`Viewing Department with id: ${id}`);
+    viewDepartmentDetail(department) {
+      this.selectedDepartment = department;
     },
+    closeDetail() {
+      this.selectedDepartment = null;
+    },
+
+    saveChanges() {
+      const token = localStorage.getItem("token");
+      this.isLoading = true;
+      axios
+        .put(`https://api.unime.site/UNIME/departments/${this.selectedDepartment.departmentId}`,
+          {
+            departmentName: this.selectedDepartment.departmentName,
+            departmentDescription: this.selectedDepartment.departmentDescription,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          }
+        )
+        .then(() => {
+          toast.success("Cập nhật thông tin chuyên khoa thành công");
+          this.fetchData();
+          this.selectedDepartment = null;
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+      // alert(this.selectedDepartment.departmentId);
+    },
+
     cancelDepartment(id) {
       console.log(`Cancelling Department with id: ${id}`);
     },
@@ -244,5 +326,190 @@ button:last-child {
   background-color: #e9ecef;
   color: #6c757d;
   cursor: not-allowed;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  max-width: 500px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center; 
+}
+
+.modal img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: left;
+  flex-direction: column;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  text-align: left;
+}
+
+.value {
+  color: #555;
+  flex: 2;
+  /* text-align: right; */
+}
+
+.modal button {
+  margin-top: 20px;
+  padding: 10px 15px;
+  border: none;
+  background: #28a745; 
+  color: white;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block; 
+  width: 100%; 
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.modal button:hover {
+  background: #218838;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.input-text {
+  width: 95%;
+  padding: 10px;
+  font-size: 1rem;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.input-text:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+.textarea-input {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  resize: vertical;
+  margin-top: 5px;
+}
+
+.textarea-input:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toggle-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle {
+  position: relative;
+  width: 96px;
+  height: 48px;
+  background-color: #f87171; /* Rose color */
+  border-radius: 24px;
+  transition: background-color 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-icon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 40px;
+  height: 40px;
+  background-color: #f9fafb; /* Light gray */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transform: rotate(-180deg);
+  transition: transform 0.3s, left 0.3s;
+}
+
+.toggle-input:checked + .toggle {
+  background-color: #34d399; /* Emerald color */
+}
+
+.toggle-input:checked + .toggle .toggle-icon {
+  left: 52px;
+  transform: rotate(0deg);
 }
 </style>

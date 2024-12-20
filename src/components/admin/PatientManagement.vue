@@ -67,7 +67,7 @@
         </button>
       </div>
     </div>
-
+    <!-- Modal -->
     <div v-if="selectedUser" class="modal-overlay" @click="closeDetail">
       <div class="modal" @click.stop>
         <img :src="selectedUser.patientImage" alt="patient-avt">
@@ -105,6 +105,17 @@
       </div>
     </div>
 
+    <!-- Alert -->
+    <AlertModal
+        :isVisible="isModalVisible"
+        :type="modalType"
+        :title="modalTitle"
+        :content="modalContent"
+        @action="handleModalAction"
+      />
+    <button class="close-button" @click="closeModal">
+      <i class="fas fa-times"></i>
+    </button>
 
   </div>
 </template>
@@ -112,6 +123,8 @@
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
+import AlertModal from "../tools/AlertModal.vue";
+import { toast } from 'vue3-toastify';
 
 export default {
   data() {
@@ -123,10 +136,17 @@ export default {
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
       selectedUser: null,
+
+      isModalVisible: false,
+      modalType: "info",
+      modalTitle: "",
+      modalContent: "",
+      pendingPatientId: null,
     };
   },
   components: {
     LoadingComponent,
+    AlertModal
   },
   computed: {
     filteredUsers() {
@@ -183,9 +203,51 @@ export default {
       console.log(`Editing user with id: ${id}`);
     },
     deleteUser(id) {
-      console.log(`Deleting user with id: ${id}`);
-      this.users = this.users.filter((user) => user.patientId !== id);
+      // console.log(`Deleting user with id: ${id}`);
+      // this.users = this.users.filter((user) => user.patientId !== id);
+      this.pendingPatientId = id;
+      this.modalType = "warning";
+      this.modalTitle = "Xác nhận xóa bệnh nhân";
+      this.modalContent = "Bạn có chắc chắn muốn xóa bệnh nhân này không?";
+      this.isModalVisible = true;
     },
+
+    handleModalAction(action) {
+        console.log("Modal action: ", action);
+        const BEARER_TOKEN = localStorage.getItem("token");
+
+        if (action === "OK" && this.pendingPatientId !== null) {
+          axios
+            .delete(`https://api.unime.site/UNIME/patients/${this.pendingPatientId}`, {
+              headers: {
+                Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              },
+            })
+            .then(() => {
+              this.users = this.users.filter(
+                (user) => user.patientId !== this.pendingUserId
+              );
+              this.pendingPatientId = null;
+              this.isModalVisible = false;
+              this.currentPage = 1;
+              toast.success(`Xóa bệnh nhân thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
+            })
+            .catch((error) => {
+              console.error("Error deleting user: ", error);
+              this.isModalVisible = false;
+            });
+        }
+        else if (action === "Cancel") {
+          this.isModalVisible = false;
+          this.pendingPatientId = null;
+        }
+      },
+    
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -413,6 +475,17 @@ button:hover {
   background: #218838;
 }
 
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

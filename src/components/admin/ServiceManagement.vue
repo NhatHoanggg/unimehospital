@@ -181,6 +181,10 @@ export default {
               console.error("Error deleting service: ", error);
             });
         }
+        else if (action === "Cancel") {
+          this.pendingServiceId = null;
+          this.isModalVisible = false;
+        }
       },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
