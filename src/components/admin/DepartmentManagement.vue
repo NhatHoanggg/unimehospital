@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Alert -->
         <AlertModal
           :isVisible="isModalVisible"
           :type="modalType"
