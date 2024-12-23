@@ -1,86 +1,137 @@
 <template>
-    <div class="history-booking">
-      <h1>Lịch sử đặt lịch</h1>
-      <div v-if="bookings.length > 0">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tên bác sĩ</th>
-              <th>Chuyên khoa</th>
-              <th>Ngày hẹn</th>
-              <th>Giờ hẹn</th>
-              <th>Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(booking, index) in bookings" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ booking.doctorName }}</td>
-              <td>{{ booking.specialty }}</td>
-              <td>{{ booking.date }}</td>
-              <td>{{ booking.time }}</td>
-              <td>{{ booking.status }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div v-else>
-        <p>Bạn chưa có lịch sử đặt lịch nào.</p>
-      </div>
+  <div class="appointment-list">
+    <h1>Danh sách lịch hẹn</h1>
+
+    <button @click="fetchAppointments">Cập nhật danh sách</button>
+
+    <div v-if="appointments.length === 0" class="no-data">
+      <p>Không có lịch hẹn nào được tìm thấy.</p>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "HistoryBooking",
-    data() {
-      return {
-        bookings: [], // Dữ liệu lịch sử sẽ được lấy từ API
+
+    <table v-else class="appointments-table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên bệnh nhân</th>
+          <th>Tên bác sĩ</th>
+          <th>Ngày</th>
+          <th>Ca</th>
+          <th>Dịch vụ</th>
+          <th>Thời gian</th>
+          <th>Trạng thái</th>
+          <th>Ghi chú</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(appointment, index) in appointments" :key="appointment.appointmentId">
+          <td>{{ index + 1 }}</td>
+          <td>{{ appointment.patientName }}</td>
+          <td>{{ appointment.doctorName }}</td>
+          <td>{{ formatDay(appointment.dayOfWeek) }}</td>
+          <td>{{ appointment.startTime }} - {{ appointment.endTime }}</td>
+          <td>{{ appointment.serviceName }}</td>
+          <td>{{ appointment.appointmentCreatedAt }}</td>
+          <td :class="getStatusClass(appointment.appointmentStatus)">{{ appointment.appointmentStatus }}</td>
+          <td>{{ appointment.appointmentNote || 'Không có' }}</td>
+          <td><button @click="viewDetails(appointment)">Chi tiết</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      appointments: [],
+    };
+  },
+  methods: {
+    async fetchAppointments() {
+      try {
+        const BEARER_TOKEN = localStorage.getItem("token");
+        const response = await fetch("https://api.unime.site/UNIME/appointments/getByPatient",{
+            headers: {
+              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            },
+          });
+        const data = await response.json();
+        if (data.code === 1000) {
+          this.appointments = data.result;
+        } else {
+          console.error("Failed to fetch appointments");
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    },
+    formatDay(dayOfWeek) {
+      const days = {
+        monday: "Thứ 2",
+        tuesday: "Thứ 3",
+        wednesday: "Thứ 4",
+        thursday: "Thứ 5",
+        friday: "Thứ 6",
+        saturday: "Thứ 7",
+        sunday: "Chủ nhật",
       };
+      return days[dayOfWeek] || dayOfWeek;
     },
-    mounted() {
-      this.fetchBookingHistory();
+    getStatusClass(status) {
+      return {
+        Pending: "status-pending",
+        Confirmed: "status-confirmed",
+        Cancelled: "status-cancelled",
+      }[status] || "status-unknown";
     },
-    methods: {
-      fetchBookingHistory() {
-        this.bookings = [
-          {
-            doctorName: "Bác sĩ Nguyễn Văn A",
-            specialty: "Tim mạch",
-            date: "2024-11-20",
-            time: "09:00 AM",
-            status: "Đã xác nhận",
-          },
-          {
-            doctorName: "Bác sĩ Lê Thị B",
-            specialty: "Nhi khoa",
-            date: "2024-11-15",
-            time: "02:00 PM",
-            status: "Hoàn thành",
-          },
-        ];
-      },
+    viewDetails(appointment) {
+      alert(`Xem chi tiết lịch hẹn: ${appointment.appointmentId}`);
     },
-  };
+  },
+  mounted() {
+    this.fetchAppointments();
+  },
+};
 </script>
-  
-  <style scoped>
-  .history-booking {
-    padding: 20px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  table th, table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  table th {
-    background-color: #f4f4f4;
-  }
+
+<style>
+.appointment-list {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.appointments-table th, .appointments-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.appointments-table th {
+  background-color: #f4f4f4;
+}
+
+.status-pending {
+  color: orange;
+}
+
+.status-confirmed {
+  color: green;
+}
+
+.status-cancelled {
+  color: red;
+}
+
+.no-data {
+  margin-top: 20px;
+  color: #666;
+}
 </style>
-  

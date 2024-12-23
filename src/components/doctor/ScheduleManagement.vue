@@ -134,6 +134,7 @@ export default {
       );
 
       const startOfNextWeek = new Date(currentMonday);
+      // startOfNextWeek.setDate(currentMonday.getDate() + 7);
       startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
 
       this.dates = Array.from({ length: 6 }, (_, i) => {
