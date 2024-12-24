@@ -1,492 +1,493 @@
 <template>
-  <div class="homepage">
-    <SliderSection />
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-content">
-        <h1>
-          Đặt Lịch Khám <br />
-          Nhanh Chóng và Dễ Dàng
-        </h1>
-        <p>
-          Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ
-          chuyên nghiệp.
+  <section class="hero__section">
+    <div class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <div class="hero-text-content">
+              <h1 class="hero-title">
+                Chúng tôi giúp người bệnh khoẻ mạnh hơn, sống lâu hơn.
+              </h1>
+              <p class="hero-description">
+                Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ
+                chuyên nghiệp.
+              </p>
+              <button class="hero-btn">Đặt lịch hẹn khám</button>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat-item">
+                <h2 class="stat-value">30+</h2>
+                <span class="stat-line stat-yellow"></span>
+                <p class="stat-description">Năm Kinh Nghiệm</p>
+              </div>
+
+              <div class="stat-item">
+                <h2 class="stat-value">18+</h2>
+                <span class="stat-line stat-purple"></span>
+                <p class="stat-description">Vị trí phòng khám</p>
+              </div>
+
+              <div class="stat-item">
+                <h2 class="stat-value">100%</h2>
+                <span class="stat-line stat-blue"></span>
+                <p class="stat-description">Bệnh nhân hài lòng</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-images">
+            <div class="image-main">
+              <img
+                class="image-full card"
+                src="@/assets/images/hero-1.jpg"
+                alt=""
+                style="width: 396px; height: 556px"
+              />
+            </div>
+            <div class="image-secondary">
+              <img
+                class="image-full image-bottom card"
+                src="@/assets/images/hero-2.jpg"
+                alt=""
+                style="width: 300px; height: 300px"
+              />
+              <img
+                class="image-full card"
+                src="@/assets/images/hero-img03.png"
+                alt=""
+                style="width: 300px; height: 300px"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--  -->
+  <section>
+    <div class="container">
+      <div class="services-header">
+        <h2 class="heading text-center">
+          Cung cấp những dịch vụ y tế tốt nhất
+        </h2>
+        <p class="text__para text-center">
+          Sự chăm sóc tầm cỡ thế giới cho mọi người. Hệ thống chăm sóc sức khoẻ
+          của chúng tôi rất chuyên nghiệp và vô tiền khoáng hậu.
         </p>
-        <router-link to="/booking" class="cta-button"
-          >Đặt Lịch Ngay</router-link
-        >
       </div>
-      <div class="hero-image">
-        <img src="@/assets/doctor-hero1.png" alt="Doctor Illustration" />
-      </div>
-    </section>
 
-    <!-- Services Section -->
-    <section class="services">
-      <h2>Dịch Vụ Của Chúng Tôi</h2>
-      <div class="services-container">
-        <div class="service-card" v-for="service in services" :key="service.id">
-          <i :class="service.icon" class="service-icon"></i>
-          <h3>{{ service.title }}</h3>
-          <p>{{ service.description }}</p>
-        </div>
-      </div>
-    </section>
-    <ChatBot />
+      <div class="services-content">
+        <div class="service-item">
+          <div class="service-icon">
+            <img src="@/assets/images/icon01.png" alt="" />
+          </div>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-      <h2>Phản Hồi Từ Khách Hàng</h2>
-      <div class="testimonials-container">
-        <div
-          class="testimonial-card"
-          v-for="testimonial in testimonials"
-          :key="testimonial.id"
-        >
-          <p>"{{ testimonial.feedback }}"</p>
-          <h4>{{ testimonial.name }}</h4>
-          <span>{{ testimonial.role }}</span>
+          <div class="service-info">
+            <h2 class="service-title">Tìm Bác Sĩ</h2>
+            <p class="service-description">
+              Sự chăm sóc tầm cỡ thế giới cho mọi người. Hệ thống chăm sóc sức
+              khoẻ của chúng tôi rất chuyên nghiệp và vô tiền khoáng hậu. Từ
+              phòng thí nghiệm đến phòng khám.
+            </p>
+            <a href="/booking" class="service-link">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">
+            <img src="@/assets/images/icon02.png" alt="" />
+          </div>
+
+          <div class="service-info">
+            <h2 class="service-title">Tìm địa điểm phòng khám</h2>
+            <p class="service-description">
+              Sự chăm sóc tầm cỡ thế giới cho mọi người. Hệ thống chăm sóc sức
+              khoẻ của chúng tôi rất chuyên nghiệp và vô tiền khoáng hậu. Từ
+              phòng thí nghiệm đến phòng khám.
+            </p>
+            <a href="/booking" class="service-link">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">
+            <img src="@/assets/images/icon03.png" alt="" />
+          </div>
+
+          <div class="service-info">
+            <h2 class="service-title">Đặt lịch hẹn khám</h2>
+            <p class="service-description">
+              Sự chăm sóc tầm cỡ thế giới cho mọi người. Hệ thống chăm sóc sức
+              khoẻ của chúng tôi rất chuyên nghiệp và vô tiền khoáng hậu. Từ
+              phòng thí nghiệm đến phòng khám.
+            </p>
+            <a href="/booking" class="service-link">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
       </div>
-    </section>
-    <section class="doctor-container">
-      <h2>Danh Sách Bác Sĩ</h2>
-      <div class="card-container">
-        <div class="doctor-card" v-for="doctor in doctors" :key="doctor.id">
-          <DoctorCard :doctor="doctor" />
+    </div>
+  </section>
+  <!-- 2 -->
+  <!-- <About /> -->
+
+  <section>
+    <div class="container">
+      <div class="services-header">
+        <h2 class="heading text-center">Các dịch vụ y tế của chúng tôi</h2>
+        <p class="text__para text-center">
+          Dịch vụ y tế chất lượng cao từ các bác sĩ chuyên nghiệp.
+        </p>
+      </div>
+
+      <div class="service-list">
+        <ListServices />
+      </div>
+    </div>
+  </section>
+  <DoctorList />
+
+  <section>
+    <div class="container">
+      <div class="faq-content">
+        <div class="faq-image">
+          <img src="@/assets/images/faq-img.png" alt="alt" />
+        </div>
+
+        <div class="faq-list w-full md:w-1/2">
+          <h2 class="heading">
+            Câu hỏi các bệnh nhân thân yêu của chúng tôi cần tham vấn
+          </h2>
+          <FaqList />
         </div>
       </div>
-    </section>
-    <!-- <CardSlider /> -->
-  </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="xl:w-[470px] mx-auto">
+        <h2 class="heading text-center">Các bệnh nhân</h2>
+        <p class="text__para text-center">
+          Sự chăm sóc tầm cỡ thế giới cho mọi người.
+        </p>
+      </div>
+
+      <TestimonialList />
+    </div>
+  </section>
+  <ChatBot />
 </template>
 
 <script>
+import FaqList from "./FaqList.vue";
+import ListServices from "./ListServices.vue";
+import TestimonialList from "./TestimonialList.vue";
 import ChatBot from "./ChatBot.vue";
-import SliderSection from "./SliderSection.vue";
-import DoctorCard from "./DoctorCard.vue";
-import { useAuthStore } from "@/stores/auth";
-// import CardSlider from "../tools/CardSlider.vue";
 
 export default {
   name: "HomePage",
   components: {
+    ListServices,
+    FaqList,
+    TestimonialList,
     ChatBot,
-    SliderSection,
-    DoctorCard,
-    // CardSlider
   },
-  data() {
-    return {
-      isMenuOpen: false,
-      authStore : useAuthStore(),
-      services: [
-        {
-          id: 1,
-          icon: "fas fa-stethoscope",
-          title: "Khám Tổng Quát",
-          description:
-            "Dịch vụ khám sức khỏe tổng quát bởi các bác sĩ chuyên nghiệp.",
-        },
-        {
-          id: 2,
-          icon: "fas fa-heartbeat",
-          title: "Chuyên Khoa Tim Mạch",
-          description:
-            "Phòng khám chuyên khoa tim mạch với trang thiết bị hiện đại.",
-        },
-        {
-          id: 3,
-          icon: "fas fa-brain",
-          title: "Chuyên Khoa Thần Kinh",
-          description: "Điều trị các bệnh lý liên quan đến hệ thần kinh.",
-        },
-      ],
-      testimonials: [
-        {
-          id: 1,
-          feedback:
-            "Dịch vụ tuyệt vời! Tôi đã đặt lịch và nhận được sự hỗ trợ nhanh chóng.",
-          name: "Nguyễn Văn A",
-          role: "Khách hàng",
-        },
-        {
-          id: 2,
-          feedback:
-            "Bác sĩ rất tận tâm và chuyên nghiệp. Tôi rất hài lòng với dịch vụ.",
-          name: "Trần Thị B",
-          role: "Khách hàng",
-        },
-        {
-          id: 3,
-          feedback:
-            "Giao diện đặt lịch rất dễ sử dụng. Rất tiện lợi cho người dùng.",
-          name: "Lê Văn C",
-          role: "Khách hàng",
-        },
-      ],
-      doctors: [
-        {
-          id: 1,
-          name: "Bác sĩ Đinh Yên Lục",
-          image:
-            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1731241976/doc3_uwcvzl.jpg",
-          speciality: "Mắt",
-          experience: "10",
-        },
-        {
-          id: 2,
-          name: "Bác sĩ Phạm Hữu Tùng",
-          image:
-            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733683197/bs-luc-dnd-1_r3jyut.webp",
-          speciality: "Tim Mạch",
-          experience: "15",
-        },
-        {
-          id: 3,
-          name: "Bác sĩ Nguyễn Thị Hương",
-          image:
-            "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1731241976/doc8_rzalke.jpg",
-          speciality: "Da Liễu",
-          experience: "8",
-        },
-      ],
-    };
-  },
-  methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
-    },
-  },
-  created(){
-    console.log(this.authStore?.user);
-    if (this.authStore?.user){
-      if (this.authStore.user.scope === "EMPLOYEE"){
-        this.$router.push('employee')
-      } else if (this.authStore.user.scope === 'DOCTOR'){
-        this.$router.push('/doctor')
-      }
-    }
-  }
 };
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
-
-:root {
-  --primary-color: #3b82f6;
-  --secondary-color: #2563eb;
-  --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  --card-background: #ffffff;
-  --input-border: #ddd;
-  --input-focus-border: var(--primary-color);
-  --text-color: #333;
-  --link-color: var(--primary-color);
-  --link-hover-color: var(--secondary-color);
-  --error-color: #ef4444;
+.hero__section {
+  padding: 50px 0;
+  background-color: #f9f9f9;
+  width: 100%;
 }
 
-.homepage {
-  font-family: "Roboto", sans-serif;
-  color: var(--text-color);
-  background-color: #3b82f6;
-}
-
-.hamburger {
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6rem 2rem 2rem 2rem;
-  max-width: 1440px;
-  margin: 0 auto;
+  background-image: linear-gradient(
+    to bottom,
+    #548ee6,
+    #90a7ec,
+    #bcc2f2,
+    #e0e0f8,
+    #ffffff
+  );
 }
 
 .hero-content {
-  max-width: 600px;
-}
-
-.hero-content h1 {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.cta-button {
-  padding: 8px 20px;
-  border: 2px solid #003a9e;
-  border-radius: 25px;
-  color: #003a9e;
-  background-color: #ffffff;
-  font-weight: 500;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.cta-button:hover {
-  background-color: #003a9e;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.hero-image img {
-  width: 100%;
-  max-width: 500px;
-  border-radius: 10px;
-  transition: transform 0.3s ease;
-}
-
-.hero-image img:hover {
-  transform: scale(1.05);
-}
-
-/* Services Section */
-.services {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.services h2 {
-  color: var(--primary-color);
-  margin-bottom: 2rem;
-  font-size: 2rem;
-}
-
-.services-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.service-card {
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 2rem;
-  width: 250px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.service-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.service-icon {
-  font-size: 2rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.service-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.service-card p {
-  font-size: 1rem;
-  color: var(--text-color);
-}
-
-/* Testimonials Section */
-.testimonials {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.testimonials h2 {
-  color: var(--primary-color);
-  margin-bottom: 2rem;
-  font-size: 2rem;
-}
-
-.testimonials-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.doctor-container {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.doctor-container h2 {
-  color: var(--primary-color);
-  margin-bottom: 2rem;
-  font-size: 2rem;
-}
-
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.testimonial-card {
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 2rem;
-  width: 300px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.testimonial-card p {
-  font-style: italic;
-  margin-bottom: 1rem;
-}
-
-.testimonial-card h4 {
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-.testimonial-card span {
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-/* Footer */
-.footer {
-  background-color: var(--card-background);
-  padding: 2rem;
-  border-top: 1px solid #ddd;
-}
-
-.footer-container {
-  display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
   justify-content: space-between;
-  max-width: 1440px;
-  margin: 0 auto;
-  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
-.footer-section h3,
-.footer-section h4 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
+.hero-text {
+  max-width: 570px;
 }
 
-.footer-section p,
-.footer-section ul,
-.footer-section li {
-  color: var(--text-color);
-  font-size: 0.9rem;
+.hero-title {
+  font-size: 36px;
+  line-height: 46px;
+  font-weight: 800;
+  color: #333;
+  text-align: left;
 }
 
-.footer-section ul {
-  list-style: none;
-  padding: 0;
+.hero-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
 }
 
-.footer-section ul li {
-  margin-bottom: 0.5rem;
+.hero-btn {
+  background-color: #3498db;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
 }
 
-.footer-section ul li a {
-  color: var(--text-color);
-  text-decoration: none;
-  transition: color 0.3s ease;
+.hero-btn:hover {
+  background-color: #15405c;
 }
 
-.footer-section ul li a:hover {
-  color: var(--primary-color);
+.hero-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 70px;
 }
 
-.social-icons a {
-  color: var(--text-color);
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
-  transition: color 0.3s ease;
-}
-
-.social-icons a:hover {
-  color: var(--primary-color);
-}
-
-.footer-bottom {
+.stat-item {
   text-align: center;
-  margin-top: 2rem;
-  font-size: 0.8rem;
-  color: var(--text-color);
 }
 
-/* Responsive Styles */
-@media (max-width: 1024px) {
-  .hero {
-    flex-direction: column;
-    text-align: center;
+.text-center {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 44px;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-line {
+  display: block;
+  width: 100px;
+  height: 2px;
+  margin: -14px auto 0;
+  border-radius: 50px;
+}
+
+.stat-yellow {
+  background-color: #f2c94c;
+}
+
+.stat-purple {
+  background-color: #9b59b6;
+}
+
+.stat-blue {
+  background-color: #3498db;
+}
+
+.stat-description {
+  font-size: 16px;
+  color: #666;
+}
+
+.hero-images {
+  display: flex;
+  gap: 30px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.image-main {
+  flex: 1;
+}
+
+.image-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.image-full {
+  width: 100%;
+}
+
+.image-bottom {
+  margin-top: 30px;
+}
+
+.services-header {
+  max-width: 6000px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: 28px;
+  line-height: 40px;
+  font-weight: 700;
+  color: #333;
+}
+
+.text__para {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.services-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.service-item {
+  width: 100%;
+  max-width: 370px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  text-align: center;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+}
+
+.service-icon img {
+  margin-bottom: 20px;
+}
+
+.service-info {
+  margin-top: 30px;
+}
+
+.service-title {
+  font-size: 26px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #333;
+}
+
+.service-description {
+  font-size: 16px;
+  line-height: 24px;
+  color: #666;
+  margin-top: 20px;
+}
+
+.service-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #181a1e;
+  margin-top: 30px;
+  transition: background-color 0.3s, border-color 0.3s;
+  text-decoration: none;
+}
+
+.service-link:hover {
+  background-color: #2c74df;
+  border-color: transparent;
+  color: white
+}
+
+.faq-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.faq-image {
+  display: none;
+  width: 50%;
+  margin-top: 50px;
+}
+
+.faq-list {
+  width: 90%;
+}
+
+.card {
+  padding: 5px;
+  color: white;
+  background: transparent;
+  border: 2px solid #0e86d4;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transform-origin: center center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card:hover {
+  border-radius: 12px;
+  background-color: #0e86d4;
+  scale: 0.95;
+  rotate: 3deg;
+  box-shadow: 0px 3px 187.5px 7.5px #0b619a9f;
+}
+
+@media (min-width: 1024px) {
+  .hero-content {
+    flex-direction: row;
+    justify-content: space-between;
   }
 
-  .hero-image {
-    margin-top: 2rem;
+  .hero-text-content {
+    max-width: 570px;
   }
 
-  .services-container,
-  .testimonials-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .footer-container {
-    flex-direction: column;
-    align-items: center;
+  .hero-stats {
+    flex-direction: row;
+    gap: 30px;
   }
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
+@media (min-width: 768px) {
+  .services-content {
+    flex-direction: row;
+    justify-content: space-between;
   }
 
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    display: none;
-  }
-
-  .nav-links.active {
-    display: flex;
-  }
-
-  .hamburger {
+  .faq-image {
     display: block;
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
   }
 
-  .hero {
-    padding: 6rem 1rem 2rem 1rem;
-  }
+  /* .faq-list{
+    width: 50%;
+  } */
+}
 
-  .services-container,
-  .testimonials-container {
-    flex-direction: column;
-    align-items: center;
+@media (min-width: 1024px) {
+  .services-content {
+    gap: 30px;
   }
 }
 </style>
