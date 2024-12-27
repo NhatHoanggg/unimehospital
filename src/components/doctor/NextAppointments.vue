@@ -1,68 +1,95 @@
 <template>
   <div class="wrapper">
-
-  <div class="appointment-container">
-    <h2>Lịch hẹn sắp tới</h2>
-    <div class="filter-container">
-      <label for="date">Ngày:</label>
-      <input type="date" v-model="filterDate" id="date" />
-      <button @click="searchAppointments">Search</button>
-    </div>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 60px;">#</th>
-            <th style="width: 150px;">Time</th>
-            <th style="width: 300px;">Name</th>
-            <th style="width: 100px;">Gender</th>
-            <th style="width: 100px;">Status</th>
-            <th style="width: 100px;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(appointment, index) in paginatedAppointments" :key="appointment.id">
-            <td>{{ index +1 }}</td>
-            <td>{{ appointment.time }}</td>
-            <td>{{ appointment.name }}</td>
-            <td>{{ appointment.gender }}</td>
-            <td><span :class="getStatusClass(appointment.status)">{{ appointment.status }}</span></td>
-            <td><button @click="viewDetail(appointment.id)">Detail</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="pagination">
-      <button :disabled="currentPage === 1" @click="previousPage">Previous</button>
-      <span>{{ currentPage }}</span>
-      <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+    <div class="appointment-container">
+      <h2>Lịch hẹn sắp tới</h2>
+      <div class="filter-container">
+        <label for="date">Ngày:</label>
+        <input type="date" v-model="filterDate" id="date" />
+        <button @click="searchAppointments">Search</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px">#</th>
+              <th style="width: 150px">Ngày</th>
+              <th style="width: 150px">Thời gian</th>
+              <th style="width: 200px">Tên bệnh nhân</th>
+              <th style="width: 200px">Bác sĩ</th>
+              <th style="width: 200px">Dịch vụ</th>
+              <th style="width: 100px">Trạng thái</th>
+              <th style="width: 100px">Đã xong</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(appointment, index) in paginatedAppointments"
+              :key="appointment.appointmentId"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>{{ formatAppointmentDate(appointment) }}</td>
+              <td>{{ `${appointment.startTime} - ${appointment.endTime}` }}</td>
+              <td>{{ appointment.patientName }}</td>
+              <td>{{ appointment.doctorName }}</td>
+              <td>{{ appointment.serviceName }}</td>
+              <td>
+                <span :class="getStatusClass(appointment.appointmentStatus)">{{
+                  appointment.appointmentStatus
+                }}</span>
+              </td>
+              <td>
+                <button class="done-btn" @click="markAsDone(appointment.appointmentId)">
+                  Xác nhận
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>Xác nhận hoàn thành lịch hẹn</h3>
+          <p>Bạn có chắc chắn muốn xác nhận hoàn thành lịch hẹn này?</p>
+          <div class="modal-buttons">
+            <button class="confirm-btn" @click="confirmCompletion">Xác nhận</button>
+            <button class="cancel-modal-btn" @click="closeModal">Đóng</button>
+          </div>
+        </div>
+      </div>
+      <div class="pagination">
+        <button :disabled="currentPage === 1" @click="previousPage">
+          Previous
+        </button>
+        <span>{{ currentPage }}</span>
+        <button :disabled="currentPage === totalPages" @click="nextPage">
+          Next
+        </button>
+      </div>
     </div>
   </div>
-</div>
-
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      filterDate: '', 
-      appointments: [
-        { id: 1, time: "16:00 - 17:00",  name: "Phillip Hogan", gender: "Male", status: "Upcoming" },
-        { id: 2, time: "16:00 - 17:00",  name: "Rosa Burgess", gender: "Male", status: "Done" },
-        { id: 3, time: "16:00 - 17:00",  name: "Mina Nichols", gender: "Male", status: "Upcoming" },
-        { id: 4, time: "16:00 - 17:00",  name: "Lula McCoy", gender: "Male", status: "Upcoming" },
-        { id: 5, time: "16:00 - 17:00",  name: "Chase George", gender: "Male", status: "Upcoming" },
-        { id: 6, time: "16:00 - 17:00",  name: "Rose Cruz", gender: "Male", status: "Upcoming" },
-        { id: 7, time: "16:00 - 17:00",  name: "Marion Stevenson", gender: "Male", status: "Upcoming" },
-        { id: 8, time: "16:00 - 17:00",  name: "Nina Stanley", gender: "Male", status: "Upcoming" },
-        { id: 9, time: "16:00 - 17:00",  name: "Bertie Mullins", gender: "Male", status: "Upcoming" },
-        { id: 10, time: "16:00 - 17:00",  name: "Lottie Henry", gender: "Male", status: "Upcoming" },
-        { id: 11, time: "16:00 - 17:00",  name: "Cora Robbins", gender: "Male", status: "Upcoming" },
-        { id: 12, time: "16:00 - 17:00",  name: "Kenneth Murphy", gender: "Male", status: "Upcoming" },
-      ],
+      filterDate: "",
+      appointments: [],
       currentPage: 1,
       itemsPerPage: 10,
+      dayOfWeekMap: {
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+        friday: 5,
+        saturday: 6,
+        sunday: 7,
+      },
+      showModal: false,
+      selectedAppointmentId: null,
     };
   },
   computed: {
@@ -75,36 +102,127 @@ export default {
     },
   },
   methods: {
-    searchAppointments() {
+    getDateFromWeek(year, week, dayOfWeek) {
+      const januaryFirst = new Date(year, 0, 1);
+      const dayOffset = januaryFirst.getDay();
+      const firstMonday =
+        dayOffset <= 4
+          ? 1 + (1 - dayOffset)
+          : 1 + (8 - dayOffset);
+      const weekOffset = (week - 1) * 7;
+      const dayInWeekOffset = this.dayOfWeekMap[dayOfWeek.toLowerCase()] - 1;
+      const resultDate = new Date(
+        year,
+        0,
+        firstMonday + weekOffset + dayInWeekOffset
+      );
+      return resultDate;
+    },
+
+    formatAppointmentDate(appointment) {
+      const date = this.getDateFromWeek(
+        appointment.year,
+        appointment.weekOfYear,
+        appointment.dayOfWeek
+      );
+      return date.toLocaleDateString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    },
+
+    async fetchAppointments() {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get('https://api.unime.site/UNIME/appointments/getByDoctor', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.code === 1000) {
+          this.appointments = response.data.result;
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    },
+
+    async searchAppointments() {
       console.log("Searching appointments for date:", this.filterDate);
+      await this.fetchAppointments();
     },
+
     getStatusClass(status) {
-      return status === "Upcoming" ? "status-upcoming" : "status-done";
+      const statusClasses = {
+        Pending: "status-pending",
+        Done: "status-done",
+        Cancelled: "status-cancelled",
+      };
+      return statusClasses[status] || "status-default";
     },
-    viewDetail(id) {
-      console.log("Viewing details for appointment ID:", id);
-      this.$router.push({ name: "AppointmentDetail", params: { id: id } });
+
+    markAsDone(id) {
+      this.selectedAppointmentId = id;
+      this.showModal = true;
     },
+
+    closeModal() {
+      this.showModal = false;
+      this.selectedAppointmentId = null;
+    },
+
+    async confirmCompletion() {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.put(
+          "https://api.unime.site/UNIME/appointments/updateCompleted",
+          {
+            appointmentId: this.selectedAppointmentId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.code === 1000) {
+          alert("Xác nhận hoàn thành lịch hẹn thành công!");
+          this.closeModal();
+          this.fetchAppointments();
+        } else {
+          alert("Có lỗi xảy ra khi xác nhận hoàn thành!");
+        }
+      } catch (error) {
+        console.error("Error completing appointment:", error);
+        alert("Có lỗi xảy ra khi xác nhận hoàn thành!");
+      }
+    },
+
     previousPage() {
       if (this.currentPage > 1) this.currentPage--;
     },
+
     nextPage() {
       if (this.currentPage < this.totalPages) this.currentPage++;
     },
+
     getCurrentDate() {
       const today = new Date();
       const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
-    }
+    },
   },
   mounted() {
     this.filterDate = this.getCurrentDate();
-  }
+    this.fetchAppointments();
+  },
 };
 </script>
-
 
 <style scoped>
 .wrapper {
@@ -113,6 +231,7 @@ export default {
   height: 100vh;
   width: 100%;
   margin-top: 64px;
+  margin-bottom: 64px;
 }
 .appointment-container {
   padding: 50px;
@@ -135,16 +254,26 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
-th, td {
+th,
+td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
 }
-.status-upcoming {
-  color: green;
+.status-pending {
+  color: #ffa500;
+  font-weight: bold;
 }
 .status-done {
-  color: red;
+  color: #008000;
+  font-weight: bold;
+}
+.status-cancelled {
+  color: #ff0000;
+  font-weight: bold;
+}
+.status-default {
+  color: #666;
 }
 .pagination {
   display: flex;
@@ -163,5 +292,49 @@ button {
 }
 button:disabled {
   background-color: #ccc;
+}
+.done-btn {
+  padding: 5px 10px;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-btn {
+  background-color: #28a745;
+}
+
+.cancel-modal-btn {
+  background-color: #6c757d;
 }
 </style>

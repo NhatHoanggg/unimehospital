@@ -31,7 +31,7 @@
         menuItems: [
           { text: 'Lịch hẹn sắp tới', icon: require('@/assets/next-appointment.png'), path: '/next-appointments' },
           { text: 'Lịch làm việc', icon: require('@/assets/calendar.png'), path: '/schedule' },
-          { text: 'Lịch bận', icon: require('@/assets/busy.png'), path: '/busy' },
+          // { text: 'Lịch bận', icon: require('@/assets/busy.png'), path: '/busy' },
           { text: 'Hồ sơ', icon: require('@/assets/User-icon.png'), path: '/profile' },
           { text: 'Đăng xuất', icon: require('@/assets/logout.png'), path: '/logout' },
         ],

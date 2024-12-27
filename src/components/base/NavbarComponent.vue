@@ -44,9 +44,9 @@
           <li v-if="!authStore.isLoggedIn">
             <router-link to="/send-otp" class="button">Đăng kí</router-link>
           </li> -->
-            <button @click="toggleDarkMode" class="dark-mode-toggle">
+            <!-- <button @click="toggleDarkMode" class="dark-mode-toggle">
               <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
-            </button>
+            </button> -->
 
             <!-- <button @click="handleNotificationClick" class="navbar-icon">
               <i class="far fa-bell"></i>
@@ -57,12 +57,12 @@
               >
             </button> -->
 
-            <button v-if="authStore.user" @click="toggleNotifications" class="navbar-icon">
+            <!-- <button v-if="authStore.user" @click="toggleNotifications" class="navbar-icon">
               <i class="far fa-bell"></i>
               <span v-if="notifications.length" class="notification-count">
                 {{ notifications.length }}
               </span>
-            </button>
+            </button> -->
 
           <!-- Danh sách thông báo -->
             <div v-if="showNotifications" class="notification-list">
