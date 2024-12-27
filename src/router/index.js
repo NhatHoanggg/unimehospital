@@ -18,6 +18,7 @@ import DoctorDetail from '@/components/DoctorDetail.vue';
 
 import ChangePassword from '@/components/profile/ChangePassword.vue';
 import HistoryBooking from '@/components/profile/HistoryBooking.vue';
+import NextAppointment from '@/components/profile/NextAppointment.vue';
 import BookingSuccessPage from '@/components/BookingSuccessPage.vue';
 
 
@@ -175,6 +176,12 @@ const routes = [
     path: '/history-booking',
     name: 'HistoryBooking',
     component: HistoryBooking,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/next-appointment',
+    name: 'NextAppointment',
+    component: NextAppointment,
     meta: { requiresAuth: true },
   },
   { 

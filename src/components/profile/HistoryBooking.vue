@@ -1,43 +1,56 @@
 <template>
-  <div class="appointment-list">
-    <h1>Danh sách lịch hẹn</h1>
-
-    <button @click="fetchAppointments">Cập nhật danh sách</button>
-
-    <div v-if="appointments.length === 0" class="no-data">
-      <p>Không có lịch hẹn nào được tìm thấy.</p>
+  <div class="wrapper">
+    <div class="appointment-container">
+      <h2>Lịch sử đặt lịch</h2>
+      <div class="filter-container">
+        <label for="date">Ngày:</label>
+        <input type="date" v-model="filterDate" id="date" />
+        <button @click="searchAppointments">Search</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px">#</th>
+              <th style="width: 150px">Ngày</th>
+              <th style="width: 150px">Thời gian</th>
+              <th style="width: 200px">Tên bệnh nhân</th>
+              <th style="width: 200px">Bác sĩ</th>
+              <th style="width: 200px">Dịch vụ</th>
+              <th style="width: 100px">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(appointment, index) in paginatedAppointments"
+              :key="appointment.appointmentId"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>{{ formatAppointmentDate(appointment) }}</td>
+              <td>{{ `${appointment.startTime} - ${appointment.endTime}` }}</td>
+              <td>{{ appointment.patientName }}</td>
+              <td>{{ appointment.doctorName }}</td>
+              <td>{{ appointment.serviceName }}</td>
+              <td>
+                <span :class="getStatusClass(appointment.appointmentStatus)">{{
+                  appointment.appointmentStatus
+                }}</span>
+              </td>
+              
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button :disabled="currentPage === 1" @click="previousPage">
+          Previous
+        </button>
+        <span>{{ currentPage }}</span>
+        <button :disabled="currentPage === totalPages" @click="nextPage">
+          Next
+        </button>
+      </div>
     </div>
-
-    <table v-else class="appointments-table">
-      <thead>
-        <tr>
-          <th>STT</th>
-          <th>Tên bệnh nhân</th>
-          <th>Tên bác sĩ</th>
-          <th>Ngày</th>
-          <th>Ca</th>
-          <th>Dịch vụ</th>
-          <th>Thời gian</th>
-          <th>Trạng thái</th>
-          <th>Ghi chú</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(appointment, index) in appointments" :key="appointment.appointmentId">
-          <td>{{ index + 1 }}</td>
-          <td>{{ appointment.patientName }}</td>
-          <td>{{ appointment.doctorName }}</td>
-          <td>{{ formatDay(appointment.dayOfWeek) }}</td>
-          <td>{{ appointment.startTime }} - {{ appointment.endTime }}</td>
-          <td>{{ appointment.serviceName }}</td>
-          <td>{{ appointment.appointmentCreatedAt }}</td>
-          <td :class="getStatusClass(appointment.appointmentStatus)">{{ appointment.appointmentStatus }}</td>
-          <td>{{ appointment.appointmentNote || 'Không có' }}</td>
-          <td><button @click="viewDetails(appointment)">Chi tiết</button></td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
@@ -45,93 +58,189 @@
 export default {
   data() {
     return {
+      filterDate: "",
       appointments: [],
+      currentPage: 1,
+      itemsPerPage: 10,
+      dayOfWeekMap: {
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+        friday: 5,
+        saturday: 6,
+        sunday: 7,
+      },
     };
   },
+  computed: {
+    paginatedAppointments() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.appointments.slice(start, start + this.itemsPerPage);
+    },
+    totalPages() {
+      return Math.ceil(this.appointments.length / this.itemsPerPage);
+    },
+  },
   methods: {
+    getDateFromWeek(year, week, dayOfWeek) {
+      const januaryFirst = new Date(year, 0, 1);
+
+      const dayOffset = januaryFirst.getDay(); 
+      const firstMonday =
+        dayOffset <= 4
+          ? 1 + (1 - dayOffset) 
+          : 1 + (8 - dayOffset); 
+
+      const weekOffset = (week - 1) * 7;
+      const dayInWeekOffset = this.dayOfWeekMap[dayOfWeek.toLowerCase()] - 1;
+
+      const resultDate = new Date(
+        year,
+        0,
+        firstMonday + weekOffset + dayInWeekOffset
+      );
+      return resultDate;
+    },
+
+    formatAppointmentDate(appointment) {
+      const date = this.getDateFromWeek(
+        appointment.year,
+        appointment.weekOfYear,
+        appointment.dayOfWeek
+      );
+      return date.toLocaleDateString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    },
+
     async fetchAppointments() {
       try {
-        const BEARER_TOKEN = localStorage.getItem("token");
-        const response = await fetch("https://api.unime.site/UNIME/appointments/getByPatient",{
-            headers: {
-              Authorization: `Bearer ${BEARER_TOKEN}`,
-            },
-          });
+        const token = localStorage.getItem("token");
+        const response = await fetch("https://api.unime.site/UNIME/appointmentHistories/getByPatient", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
+
         if (data.code === 1000) {
           this.appointments = data.result;
-        } else {
-          console.error("Failed to fetch appointments");
         }
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
     },
-    formatDay(dayOfWeek) {
-      const days = {
-        monday: "Thứ 2",
-        tuesday: "Thứ 3",
-        wednesday: "Thứ 4",
-        thursday: "Thứ 5",
-        friday: "Thứ 6",
-        saturday: "Thứ 7",
-        sunday: "Chủ nhật",
-      };
-      return days[dayOfWeek] || dayOfWeek;
+
+    async searchAppointments() {
+      console.log("Searching appointments for date:", this.filterDate);
+      await this.fetchAppointments();
     },
+
     getStatusClass(status) {
-      return {
+      const statusClasses = {
         Pending: "status-pending",
-        Confirmed: "status-confirmed",
+        Completed: "status-done",
         Cancelled: "status-cancelled",
-      }[status] || "status-unknown";
+      };
+      return statusClasses[status] || "status-default";
     },
-    viewDetails(appointment) {
-      alert(`Xem chi tiết lịch hẹn: ${appointment.appointmentId}`);
+
+    previousPage() {
+      if (this.currentPage > 1) this.currentPage--;
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) this.currentPage++;
+    },
+
+    getCurrentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
     },
   },
   mounted() {
+    this.filterDate = this.getCurrentDate();
     this.fetchAppointments();
   },
 };
 </script>
 
-<style>
-.appointment-list {
-  max-width: 800px;
-  margin: auto;
-  text-align: center;
+<style scoped>
+.wrapper {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  margin-top: 64px;
+  margin-bottom: 64px;
 }
-
-.appointments-table {
+.appointment-container {
+  padding: 50px;
+  border-radius: 20px;
+  border-width: 1px;
+  max-width: 960px;
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.table-container {
+  overflow-x: auto;
+}
+table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
-
-.appointments-table th, .appointments-table td {
+th,
+td {
+  padding: 10px;
   border: 1px solid #ddd;
-  padding: 8px;
+  text-align: center;
 }
-
-.appointments-table th {
-  background-color: #f4f4f4;
-}
-
 .status-pending {
-  color: orange;
+  color: #ffa500;
+  font-weight: bold;
 }
-
-.status-confirmed {
-  color: green;
+.status-done {
+  color: #008000;
+  font-weight: bold;
 }
-
 .status-cancelled {
-  color: red;
+  color: #ff0000;
+  font-weight: bold;
+}
+.status-default {
+  color: #666;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.no-data {
-  margin-top: 20px;
-  color: #666;
+button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+}
+button:disabled {
+  background-color: #ccc;
 }
 </style>

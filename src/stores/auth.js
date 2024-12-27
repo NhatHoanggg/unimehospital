@@ -71,7 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
     const timeLeft = payload.exp - currentTime;
     console.log("time left: ", timeLeft);
     console.log("time left <= 300: ", timeLeft <= 300 && timeLeft > 0);
-    return timeLeft <= 300 && timeLeft > 0;
+    return timeLeft <= 60 && timeLeft > 0;
   };
 
   const logout = () => {

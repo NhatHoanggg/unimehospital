@@ -247,6 +247,7 @@ export default {
         })
         .catch((error) => {
           console.error("Lỗi tải dữ liệu:", error);
+          this.handleLogout();
         });
       } 
       else if (this.authStore.user.scope === "DOCTOR"){
