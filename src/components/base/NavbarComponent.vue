@@ -157,6 +157,8 @@ export default {
 
     this.fetchUserData();
     this.startUserDataPolling();
+
+    this.startCheckToken();
   },
   watch: {
   notifications: {
@@ -188,6 +190,7 @@ export default {
   beforeUnmount() {
     clearInterval(this.pollingInterval);
     clearInterval(this.userDataPollingInterval);
+    clearInterval(this.checkTokenInterval);
   },
   methods: {
     fetchNotifications() {
@@ -204,10 +207,18 @@ export default {
       }, 10000);
     },
     startUserDataPolling() {
-    this.userDataPollingInterval = setInterval(() => {
-      this.fetchUserData();
-    }, 3000);
-  },
+      this.userDataPollingInterval = setInterval(() => {
+        this.fetchUserData();
+      }, 3000);
+    },
+
+    startCheckToken() {
+      this.checkTokenInterval = setInterval(() => {
+        if (this.authStore.checkTokenExpiration()) {
+          this.authStore.refresh();
+        }
+      }, 60000);
+    },
 
     async fetchUserData() {
       if(!this.authStore.user) return;
@@ -215,7 +226,7 @@ export default {
         const token = localStorage.getItem("token");
       await axios
         .get(`https://api.unime.site/UNIME/patients/myInfo`, {
-          headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
           if (response.data.code === 1000) {
@@ -242,7 +253,7 @@ export default {
         const token = localStorage.getItem("token");
         await axios
           .get(`https://api.unime.site/UNIME/doctors/myInfo`, {
-            headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+            headers: { Authorization: `Bearer ${token}` },
           })
           .then((response) => {
             if (response.data.code === 1000) {
@@ -637,30 +648,44 @@ export default {
   white-space: normal;
 }
 
-/* Responsive Styles */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .navbar-menu {
-    position: absolute;
-    top: 70px;
-    right: 20px;
     flex-direction: column;
-    background-color: #ffffff;
-    width: 200px;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 15px 0;
-    gap: 15px;
     max-height: 0;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--background);
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 999;
   }
 
   .navbar-menu.active {
-    max-height: 500px;
+    max-height: 300px; /* Hoặc chiều cao phù hợp */
+    transition: max-height 0.3s ease-in-out;
   }
 
   .hamburger {
     display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+  }
+
+  .hamburger .bar {
+    height: 3px;
+    width: 25px;
+    background-color: #003a9e;
+  }
+
+  .navbar-left, .navbar-right {
+    flex: 1;
+  }
+
+  .navbar-right {
+    justify-content: flex-end;
   }
 }
+
 </style>

@@ -111,7 +111,7 @@ export default {
         axios
           .delete(`https://api.unime.site/UNIME/doctorservice`, {
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
             },
             data: doctorServiceData,
           })

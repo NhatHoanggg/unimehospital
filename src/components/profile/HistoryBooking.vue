@@ -54,7 +54,7 @@ export default {
         const BEARER_TOKEN = localStorage.getItem("token");
         const response = await fetch("https://api.unime.site/UNIME/appointments/getByPatient",{
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
             },
           });
         const data = await response.json();

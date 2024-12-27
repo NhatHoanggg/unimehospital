@@ -175,7 +175,7 @@ export default {
       axios
         .get("https://api.unime.site/UNIME/patients", {
           headers: {
-            Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            Authorization: `Bearer ${BEARER_TOKEN}`,
           },
         })
         .then((response) => {
@@ -220,7 +220,7 @@ export default {
           axios
             .delete(`https://api.unime.site/UNIME/patients/${this.pendingPatientId}`, {
               headers: {
-                Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+                Authorization: `Bearer ${BEARER_TOKEN}`,
               },
             })
             .then(() => {

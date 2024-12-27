@@ -62,7 +62,8 @@ export default {
           data,
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
+              // Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
             },
           }
         );

@@ -100,7 +100,7 @@ export default {
           data,
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );

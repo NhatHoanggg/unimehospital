@@ -186,7 +186,7 @@ export default {
           updatedUser,
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -219,7 +219,7 @@ export default {
       const token = localStorage.getItem("token");
       axios
         .get(`https://api.unime.site/UNIME/doctors/myInfo`, {
-          headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
           if (response.data.code === 1000) {

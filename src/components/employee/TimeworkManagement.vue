@@ -111,7 +111,7 @@ export default {
           `https://api.unime.site/UNIME/doctortimework/get/listByWeek/${this.weekOfYear}_${this.year}`,
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
             },
           }
         )

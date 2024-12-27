@@ -70,13 +70,13 @@ export default {
     };
 
     const submitLogin = async () => {
-      const formData = new FormData();
-      formData.append("username", username.value);
-      formData.append("password", password.value);
+      if (!username.value || !password.value) {
+        errorMessage.value = "Vui lòng nhập đầy đủ thông tin.";
+        return;
+      }
 
       try {
         const response = await fetch("https://api.unime.site/UNIME/auth/token", {
-        // const response = await fetch("http://localhost:8888/UNIME/auth/token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -87,41 +87,27 @@ export default {
           }),
         });
 
-        console.log("Response status:", response.status);
-
         if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.status}`);
+          throw new Error(`Đăng nhập thất bại: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("Server response:", data); 
-        console.log("Token response:", data.result.token)
+        authStore.login(data.result.token);
+        console.log("Token: ", data.result.token);
 
-        const t = data.result.token;
-        let token = {};
-        token.raw = t;
-        token.header = JSON.parse(window.atob(t.split('.')[0]));
-        token.payload = JSON.parse(window.atob(t.split('.')[1]));
-        console.log("token: ", token.payload)
-
-        authStore.login(token.payload); 
-        localStorage.setItem("token", JSON.stringify(data.result.token));
-
-        const userData = localStorage.getItem("user");
-        const user = JSON.parse(userData);
-        setTimeout(() => {
-          if (user.scope === "ADMIN") {
-            router.push("/admin");
-          } else if (user.scope === "EMPLOYEE") {
-            router.push("/employee");
-          } else if (user.scope === "DOCTOR") {
-            router.push("/doctor");
-          } else if (user.scope === "PATIENT") {
-            router.push("/");
-          }
-        }, 100);
-        // router.push("/");
-        
+        // Điều hướng dựa trên quyền người dùng
+        const { scope } = authStore.user;
+        if (scope === "ADMIN") {
+          router.push("/admin");
+        } else if (scope === "EMPLOYEE") {
+          router.push("/employee");
+        } else if (scope === "DOCTOR") {
+          router.push("/doctor");
+        } else if (scope === "PATIENT") {
+          router.push("/");
+        } else {
+          throw new Error("Quyền người dùng không hợp lệ.");
+        }
       } catch (error) {
         console.error("Error:", error);
         errorMessage.value = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
@@ -139,6 +125,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");

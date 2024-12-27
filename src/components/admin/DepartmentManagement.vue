@@ -205,7 +205,7 @@ export default {
           },
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         )
@@ -239,7 +239,7 @@ export default {
         axios
           .delete(`https://api.unime.site/UNIME/departments/${this.pendingDepartmentId}`, {
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
             },
           })
           .then(() => {

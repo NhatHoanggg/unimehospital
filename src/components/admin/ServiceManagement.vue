@@ -250,7 +250,7 @@ export default {
             await axios.put(
               `https://api.unime.site/UNIME/services/${this.selectedService.serviceId}`,
               this.selectedService,
-              { headers: { Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}` } }
+              { headers: { Authorization: `Bearer ${BEARER_TOKEN}` } }
             );
             this.isEditing = false;
             this.selectedService = null;
@@ -286,7 +286,7 @@ export default {
         try {
           await axios.delete(
             `https://api.unime.site/UNIME/services/${this.pendingServiceId}`,
-            { headers: { Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}` } }
+            { headers: { Authorization: `Bearer ${BEARER_TOKEN}` } }
           );
           this.services = this.services.filter(
             service => service.serviceId !== this.pendingServiceId

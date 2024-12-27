@@ -12,7 +12,7 @@
                 Chúng tôi cung cấp các dịch vụ y tế chất lượng cao từ các bác sĩ
                 chuyên nghiệp.
               </p>
-              <button class="hero-btn">Đặt lịch hẹn khám</button>
+              <button class="hero-btn" @click="bookAppointment">Đặt lịch hẹn khám</button>
             </div>
 
             <div class="hero-stats">
@@ -191,14 +191,26 @@ import FaqList from "./FaqList.vue";
 import ListServices from "./ListServices.vue";
 import TestimonialList from "./TestimonialList.vue";
 import ChatBot from "./ChatBot.vue";
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   name: "HomePage",
+  data(){
+    return {
+      authStore: useAuthStore(),
+    }
+  },
   components: {
-    ListServices,
+    ListServices, 
     FaqList,
     TestimonialList,
     ChatBot,
+  },
+  methods: {
+    bookAppointment() {
+      this.$router.push("/booking");
+      // this.authStore.refresh();
+    },
   },
 };
 </script>

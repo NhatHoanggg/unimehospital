@@ -124,7 +124,7 @@ export default {
       axios
         .get("https://api.unime.site/UNIME/employees", {
           headers: {
-            Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+            Authorization: `Bearer ${BEARER_TOKEN}`,
           },
         })
         .then((response) => {

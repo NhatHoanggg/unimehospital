@@ -1,24 +1,77 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false);
   const user = ref(null);
   const token = ref(null);
 
-  const login = (payload) => {
+  const decodeToken = (t) => {
+    try {
+      const payload = JSON.parse(atob(t.split('.')[1]));
+      return payload;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
+  const login = (rawToken) => {
+    const payload = decodeToken(rawToken);
+    if (!payload) throw new Error("Invalid token");
+
+    // Cập nhật user và token
     user.value = {
       username: payload.sub,
       scope: payload.scope,
-      image: payload.image,
+      image: payload.image || null,
     };
-    token.value = payload;
+    token.value = rawToken;
 
     isLoggedIn.value = true;
 
+    // Lưu thông tin vào localStorage
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('user', JSON.stringify(user.value));
-    localStorage.setItem('token', JSON.stringify(token.value));
+    localStorage.setItem('token', rawToken.toString());
+  };
+
+  const refresh = async () => {
+    const oldToken = localStorage.getItem('token');
+    console.log("Old Token", oldToken);
+
+    try {
+      const token = { token: oldToken };
+      const response = await axios.post("https://api.unime.site/UNIME/auth/refresh", token);
+
+      if (response.data.code === 1000) {
+        login(response.data.result.token);
+      } else {
+        console.error("Failed to refresh token");
+        logout();
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      logout(); 
+    }
+  };
+
+  const checkTokenExpiration = () => {
+    const currentTime = Math.floor(Date.now() / 1000);  
+    const payload = decodeToken(token.value);
+
+    console.log("checkTokenExpiration", payload);
+
+    if (!payload) return false;
+
+    console.log("Token expiration:", payload.exp);
+    console.log("Current time:", currentTime);
+
+    const timeLeft = payload.exp - currentTime;
+    console.log("time left: ", timeLeft);
+    console.log("time left <= 300: ", timeLeft <= 300 && timeLeft > 0);
+    return timeLeft <= 300 && timeLeft > 0;
   };
 
   const logout = () => {
@@ -36,9 +89,15 @@ export const useAuthStore = defineStore('auth', () => {
     const storedToken = localStorage.getItem('token');
 
     if (loggedIn && storedUser && storedToken) {
-      isLoggedIn.value = true;
-      user.value = JSON.parse(storedUser);
-      token.value = JSON.parse(storedToken);
+      // Kiểm tra tính hợp lệ của token
+      const payload = decodeToken(storedToken);
+      if (payload && payload.exp > Date.now() / 1000) {  
+        user.value = JSON.parse(storedUser);
+        token.value = storedToken;
+        isLoggedIn.value = true;
+      } else {
+        logout();
+      }
     }
   };
 
@@ -48,6 +107,8 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     login,
     logout,
+    refresh,
     initialize,
+    checkTokenExpiration,
   };
 });

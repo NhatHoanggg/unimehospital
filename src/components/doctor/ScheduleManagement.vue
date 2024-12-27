@@ -235,7 +235,7 @@ export default {
           formattedData,
           {
             headers: {
-              Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
+              Authorization: `Bearer ${BEARER_TOKEN}`,
             },
           }
         );
