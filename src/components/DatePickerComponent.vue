@@ -126,6 +126,8 @@ export default {
   startOfWeek.setDate(today.getDate() + offsetToMonday);
 
   const daysList = [];
+  let todayIndex = 0; // Chỉ số của ngày hôm nay
+
   for (let i = 0; i < 14; i++) { // 2 tuần
     const newDate = new Date(startOfWeek);
     newDate.setDate(startOfWeek.getDate() + i);
@@ -136,10 +138,21 @@ export default {
 
     const formattedDate = `${day}/${month}/${year}`;
     daysList.push(formattedDate);
+
+    // Kiểm tra ngày hiện tại để lưu lại chỉ số
+    if (
+      today.getDate() === newDate.getDate() &&
+      today.getMonth() === newDate.getMonth() &&
+      today.getFullYear() === newDate.getFullYear()
+    ) {
+      todayIndex = i;
+    }
   }
 
   this.days = daysList;
+  this.selectedDay = todayIndex; // Đặt ngày hiện tại làm ngày được chọn
 },
+
     isDayDisabled(day) {
         const [dayPart, monthPart, yearPart] = day.split('/').map(Number);
         const currentDate = new Date();

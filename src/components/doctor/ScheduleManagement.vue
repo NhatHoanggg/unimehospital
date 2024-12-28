@@ -63,18 +63,15 @@ export default {
       ],
       days: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
       dates: [],
+      datesToSend: [],
       periods: [1, 2, 3, 4, 5, 6, 7, 8],
       selectedSlots: [],
       weekNumber: 0,
-      timeworkList:[],
+      timeworkList: [],
     };
   },
   computed: {
     isSendAllowed() {
-      // const now = new Date();
-      // const dayOfWeek = now.getDay();
-      // const hours = now.getHours();
-      // return dayOfWeek === 6 && hours >= 20 && hours < 24;
       return true;
     },
   },
@@ -83,14 +80,13 @@ export default {
     this.getTimeworkList();
   },
   methods: {
-    convertToTimeworkId(dayOfWeek, startTime, endTime){
+    convertToTimeworkId(dayOfWeek, startTime, endTime) {
       const timework = this.timeworkList.find(
         (timework) =>
           timework.dayOfWeek === dayOfWeek &&
           timework.startTime === startTime &&
           timework.endTime === endTime
       );
-      // console.log("timework id: ", timework.timeworkId);
       return timework.timeworkId;
     },
 
@@ -105,25 +101,22 @@ export default {
           console.log("Lấy danh sách timework thành công");
         } else {
           console.error("Lấy danh sách timework thất bại");
-          // alert("Lấy danh sách timework thất bại.");
-          toast.error(`Lấy danh sách timework thất bại!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+          toast.error(`Lấy danh sách timework thất bại!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
         }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        // alert("Có lỗi xảy ra trong quá trình xử lý.");
-        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     },
+
     updateWeekDates() {
       const today = new Date();
       const dayOfWeek = today.getDay();
@@ -134,39 +127,42 @@ export default {
       );
 
       const startOfNextWeek = new Date(currentMonday);
-      // startOfNextWeek.setDate(currentMonday.getDate() + 7);
-      startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
+      startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7  ); 
+      // qqq
 
-      this.dates = Array.from({ length: 6 }, (_, i) => {
+      this.dates = [];
+      this.datesToSend = [];
+
+      for (let i = 0; i < 6; i++) {
         const date = new Date(startOfNextWeek);
         date.setDate(startOfNextWeek.getDate() + i);
+        
+        this.datesToSend.push(date);
+        
         const formattedDate = `${date.getDate()}/${
           date.getMonth() + 1
         }/${date.getFullYear()}`;
+        
+        this.dates.push(formattedDate);
+      }
 
-        this.weekNumber = this.getWeekOfYear(date);
-        // console.log(`Ngày ${formattedDate} thuộc tuần thứ ${this.weekNumber} của năm`);
-
-        return formattedDate;
-      });
+      // Get week info for the first date
+      const weekInfo = this.getWeekNumber(this.datesToSend[0]);
+      this.weekNumber = weekInfo.week;
+      this.year = weekInfo.year;
     },
 
-    getWeekOfYear(date) {
-      const targetDate = new Date(date);
-      targetDate.setHours(0, 0, 0, 0);
-
-      const startOfYear = new Date(targetDate.getFullYear(), 0, 1);
-      const dayOfWeek = startOfYear.getDay();
-      const startOfFirstWeek = new Date(startOfYear);
-      startOfFirstWeek.setDate(
-        startOfYear.getDate() + (dayOfWeek === 0 ? -6 : 1 - dayOfWeek)
-      );
-
-      const daysDifference = Math.floor(
-        (targetDate - startOfFirstWeek) / (24 * 60 * 60 * 1000)
-      );
-      const weekNumber = Math.ceil((daysDifference + 1) / 7);
-      return weekNumber;
+    getWeekNumber(d) {
+      const date = new Date(d);
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+      const week1 = new Date(date.getFullYear(), 0, 4);
+      const week = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+      
+      return {
+        week: week,
+        year: date.getFullYear()
+      };
     },
 
     toggleSelection(dayIndex, period) {
@@ -201,10 +197,10 @@ export default {
 
     async sendData() {
       const formattedData = [];
+      const weekInfo = this.getWeekNumber(this.datesToSend[0]);
 
       this.dates.forEach((date, dayIndex) => {
         this.periods.forEach((period) => {
-
           const timeworkId = this.convertToTimeworkId(
             this.getDayOfWeek(dayIndex),
             this.shifts[period].split("-")[0],
@@ -212,11 +208,8 @@ export default {
           );
 
           formattedData.push({
-            doctorTimeworkYear: new Date().getFullYear(),
-            weekOfYear: this.weekNumber ,
-            // dayOfWeek: this.getDayOfWeek(dayIndex),
-            // startTime: this.shifts[period].split("-")[0],
-            // endTime: this.shifts[period].split("-")[1],
+            doctorTimeworkYear: weekInfo.year,
+            weekOfYear: weekInfo.week,
             timework_id: timeworkId,
             doctorTimeworkStatus: this.isSelected(dayIndex, period)
               ? "Busy"
@@ -226,7 +219,6 @@ export default {
       });
 
       console.log(JSON.stringify(formattedData, null, 2));
-      // const myschedule = JSON.stringify(formattedData, null, 2);
       const BEARER_TOKEN = localStorage.getItem("token");
 
       try {
@@ -242,32 +234,26 @@ export default {
 
         if (response.status === 200) {
           console.log("Thêm timework thành công", response.data);
-          // alert("Thêm timework thành công");
-          toast.success(`Thêm timework thành công!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+          toast.success(`Thêm timework thành công!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
         } else {
           console.error("Thêm timework thất bại", response.data);
-          // alert("Thêm timework thất bại.");
-          toast.error(`Thêm timework thất bại!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+          toast.error(`Thêm timework thất bại!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
         }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        // alert("Có lỗi xảy ra trong quá trình xử lý.");
-        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+        toast.error(`Có lỗi xảy ra trong quá trình xử lý!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     },
   },

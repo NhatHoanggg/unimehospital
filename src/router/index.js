@@ -45,7 +45,7 @@ import CancelledAppointment from '@/components/employee/CancelledAppointment.vue
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
 import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
 import NextAppointments from '@/components/doctor/NextAppointments.vue';
-import BusyManagement from '@/components/doctor/BusyManagement.vue';
+import DoctorTimework from '@/components/doctor/DoctorTimework.vue';
 import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
 import EditProfile from '@/components/doctor/EditProfile.vue';
 
@@ -318,8 +318,8 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: 'busy',
-        component: BusyManagement,
+        path: 'timework',
+        component: DoctorTimework,
         meta: { requiresAuth: true },
       },
       {
