@@ -39,6 +39,8 @@ import TimeOffManagement from '@/components/employee/TimeOffManagement.vue';
 import TimeworkManagement from '@/components/employee/TimeworkManagement.vue';
 import ListDoctorServices from '@/components/employee/ListDoctorServices.vue';
 import EditEmployee from '@/components/employee/EditEmployee.vue';
+import PendingAppointment from '@/components/employee/PendingAppointment.vue';
+import CancelledAppointment from '@/components/employee/CancelledAppointment.vue';
 
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
 import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
@@ -278,6 +280,16 @@ const routes = [
         component: EditEmployee,
         meta: { requiresAuth: true },
       },
+      {
+        path: 'pending-appointment',
+        component: PendingAppointment,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'cancelled-appointment',
+        component: CancelledAppointment,
+        meta: { requiresAuth: true },
+      }
     ]
     // meta: { requiresAuth: true },
   },

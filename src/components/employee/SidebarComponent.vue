@@ -30,8 +30,8 @@ import { useRouter } from "vue-router";
         router : useRouter(),
         menuItems: [
           { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
-          { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
-          { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
+          { text: 'Lịch chờ', icon: require('@/assets/pending.png'), path: '/pending-appointment' },
+          { text: 'Lịch hủy', icon: require('@/assets/cancel.png'), path: '/cancelled-appointment' },
           // { text: 'Request', icon: require('@/assets/request.png'), path: '/time-off-management' },
           { text: 'Dịch vụ', icon: require('@/assets/list-service.png'), path: '/list-services' },
           { text: 'Hồ sơ', icon: require('@/assets/User-icon.png'), path: '/profile' },
