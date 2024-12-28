@@ -71,7 +71,7 @@
 <script>
 import axios from "axios";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
-import { toast } from "vue3-toastify";
+// import { toast } from "vue3-toastify";
 
 export default {
   components: { DepartmentListComponentVue },
@@ -159,7 +159,7 @@ export default {
     },
 
     handleDepartmentSelected(payload) {
-      this.selectedDepartment = payload.department.label;
+      this.selectedDepartment = payload.department.value;
     },
 
     async addEmployee() {
@@ -196,9 +196,9 @@ export default {
           employeeName: this.formFields.find(
             (field) => field.id === "employeeName"
           ).model,
-          employeeAddress: this.formFields.find(
-            (field) => field.id === "employeeAddress"
-          ).model,
+          // employeeAddress: this.formFields.find(
+          //   (field) => field.id === "employeeAddress"
+          // ).model,
           employeePhoneNumber: this.formFields.find(
             (field) => field.id === "employeePhoneNumber"
           ).model,
@@ -206,7 +206,7 @@ export default {
           employeeDateOfBirth: this.formFields.find(
             (field) => field.id === "employeeDateOfBirth"
           ).model,
-          departmentName: this.selectedDepartment,
+          departmentId: this.selectedDepartment,
         };
 
         console.log("emloyee data", employeeData);
@@ -224,12 +224,7 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          // alert("Thêm nhân viên thành công!");
-          toast.success(`Thêm nhân viên thành công!`, {
-            rtl: false,
-            limit: 3,
-            position: this.$toast.POSITION.TOP_RIGHT,
-          });
+          alert("Thêm nhân viên thành công");
         } else {
           alert(
             "Có lỗi xảy ra: " +

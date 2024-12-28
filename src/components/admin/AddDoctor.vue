@@ -173,7 +173,7 @@ export default {
     },
 
     handleDepartmentSelected(payload) {
-      this.selectedDepartment = payload.department.label;
+      this.selectedDepartment = payload.department.value;
     },
 
     async addDoctor() {
@@ -222,7 +222,7 @@ export default {
           doctorDescription: this.formFields.find(
             (field) => field.id === "doctorDescription"
           ).model,
-          departmentName: this.selectedDepartment,
+          departmentId: this.selectedDepartment,
         };
         
         console.log("Dữ liệu gửi đi:", doctorData);
@@ -240,7 +240,6 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          // alert("Thêm bác sĩ thành công!");
           toast.success(`Thêm bác sĩ thành công!`,
                     {
                       rtl: false,

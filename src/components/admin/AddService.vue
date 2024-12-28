@@ -25,16 +25,8 @@
 
       <div class="form-group">
         <label for="department">Chuyên khoa:</label>
-        <multiselect
-          v-model="selectedDepartment"
-          :options="departments"
-          placeholder="Chọn chuyên khoa"
-          label="label"
-          track-by="value"
-          :searchable="true"
-          :close-on-select="true"
-          :allow-empty="false"
-          class="multi-select"
+        <department-list-component-vue
+          @department-selected="handleDepartmentSelected"
         />
       </div>
 
@@ -57,6 +49,7 @@
           accept="image/*"
         />
       </div>
+
       <div class="form-group">
         <img
           v-if="previewImage"
@@ -73,12 +66,11 @@
 
 <script>
 import axios from "axios";
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.min.css";
-import { toast } from 'vue3-toastify';
+import { toast } from "vue3-toastify";
+import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
 
 export default {
-  components: { Multiselect },
+  components: { DepartmentListComponentVue },
 
   data() {
     return {
@@ -89,14 +81,6 @@ export default {
       serviceImage: null,
       previewImage: null,
       imageUrl: "",
-      isLoading: true,
-      data: "",
-      departments: [
-        { label: "Răng-Hàm-Mặt", value: "Răng-Hàm-Mặt" },
-        { label: "Tim Mạch", value: "Tim Mạch" },
-        { label: "Nhi Khoa", value: "Nhi Khoa" },
-        { label: "Da Liễu", value: "Da Liễu" },
-      ],
     };
   },
 
@@ -122,26 +106,18 @@ export default {
       }
     },
 
+    handleDepartmentSelected(payload) {
+      this.selectedDepartment = payload.department;
+      console.log("Phòng ban đã chọn:", this.selectedDepartment);
+    },
+
     async addService() {
       if (!this.isValidForm) {
-        // alert("Vui lòng điền đầy đủ thông tin!");
-        toast.warn(`Vui lòng điền đầy đủ thông tin!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },); 
-        return;
-      }
-
-      if (!this.serviceImage) {
-        // alert("Vui lòng chọn hình ảnh cho dịch vụ!");
-        toast.warn(`Vui lòng chọn hình ảnh cho dịch vụ!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },); 
+        toast.warn("Vui lòng điền đầy đủ thông tin!", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
         return;
       }
 
@@ -162,25 +138,26 @@ export default {
         const BEARER_TOKEN = localStorage.getItem("token");
 
         if (!BEARER_TOKEN) {
-          // alert("Token không hợp lệ hoặc hết hạn!");
-          toast.error(`Token không hợp lệ hoặc hết hạn!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },); 
+          toast.error("Token không hợp lệ hoặc hết hạn!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
           return;
         }
 
+        const serviceData = {
+          serviceName: this.serviceName,
+          servicePrice: this.servicePrice,
+          serviceDescription: this.serviceDescription,
+          departmentId: this.selectedDepartment.value,
+          serviceImage: this.imageUrl,
+        };
+        console.log("Service data:", serviceData);
+
         const serviceResponse = await axios.post(
           "https://api.unime.site/UNIME/services",
-          {
-            serviceImage: this.imageUrl,
-            serviceName: this.serviceName,
-            serviceDescription: this.serviceDescription,
-            servicePrice: this.servicePrice,
-            departmentName: this.selectedDepartment.value,
-          },
+          serviceData,
           {
             headers: {
               Authorization: `Bearer ${BEARER_TOKEN}`,
@@ -189,36 +166,21 @@ export default {
         );
 
         if (serviceResponse.status === 200) {
-          console.log("Dịch vụ đã được thêm thành công:", serviceResponse.data);
-          // alert("Thêm dịch vụ thành công!");
-          toast.success(`Thêm dịch vụ thành công!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+          toast.success("Thêm dịch vụ thành công!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
           this.resetForm();
         } else {
-          console.error("Lỗi khi thêm dịch vụ:", serviceResponse.data);
-          // alert("Thêm dịch vụ thất bại.");
-          toast.error(`Thêm dịch vụ thất bại!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },);
+          toast.error("Thêm dịch vụ thất bại!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
         }
       } catch (error) {
-        if (error.response) {
-          console.error("Lỗi server:", error.response.data);
-          alert(`Có lỗi từ server: ${error.response.data.message || error.response.data}`);
-        } else if (error.request) {
-          console.error("Lỗi không nhận được phản hồi:", error.request);
-          alert("Không nhận được phản hồi từ server.");
-        } else {
-          console.error("Lỗi thiết lập yêu cầu:", error.message);
-          alert(`Lỗi: ${error.message}`);
-        }
+        console.error(error);
       }
     },
 
@@ -231,23 +193,10 @@ export default {
       this.previewImage = null;
       this.imageUrl = "";
     },
-    fetchDepartment() {
-      this.isLoading = true;
-      axios
-        .get("https://api.unime.site/UNIME/departments/get/departmentList")
-        .then((response) => {
-          this.departments = response.data.result;
-        })
-        .catch((error) => {
-          console.error("Error fetching data: ", error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
-    },
   },
 };
 </script>
+
 
 
 <style scoped>
