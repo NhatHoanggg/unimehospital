@@ -14,7 +14,6 @@
               <th style="width: 60px">#</th>
               <th style="width: 150px">Ngày</th>
               <th style="width: 150px">Thời gian</th>
-              <th style="width: 200px">Tên bệnh nhân</th>
               <th style="width: 200px">Bác sĩ</th>
               <th style="width: 200px">Dịch vụ</th>
               <th style="width: 100px">Trạng thái</th>
@@ -28,7 +27,6 @@
               <td>{{ index + 1 }}</td>
               <td>{{ formatAppointmentDate(appointment) }}</td>
               <td>{{ `${appointment.startTime} - ${appointment.endTime}` }}</td>
-              <td>{{ appointment.patientName }}</td>
               <td>{{ appointment.doctorName }}</td>
               <td>{{ appointment.serviceName }}</td>
               <td>
@@ -36,7 +34,6 @@
                   appointment.appointmentStatus
                 }}</span>
               </td>
-              
             </tr>
           </tbody>
         </table>
@@ -74,9 +71,34 @@ export default {
     };
   },
   computed: {
+    sortedAppointments() {
+      return [...this.appointments].sort((a, b) => {
+        // So sánh năm
+        if (a.year !== b.year) {
+          return b.year - a.year;
+        }
+        
+        // So sánh tuần
+        if (a.weekOfYear !== b.weekOfYear) {
+          return b.weekOfYear - a.weekOfYear;
+        }
+        
+        // So sánh ngày trong tuần
+        const aDayNum = this.dayOfWeekMap[a.dayOfWeek.toLowerCase()];
+        const bDayNum = this.dayOfWeekMap[b.dayOfWeek.toLowerCase()];
+        if (aDayNum !== bDayNum) {
+          return bDayNum - aDayNum;
+        }
+        
+        // So sánh thời gian bắt đầu
+        const aTime = parseInt(a.startTime.replace(':', ''));
+        const bTime = parseInt(b.startTime.replace(':', ''));
+        return bTime - aTime;
+      });
+    },
     paginatedAppointments() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.appointments.slice(start, start + this.itemsPerPage);
+      return this.sortedAppointments.slice(start, start + this.itemsPerPage);
     },
     totalPages() {
       return Math.ceil(this.appointments.length / this.itemsPerPage);
@@ -186,7 +208,6 @@ export default {
   padding: 50px;
   border-radius: 20px;
   border-width: 1px;
-  max-width: 960px;
   background-color: white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
