@@ -45,6 +45,7 @@ import CancelledAppointment from '@/components/employee/CancelledAppointment.vue
 import DoctorDashboard from '@/components/doctor/DoctorDashboard.vue';
 import ScheduleManagement from '@/components/doctor/ScheduleManagement.vue';
 import NextAppointments from '@/components/doctor/NextAppointments.vue';
+import HistoryDoctor from '@/components/doctor/HistoryDoctor.vue';
 import DoctorTimework from '@/components/doctor/DoctorTimework.vue';
 import AppointmentDetail from '@/components/doctor/AppointmentDetail.vue';
 import EditProfile from '@/components/doctor/EditProfile.vue';
@@ -95,21 +96,6 @@ const routes = [
     name: 'AboutUs',
     component: AboutUs 
   },
-  // { 
-  //   path: '/booking', 
-  //   name: 'Booking',
-  //   component:  BookingPage,
-  //   children: [
-  //     {
-  //       path: 'doctors',
-  //       component: BookDoctor,
-  //     },
-  //     {
-  //       path: 'services',
-  //       component: BookService,
-  //     },
-  //   ],
-  // },
   { 
     path: '/booking', 
     name: 'Booking',
@@ -306,6 +292,11 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'history',
+        component: HistoryDoctor,
+        meta: { requiresAuth: true },
+      },
+      {
         path: 'next-appointments/:id',  
         name: 'AppointmentDetail',
         component: AppointmentDetail,
@@ -313,7 +304,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: 'schedule',
+        path: 'add-schedule',
         component: ScheduleManagement,
         meta: { requiresAuth: true },
       },

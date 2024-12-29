@@ -65,7 +65,7 @@
             </button> -->
 
           <!-- Danh sách thông báo -->
-            <div v-if="showNotifications" class="notification-list">
+            <!-- <div v-if="showNotifications" class="notification-list">
               <p v-if="notifications.length === 0">Không có thông báo.</p>
               <ul v-else>
                 <li v-for="(notification, index) in notifications" :key="index">
@@ -73,7 +73,7 @@
                   <p>{{ notification.body }}</p>
                 </li>
               </ul>
-            </div>
+            </div> -->
           
             <li v-if="!authStore.isLoggedIn" class="button-container">
               <router-link to="/sign-in" class="button">Đăng nhập</router-link>
@@ -128,7 +128,7 @@
 <script>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { toast } from "vue3-toastify";
+// import { toast } from "vue3-toastify";
 import axios from "axios";
 
 export default {
@@ -136,59 +136,51 @@ export default {
   data() {
     return {
       imageSrc: "https://res.cloudinary.com/dy8p5yjsd/image/upload/v1733478703/user_cnv7fx.png",
-      notifications: [],
-      showNotifications: false,
-      isDarkMode: false,
-      previousNotificationCount: 0,
+      // notifications: [],
+      // showNotifications: false,
+      // isDarkMode: false,
+      // previousNotificationCount: 0,
     };
   },
   mounted() {
-    // const storedUser = localStorage.getItem("user");
-    // if (storedUser) {
-    //   const user = JSON.parse(storedUser);
-    //   if (user.image) {
-    //     this.imageSrc = user.image;
-    //   }
-    // }
+    // this.fetchNotifications();
 
-    this.fetchNotifications();
-
-    this.startPolling();
+    // this.startPolling();
 
     this.fetchUserData();
     this.startUserDataPolling();
 
     this.startCheckToken();
   },
-  watch: {
-  notifications: {
-    handler(newNotifications) {
-      if (!this.authStore.user) return;
-      const newCount = newNotifications.length;
+  // watch: {
+  // notifications: {
+  //   handler(newNotifications) {
+  //     if (!this.authStore.user) return;
+  //     const newCount = newNotifications.length;
 
-      if (newCount !== this.previousNotificationCount) {
+  //     if (newCount !== this.previousNotificationCount) {
 
-        if (newCount > this.previousNotificationCount) {
-          // this.showNotificationPopup(newCount - this.previousNotificationCount);
-          toast.info(
-            `Bạn có ${newCount} thông báo mới!`,
-            {
-              rtl: false,
-              limit: 3,
-              position: toast.POSITION.BOTTOM_RIGHT,
-            }
-          );
-        }
-        this.previousNotificationCount = newCount;
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
-  },
+  //       if (newCount > this.previousNotificationCount) {
+  //         // this.showNotificationPopup(newCount - this.previousNotificationCount);
+  //         toast.info(
+  //           `Bạn có ${newCount} thông báo mới!`,
+  //           {
+  //             rtl: false,
+  //             limit: 3,
+  //             position: toast.POSITION.BOTTOM_RIGHT,
+  //           }
+  //         );
+  //       }
+  //       this.previousNotificationCount = newCount;
+  //       }
+  //     },
+  //     immediate: true,
+  //     deep: true,
+  //   },
+  // },
 
   beforeUnmount() {
-    clearInterval(this.pollingInterval);
+    // clearInterval(this.pollingInterval);
     clearInterval(this.userDataPollingInterval);
     clearInterval(this.checkTokenInterval);
   },
@@ -201,11 +193,11 @@ export default {
         })
         .catch((error) => console.error("Lỗi khi tải thông báo:", error));
     },
-    startPolling() {
-      this.pollingInterval = setInterval(() => {
-        this.fetchNotifications();
-      }, 10000);
-    },
+    // startPolling() {
+    //   this.pollingInterval = setInterval(() => {
+    //     this.fetchNotifications();
+    //   }, 10000);
+    // },
     startUserDataPolling() {
       this.userDataPollingInterval = setInterval(() => {
         this.fetchUserData();
@@ -353,8 +345,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  /* font-family: 'Poppins', sans-serif; */
-  /* font-family: "Roboto", sans-serif; */
 }
 
 .navbar-left {

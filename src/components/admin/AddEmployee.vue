@@ -248,7 +248,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
   padding: 20px;
 }
 

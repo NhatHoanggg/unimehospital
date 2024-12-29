@@ -264,8 +264,8 @@ export default {
   display: flex;
   justify-content: center;
   padding: 40px;
-  /* background-color: #f4f4f9; */
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background-color: #f4f4f9;
+  /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
   height: 800px;
   overflow: hidden;
 }
@@ -274,7 +274,7 @@ export default {
   background-color: white;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
   width: 600px;
 }
 

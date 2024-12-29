@@ -34,11 +34,6 @@
         </div>
 
         <div class="form-group">
-          <label for="depart">Chuyên khoa</label>
-          <input type="text" id="depart" v-model="departmentName" readonly />
-        </div>
-
-        <div class="form-group">
           <label>Giới tính</label>
           <div class="gender-options">
             <label>
@@ -115,7 +110,7 @@ export default {
       avatar: null,
       defaultAvatar: "https://via.placeholder.com/200",
 
-      doctorId: "",
+      // doctorId: "",
       doctorImage: "",
       doctorName: "",
       doctorAddress: "",
@@ -124,7 +119,6 @@ export default {
       doctorDateOfBirth: "",
       doctorDescription: "",
       doctorEmail: "",
-      departmentName: "",
       doctordetailInformation: "",
       doctordetailExperience: "",
       doctordetailAwardRecognization: "",
@@ -162,9 +156,8 @@ export default {
           this.doctorImage = uploadResponse.data.secure_url;
         }
 
-        // Tạo object dữ liệu cập nhật
         const updatedUser = {
-          doctorId: this.doctorId,
+          doctorEmail: this.doctorEmail,
           doctorImage: this.doctorImage,
           doctorName: this.doctorName,
           doctorAddress: this.doctorAddress,
@@ -172,8 +165,6 @@ export default {
           doctorGender: this.doctorGender,
           doctorDateOfBirth: this.doctorDateOfBirth,
           doctorDescription: this.doctorDescription,
-          doctorEmail: this.doctorEmail,
-          departmentName: this.departmentName,
           doctordetailInformation: this.doctordetailInformation,
           doctordetailExperience: this.doctordetailExperience,
           doctordetailAwardRecognization: this.doctordetailAwardRecognization,
@@ -225,7 +216,6 @@ export default {
           if (response.data.code === 1000) {
             const user = response.data.result;
 
-            this.doctorId = user.doctorId;
             this.doctorImage = user.doctorImage;
             this.doctorName = user.doctorName;
             this.doctorAddress = user.doctorAddress;
@@ -234,11 +224,10 @@ export default {
             this.doctorDateOfBirth = user.doctorDateOfBirth;
             this.doctorDescription = user.doctorDescription;
             this.doctorEmail = user.doctorEmail;
-            this.departmentName = user.departmentName;
+            // this.departmentName = user.departmentName;
             this.doctordetailInformation = user.doctordetailInformation;
             this.doctordetailExperience = user.doctordetailExperience;
-            this.doctordetailAwardRecognization =
-              user.doctordetailAwardRecognization;
+            this.doctordetailAwardRecognization =user.doctordetailAwardRecognization;
 
             this.avatar = user.doctorImage || this.defaultAvatar;
           }
