@@ -25,20 +25,15 @@
                   {{ selectedTime || "Chưa chọn" }}
                 </div>
               </div>
-              <div class="location">
+
+              <!-- <div class="location">
                 <i class="fas fa-map-marker-alt"></i> Địa điểm:
                 {{ doctor.address }}
-              </div>
-              <!-- <div class="service-option"><i class="fas fa-hand-holding-heart"></i> Dịch vụ: Khám tổng quát</div> -->
+              </div> -->
+
               <div class="service-option">
                 <i class="fas fa-hand-holding-heart"></i>
                 Dịch vụ:
-                <!-- <select v-model="selectedService">
-                  <option disabled value="">Vui lòng chọn</option>
-                  <option v-for="item in items" :key="item.value" :value="item.value">
-                    {{ item.label }}
-                  </option>
-                </select> -->
                 <DoctorServiceListComponent
                   :serviceId="Number($route.params.id)"
                   @service-selected="handleServiceSelected"
@@ -60,7 +55,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import DoctorServiceListComponent from "./tools/DoctorServiceListComponent.vue";
@@ -82,29 +76,10 @@ export default {
     return {
       isCollapsed: true,
       doctor: {},
-      items: [
-        { label: "Khám bệnh", value: "Khám bệnh" },
-        { label: "Tư vấn", value: "Tư vấn" },
-      ],
       selectedService: "",
       servicePrice: "",
       serviceId: "",
     };
-  },
-  mounted() {
-    const doctorId = this.$route.params.id;
-    const doctorData = localStorage.getItem("selectedDoctor");
-
-    if (doctorData) {
-      const doctor = JSON.parse(doctorData);
-      if (doctor.id === doctorId) {
-        this.doctor = doctor;
-      } else {
-        this.fetchDoctorData(doctorId);
-      }
-    } else {
-      this.fetchDoctorData(doctorId);
-    }
   },
 
   methods: {
@@ -140,16 +115,6 @@ export default {
           limit: 3,
           position: toast.POSITION.TOP_RIGHT,
         });
-      }
-    },
-    async fetchDoctorData(id) {
-      try {
-        const response = await axios.get(
-          `https://api.unime.site/UNIME/doctors/get/getDetail/${id}`
-        );
-        this.doctor = response.data.result;
-      } catch (error) {
-        console.error("Error fetching doctor data:", error);
       }
     },
   },

@@ -3,7 +3,11 @@
     <div class="box">
       <div class="title">
         <h1>1. Chọn ngày khám</h1>
-        <i v-if="!isCollapsed" class="fas fa-chevron-up" @click="toggleCollapse"></i>
+        <i
+          v-if="!isCollapsed"
+          class="fas fa-chevron-up"
+          @click="toggleCollapse"
+        ></i>
         <i v-else class="fas fa-chevron-down" @click="toggleCollapse"></i>
       </div>
 
@@ -15,14 +19,17 @@
                 class="slider-item"
                 v-for="(day, index) in dayOfWeek"
                 :key="index"
-                :class="{ active: selectedDay === index, disabled: isDayDisabled(day) }"
+                :class="{
+                  active: selectedDay === index,
+                  disabled: isDayDisabled(day),
+                }"
               >
                 {{ day }}
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="slider-container">
           <button @click="prevSlide" class="arrow-button">‹</button>
           <div class="slider-wrapper">
@@ -32,7 +39,10 @@
                 v-for="(day, index) in days"
                 :key="index"
                 @click="!isDayDisabled(day) && selectDay(index)"
-                :class="{ active: selectedDay === index, disabled: isDayDisabled(day) }"
+                :class="{
+                  active: selectedDay === index,
+                  disabled: isDayDisabled(day),
+                }"
               >
                 {{ day }}
               </div>
@@ -42,7 +52,7 @@
         </div>
         <div v-if="isLoading" class="loading schedule-container">
           <p>Đang tải dữ liệu</p>
-            <LoadingComponent />
+          <LoadingComponent />
         </div>
         <div v-else class="schedule-container">
           <div class="schedule-wrapper" v-if="selectedDaySchedule.length">
@@ -95,7 +105,22 @@ export default {
       isCollapsed: false,
       selectedShift: null,
       isLoading: true,
-      dayOfWeek: ["T2", "T3", "T4", "T5", "T6", "T7", "CN", "T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+      dayOfWeek: [
+        "Thứ 2",
+        "Thứ 3",
+        "Thứ 4",
+        "Thứ 5",
+        "Thứ 6",
+        "Thứ 7",
+        "Chủ nhật",
+        "Thứ 2",
+        "Thứ 3",
+        "Thứ 4",
+        "Thứ 5",
+        "Thứ 6",
+        "Thứ 7",
+        "Chủ nhật",
+      ],
     };
   },
   computed: {
@@ -117,51 +142,52 @@ export default {
   },
   methods: {
     generateDays() {
-  const today = new Date();
-  const startOfWeek = new Date(today);
+      const today = new Date();
+      const startOfWeek = new Date(today);
 
-  // Xác định ngày bắt đầu từ thứ 2
-  const dayOfWeek = today.getDay();
-  const offsetToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  startOfWeek.setDate(today.getDate() + offsetToMonday);
+      // Xác định ngày bắt đầu từ thứ 2
+      const dayOfWeek = today.getDay();
+      const offsetToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      startOfWeek.setDate(today.getDate() + offsetToMonday);
 
-  const daysList = [];
-  let todayIndex = 0; // Chỉ số của ngày hôm nay
+      const daysList = [];
+      let todayIndex = 0; // Chỉ số của ngày hôm nay
 
-  for (let i = 0; i < 14; i++) { // 2 tuần
-    const newDate = new Date(startOfWeek);
-    newDate.setDate(startOfWeek.getDate() + i);
+      for (let i = 0; i < 14; i++) {
+        // 2 tuần
+        const newDate = new Date(startOfWeek);
+        newDate.setDate(startOfWeek.getDate() + i);
 
-    const day = newDate.getDate();
-    const month = newDate.getMonth() + 1;
-    const year = newDate.getFullYear();
+        const day = newDate.getDate();
+        const month = newDate.getMonth() + 1;
+        const year = newDate.getFullYear();
 
-    const formattedDate = `${day}/${month}/${year}`;
-    daysList.push(formattedDate);
+        const formattedDate = `${day}/${month}/${year}`;
+        daysList.push(formattedDate);
 
-    // Kiểm tra ngày hiện tại để lưu lại chỉ số
-    if (
-      today.getDate() === newDate.getDate() &&
-      today.getMonth() === newDate.getMonth() &&
-      today.getFullYear() === newDate.getFullYear()
-    ) {
-      todayIndex = i;
-    }
-  }
+        // Kiểm tra ngày hiện tại để lưu lại chỉ số
+        if (
+          today.getDate() === newDate.getDate() &&
+          today.getMonth() === newDate.getMonth() &&
+          today.getFullYear() === newDate.getFullYear()
+        ) {
+          todayIndex = i;
+        }
+      }
 
-  this.days = daysList;
-  this.selectedDay = todayIndex; // Đặt ngày hiện tại làm ngày được chọn
-},
+      this.days = daysList;
+      this.selectedDay = todayIndex; // Đặt ngày hiện tại làm ngày được chọn
+    },
 
     isDayDisabled(day) {
-        const [dayPart, monthPart, yearPart] = day.split('/').map(Number);
-        const currentDate = new Date();
-        const checkDate = new Date(yearPart, monthPart - 1, dayPart);
-        return checkDate < new Date(currentDate.setHours(0, 0, 0, 0));
-      },
+      const [dayPart, monthPart, yearPart] = day.split("/").map(Number);
+      const currentDate = new Date();
+      const checkDate = new Date(yearPart, monthPart - 1, dayPart);
+      return checkDate < new Date(currentDate.setHours(0, 0, 0, 0));
+    },
 
     async updateSchedules() {
-      console.log("doctor id: ->",this.doctorId)
+      console.log("doctor id: ->", this.doctorId);
       this.isLoading = true;
       try {
         const response = await axios.get(
@@ -171,23 +197,23 @@ export default {
         if (response.data.code === 1000) {
           const result = response.data.result;
           result
-          .filter((shift) => shift.doctorTimeworkStatus === "Available") 
-          .forEach((shift) => {
-            const date = this.formatDateFromApi(
-              shift.doctorTimeworkYear,
-              shift.weekOfYear,
-              shift.dayOfWeek
-            );
+            .filter((shift) => shift.doctorTimeworkStatus === "Available")
+            .forEach((shift) => {
+              const date = this.formatDateFromApi(
+                shift.doctorTimeworkYear,
+                shift.weekOfYear,
+                shift.dayOfWeek
+              );
 
-            if (!this.schedules[date]) {
-              this.schedules[date] = [];
-            }
+              if (!this.schedules[date]) {
+                this.schedules[date] = [];
+              }
 
-            this.schedules[date].push({
-              time: `${shift.startTime.slice(0,-3)}-${shift.endTime.slice(0,-3)}`,
-              doctorTimeworkId: shift.doctorTimeworkId, 
+              this.schedules[date].push({
+                time: `${shift.startTime}-${shift.endTime}`,
+                doctorTimeworkId: shift.doctorTimeworkId,
+              });
             });
-          });
         } else {
           console.error("Failed to fetch schedules", response.data.message);
         }
@@ -198,7 +224,15 @@ export default {
       }
     },
     formatDateFromApi(year, week, dayOfWeek) {
-      const dayNames = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+      const dayNames = [
+        "SUNDAY",
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY",
+      ];
       const dayIndex = dayNames.indexOf(dayOfWeek);
 
       const firstDayOfYear = new Date(year, 0, 1);
@@ -277,12 +311,12 @@ export default {
 .container {
   width: 100%;
   height: auto;
-  background-color: #F1F5F9;
+  background-color: #f1f5f9;
   /* margin-top: 70px; */
   align-items: center;
   justify-content: center;
   display: flex;
-  color: #2046A9;
+  color: #2046a9;
 }
 
 .box {
@@ -327,7 +361,7 @@ export default {
 .slider-track {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  margin-top:0;
+  margin-top: 0;
 }
 
 .slider-item {
@@ -383,17 +417,17 @@ export default {
   list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  grid-template-rows: repeat(3, 1fr);    
-  gap: 10px;   
-  position: relative; 
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
   width: 100%;
 }
 
 .schedule-wrapper li {
   width: 150px;
-  background-color: #D9D9D9;
-  border: 1px solid #D9D9D9;
+  background-color: #d9d9d9;
+  border: 1px solid #d9d9d9;
   border-radius: 20px;
   margin: 5px 0;
   text-align: center;
@@ -412,14 +446,14 @@ export default {
   cursor: pointer;
 }
 
-.schedule-wrapper img{
+.schedule-wrapper img {
   height: 300px;
 }
 
 .button {
-  position: absolute; 
+  position: absolute;
   /* bottom: 50px;        */
-  right: 114px;        
+  right: 114px;
   min-width: 192px;
   padding: 15px 20px;
   border: 2px solid #003a9e;
@@ -442,9 +476,8 @@ export default {
   align-items: center;
 }
 .slider-item.disabled {
-  color: #ccc;         
-  text-decoration: line-through; 
+  color: #ccc;
+  text-decoration: line-through;
   cursor: not-allowed;
 }
-
 </style>
