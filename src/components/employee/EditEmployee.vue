@@ -56,6 +56,16 @@
         </div>
 
         <div class="form-group">
+          <label for="dob">Ngày sinh</label>
+          <input
+            type="date"
+            id="dob"
+            v-model="employeeDateOfBirth"
+            required
+          />
+        </div>
+
+        <div class="form-group">
           <label for="phone">Số điện thoại</label>
           <input
             type="text"
@@ -128,13 +138,13 @@ export default {
         // Tạo object dữ liệu cập nhật
         const updatedUser = {
           employeeUsername: this.employeeUsername,
-          employeeImage: this.employeeImage,
           employeePassword: this.employeePassword,
           employeeEmail: this.employeeEmail,
           employeeName: this.employeeName,
+          employeeImage: this.employeeImage,
           employeePhoneNumber: this.employeePhoneNumber,
           employeeGender: this.employeeGender,
-          // employeeDateOfBirth: "2003-10-06"
+          employeeDateOfBirth: "2003-10-06"
         };
 
         console.log(JSON.stringify(updatedUser));

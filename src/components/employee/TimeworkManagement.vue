@@ -15,7 +15,12 @@
       <tbody>
         <tr v-for="shift in shifts" :key="shift">
           <td>Ca {{ shift }}</td>
-          <td v-for="day in days" :key="day">
+          <td
+            v-for="day in days"
+            :key="day"
+            @click="showAvailableDoctors(day, shift)"
+            class="clickable-cell"
+          >
             {{ getDoctorCount(day, shift) }}
           </td>
         </tr>
@@ -23,6 +28,17 @@
     </table>
     <div v-if="loading" class="loading">Đang tải...</div>
     <div v-if="error" class="error">{{ error }}</div>
+
+    <!-- Modal hiển thị danh sách bác sĩ -->
+    <div v-if="availableDoctors.length" class="doctor-modal">
+      <h3> {{ formatDay(selectedDay) }} - Ca: {{ selectedShift }}</h3>
+      <ul>
+        <li v-for="doctor in availableDoctors" :key="doctor.doctorId">
+          {{ doctor.doctorName }}
+        </li>
+      </ul>
+      <button @click="closeDoctorModal">Đóng</button>
+    </div>
   </div>
 </template>
 
@@ -51,25 +67,83 @@ export default {
       ],
       loading: false,
       error: null,
+      selectedDay: null,
+      selectedShift: null,
+      availableDoctors: [],
     };
   },
   computed: {
     isPreviousDisabled() {
-      return this.weekOfYear <= this.currentWeek.week;
+      return (
+        this.weekOfYear === this.currentWeek.week &&
+        this.year === this.currentWeek.year
+      );
     },
+
     isNextDisabled() {
       return this.weekOfYear >= this.maxWeek;
     },
   },
   methods: {
+    showAvailableDoctors(day, shift) {
+      this.selectedDay = day;
+      this.selectedShift = shift;
+      const [startTime, endTime] = shift.split("-");
+      this.availableDoctors = this.schedules.filter(
+        (schedule) =>
+          schedule.dayOfWeek === day &&
+          schedule.startTime === startTime &&
+          schedule.endTime === endTime &&
+          schedule.doctorTimeworkStatus === "Available"
+      );
+    },
+    closeDoctorModal() {
+      this.availableDoctors = [];
+      this.selectedDay = null;
+      this.selectedShift = null;
+    },
     getCurrentWeek() {
       const now = new Date();
-      const firstJan = new Date(now.getFullYear(), 0, 1);
-      const days = Math.floor((now - firstJan) / (24 * 60 * 60 * 1000));
-      const week = Math.ceil((days + firstJan.getDay() + 1) / 7);
-      return { year: now.getFullYear(), week };
+      const year = now.getFullYear();
+
+      const firstJan = new Date(year, 0, 1);
+      const firstMonday = new Date(
+        year,
+        0,
+        firstJan.getDate() + ((8 - (firstJan.getDay() || 7)) % 7)
+      );
+
+      const daysSinceFirstMonday = Math.floor(
+        (now - firstMonday) / (24 * 60 * 60 * 1000)
+      );
+
+      let week = Math.floor(daysSinceFirstMonday / 7) + 1;
+
+      if (daysSinceFirstMonday < 0) {
+        const lastDec = new Date(year - 1, 11, 31);
+        const lastDecFirstMonday = new Date(
+          lastDec.getFullYear(),
+          0,
+          lastDec.getDate() + ((8 - (lastDec.getDay() || 7)) % 7)
+        );
+        week =
+          Math.floor(
+            (lastDec - lastDecFirstMonday) / (7 * 24 * 60 * 60 * 1000)
+          ) + 1;
+        return { year: year - 1, week };
+      }
+
+      if (week > 52) {
+        week = 1;
+        return { year: year + 1, week };
+      }
+      console.log("Current Year:", year, "Current Week:", week);
+
+      return { year, week };
     },
+
     formatDay(dayOfWeek) {
+      // Format tên ngày trong tuần
       const days = {
         MONDAY: "Thứ Hai",
         TUESDAY: "Thứ Ba",
@@ -81,26 +155,30 @@ export default {
       return days[dayOfWeek] || dayOfWeek;
     },
     getDoctorCount(day, shift) {
+      // Đếm số bác sĩ có trạng thái Available trong một ca
       const [startTime, endTime] = shift.split("-");
       return this.schedules.filter(
         (schedule) =>
           schedule.dayOfWeek === day &&
           schedule.startTime === startTime &&
           schedule.endTime === endTime &&
-          schedule.doctortimeworkStatus === "Available"
+          schedule.doctorTimeworkStatus === "Available"
       ).length;
     },
     changeWeek(step) {
       this.weekOfYear += step;
+
       if (this.weekOfYear > 52) {
-        this.weekOfYear = 1;
+        this.weekOfYear = 1; 
         this.year++;
       } else if (this.weekOfYear < 1) {
-        this.weekOfYear = 52;
+        this.weekOfYear = 52; 
         this.year--;
       }
+
       this.fetchSchedule();
     },
+
     fetchSchedule() {
       this.loading = true;
       this.error = null;
@@ -117,7 +195,7 @@ export default {
         )
         .then((response) => {
           if (response.data.code === 1000) {
-            this.schedules = response.data.result;
+            this.schedules = response.data.result; // Lưu kết quả vào schedules
           } else {
             this.error = "Không thể lấy dữ liệu!";
           }
@@ -197,5 +275,44 @@ export default {
 .error {
   color: red;
   text-align: center;
+}
+.clickable-cell {
+  cursor: pointer;
+  background-color: #f0f8ff;
+  transition: background-color 0.3s;
+}
+.clickable-cell:hover {
+  background-color: #dceeff;
+}
+
+.doctor-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.doctor-modal h3 {
+  margin-bottom: 10px;
+}
+.doctor-modal ul {
+  list-style: none;
+  padding: 0;
+}
+.doctor-modal li {
+  padding: 5px 0;
+}
+.doctor-modal button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

@@ -36,6 +36,7 @@ import AddEmployee from '@/components/admin/AddEmployee.vue';
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import AddDoctorService from '@/components/employee/AddDoctorService.vue';
 import TimeOffManagement from '@/components/employee/TimeOffManagement.vue';
+import PatientList from '@/components/employee/PatientList.vue';
 import TimeworkManagement from '@/components/employee/TimeworkManagement.vue';
 import ListDoctorServices from '@/components/employee/ListDoctorServices.vue';
 import EditEmployee from '@/components/employee/EditEmployee.vue';
@@ -244,6 +245,11 @@ const routes = [
       {
         path: 'time-off-management',
         component: TimeOffManagement,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'patient-list',
+        component: PatientList,
         meta: { requiresAuth: true },
       },
       {
