@@ -1,11 +1,11 @@
 <template>
-  <div class="employee-management">
+  <div class="doctor-management">
     <div v-if="isLoading" class="loading">
       <p>Đang tải dữ liệu</p>
       <LoadingComponent />
     </div>
     <div v-else>
-      <h1>Quản lý Nhân viên</h1>
+      <h1>Danh sách Bác sĩ</h1>
       <div class="search-container">
         <input
           type="text"
@@ -20,38 +20,43 @@
         </select>
       </div>
 
-      <table class="employee-table">
+      <table class="doctor-table">
         <thead>
           <tr>
+            <th>STT</th>
             <th>Tên</th>
             <th>Chuyên khoa</th>
             <th>Trạng thái</th>
             <th>Email</th>
-            <th>SĐT</th>
-            <th>Giới tính</th>
+            <!-- <th>SĐT</th> -->
+            <!-- <th>Địa chỉ</th> -->
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="employee in filteredEmployees" :key="employee.employeeId">
-            <td>{{ employee.employeeName }}</td>
-            <td>{{ employee.departmentName }}</td>
-            <td>{{ employee.employeeStatus }}</td>
-            <td>{{ employee.employeeEmail }}</td>
-            <td>{{ employee.employeePhoneNumber }}</td>
-            <td>{{ formatGender(employee.employeeGender) }}</td>
+          <tr v-for="(doctor, index) in filteredDoctors" :key="doctor.doctorId">
+            <td>{{ index + 1 }}</td>
+            <td>{{ doctor.doctorName }}</td>
+            <td>{{ doctor.departmentName }}</td>
+            <td>
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  :checked="doctor.doctorStatus === 'ACTIVE'"
+                  @change="toggleDoctorStatus(doctor)"
+                />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td>{{ doctor.doctorEmail }}</td>
+            <!-- <td>{{ doctor.doctorPhoneNumber }}</td> -->
+            <!-- <td>{{ doctor.doctorAddress }}</td> -->
             <td>
               <button
-                @click="editEmployee(employee.employeeId)"
-                class="edit-btn"
+                @click="showDoctorDetails(doctor)"
+                class="detail-btn"
               >
-                Edit
-              </button>
-              <button
-                @click="deleteEmployee(employee.employeeId)"
-                class="delete-btn"
-              >
-                Delete
+                Chi tiết
               </button>
             </td>
           </tr>
@@ -76,6 +81,49 @@
         </button>
       </div>
     </div>
+
+    <!-- Modal Chi tiết bác sĩ -->
+    <div v-if="selectedDoctor" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Thông tin chi tiết bác sĩ</h2>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="doctor-profile">
+            <img 
+              :src="selectedDoctor.doctorImage" 
+              :alt="selectedDoctor.doctorName"
+              class="doctor-profile-image"
+            />
+            <div class="doctor-info">
+              <h3>{{ selectedDoctor.doctorName }}</h3>
+              <p><strong>Chuyên khoa:</strong> {{ selectedDoctor.departmentName }}</p>
+              <p><strong>Ngày sinh:</strong> {{ formatDate(selectedDoctor.doctorDateOfBirth) }}</p>
+              <p><strong>Giới tính:</strong> {{ selectedDoctor.doctorGender ? 'Nam' : 'Nữ' }}</p>
+              <p><strong>Email:</strong> {{ selectedDoctor.doctorEmail }}</p>
+              <p><strong>Số điện thoại:</strong> {{ selectedDoctor.doctorPhoneNumber }}</p>
+              <p><strong>Địa chỉ:</strong> {{ selectedDoctor.doctorAddress }}</p>
+            </div>
+          </div>
+          
+          <div class="doctor-details">
+            <h4>Mô tả</h4>
+            <p>{{ selectedDoctor.doctorDescription }}</p>
+            
+            <h4>Thông tin chi tiết</h4>
+            <p style="white-space: pre-line">{{ selectedDoctor.doctordetailInformation }}</p>
+            
+            <h4>Kinh nghiệm</h4>
+            <p>{{ selectedDoctor.doctordetailExperience }}</p>
+            
+            <h4>Giải thưởng & Ghi nhận</h4>
+            <p>{{ selectedDoctor.doctordetailAwardRecognization }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,21 +134,22 @@ import LoadingComponent from "../tools/LoadingComponent.vue";
 export default {
   data() {
     return {
-      employees: [],
+      doctors: [],
       rowsPerPage: 5,
       currentPage: 1,
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
+      selectedDoctor: null,
     };
   },
   components: {
     LoadingComponent,
   },
   computed: {
-    filteredEmployees() {
-      const filtered = this.employees.filter((employee) => {
-        return employee.employeeName
+    filteredDoctors() {
+      const filtered = this.doctors.filter((doctor) => {
+        return doctor.doctorName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase());
       });
@@ -109,8 +158,8 @@ export default {
       return filtered.slice(start, start + this.rowsPerPage);
     },
     totalPages() {
-      const filtered = this.employees.filter((employee) => {
-        return employee.employeeName
+      const filtered = this.doctors.filter((doctor) => {
+        return doctor.doctorName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase());
       });
@@ -122,13 +171,13 @@ export default {
       this.isLoading = true;
       const BEARER_TOKEN = localStorage.getItem("token");
       axios
-        .get("https://api.unime.site/UNIME/employees", {
+        .get("https://api.unime.site/UNIME/doctors/doctorList", {
           headers: {
             Authorization: `Bearer ${BEARER_TOKEN}`,
           },
         })
         .then((response) => {
-          this.employees = response.data.result;
+          this.doctors = response.data.result;
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
@@ -137,17 +186,25 @@ export default {
           this.isLoading = false;
         });
     },
-    formatGender(gender) {
-      return gender ? "Nam" : "Nữ";
+    async toggleDoctorStatus(doctor) {
+      // console.log(doctor.doctorId);
+      const BEARER_TOKEN = localStorage.getItem("token");
+      await axios.patch(`https://api.unime.site/UNIME/doctors/updateStatus/${doctor.doctorId}`, {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      });
     },
-    editEmployee(id) {
-      console.log(`Editing employee with id: ${id}`);
+
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('vi-VN', options);
     },
-    deleteEmployee(id) {
-      console.log(`Deleting employee with id: ${id}`);
-      this.employees = this.employees.filter(
-        (employee) => employee.employeeId !== id
-      );
+    showDoctorDetails(doctor) {
+      this.selectedDoctor = doctor;
+    },
+    closeModal() {
+      this.selectedDoctor = null;
     },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
@@ -162,7 +219,7 @@ export default {
 </script>
 
 <style scoped>
-.employee-management {
+.doctor-management {
   margin-top: 64px;
   padding: 20px;
   background-color: #f9f9f9;
@@ -198,10 +255,17 @@ h1 {
   width: 150px;
 }
 
-.employee-table {
+.doctor-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+}
+
+.doctor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 th,
@@ -220,34 +284,19 @@ tr:nth-child(even) {
   background-color: #fafafa;
 }
 
-button {
+.detail-btn {
   padding: 6px 12px;
+  width: 100%;
+  background-color: #2196F3;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #f0f0f0;
-}
-
-.edit-btn {
-  background-color: #4caf50;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #45a049;
-}
-
-.delete-btn {
-  background-color: #f44336;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #e53935;
+.detail-btn:hover {
+  background-color: #1976D2;
 }
 
 .pagination {
@@ -261,6 +310,7 @@ button:hover {
   padding: 8px 16px;
   background-color: #007bff;
   color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -281,4 +331,136 @@ button:hover {
   justify-content: center;
   align-items: center;
 }
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.doctor-profile {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.doctor-profile-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.doctor-info {
+  flex: 1;
+  text-align: left;
+}
+
+.doctor-info h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.doctor-details{
+  display: flex;
+  flex-direction: column;
+  text-align: justify;
+}
+
+.doctor-details h4 {
+  color: #2196F3;
+  margin: 16px 0 8px 0;
+}
+
+.doctor-details p {
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
 </style>

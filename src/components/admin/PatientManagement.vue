@@ -1,11 +1,11 @@
 <template>
   <div class="patient-management">
-    <h1>Quản lý bệnh nhân</h1>
     <div v-if="isLoading" class="loading">
       <p>Đang tải dữ liệu</p>
       <LoadingComponent />
     </div>
     <div v-else>
+      <h1>Danh sách Bệnh nhân</h1>
       <div class="search-container">
         <input
           type="text"
@@ -20,29 +20,36 @@
         </select>
       </div>
 
-      <table class="user-table">
+      <table class="patient-table">
         <thead>
           <tr>
+            <th>STT</th>
             <th>Tên</th>
+            <th>Username</th>
+            <th>Trạng thái</th>
             <th>Email</th>
-            <th>SĐT</th>
-            <th>Giới tính</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in filteredUsers" :key="user.patientId">
-            <td>{{ user.patientName }}</td>
-            <td>{{ user.patientEmail }}</td>
-            <td>{{ user.patientPhoneNumber }}</td>
-            <td>{{ formatGender(user.patientGender) }}</td>
+          <tr v-for="(patient, index) in filteredPatients" :key="patient.patientId">
+            <td>{{ index + 1 }}</td>
+            <td>{{ patient.patientName }}</td>
+            <td>{{ patient.patientUsername }}</td>
             <td>
-              <!-- <button @click="editUser(user.patientId)" class="edit-btn">
-                Edit
-              </button> -->
-              <button @click="openDetail(user)" class="edit-btn">Detail</button>
-              <button @click="deleteUser(user.patientId)" class="delete-btn">
-                Delete
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  :checked="patient.patientStatus === 'ACTIVE'"
+                  @change="togglePatientStatus(patient)"
+                />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td>{{ patient.patientEmail }}</td>
+            <td>
+              <button @click="showPatientDetails(patient)" class="detail-btn">
+                Chi tiết
               </button>
             </td>
           </tr>
@@ -67,91 +74,60 @@
         </button>
       </div>
     </div>
-    <!-- Modal -->
-    <div v-if="selectedUser" class="modal-overlay" @click="closeDetail">
-      <div class="modal" @click.stop>
-        <img :src="selectedUser.patientImage" alt="patient-avt">
-        <div class="details">
-          <div class="detail-item">
-            <span class="label">Username:</span>
-            <span class="value">{{ selectedUser.patientUsername }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Tên bệnh nhân:</span>
-            <span class="value">{{ selectedUser.patientName }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Email:</span>
-            <span class="value">{{ selectedUser.patientEmail }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Địa chỉ:</span>
-            <span class="value">{{ selectedUser.patientAddress || 'Không có mô tả' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">SĐT:</span>
-            <span class="value">{{ selectedUser.patientPhoneNumber || 'Không có mô tả' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Giới tính:</span>
-            <span class="value">{{ selectedUser.patientGender ? 'Nam' : 'Nữ' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Ngày sinh:</span>
-            <span class="value">{{ selectedUser.patientDateOfBirth || 'Không có mô tả' }}</span>
+
+    <div v-if="selectedPatient" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Thông tin chi tiết bệnh nhân</h2>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="patient-profile">
+            <img
+              :src="selectedPatient.patientImage"
+              :alt="selectedPatient.patientName"
+              class="patient-profile-image"
+            />
+            <div class="patient-info">
+              <h3>{{ selectedPatient.patientName }}</h3>
+              <p><strong>Username:</strong> {{ selectedPatient.patientUsername }}</p>
+              <p><strong>Ngày sinh:</strong> {{ formatDate(selectedPatient.patientDateOfBirth) }}</p>
+              <p><strong>Giới tính:</strong> {{ selectedPatient.patientGender ? 'Nam' : 'Nữ' }}</p>
+              <p><strong>Email:</strong> {{ selectedPatient.patientEmail }}</p>
+              <p><strong>Số điện thoại:</strong> {{ selectedPatient.patientPhoneNumber }}</p>
+              <p><strong>Địa chỉ:</strong> {{ selectedPatient.patientAddress }}</p>
+            </div>
           </div>
         </div>
-        <button @click="closeDetail">Đóng</button>
       </div>
     </div>
-
-    <!-- Alert -->
-    <AlertModal
-        :isVisible="isModalVisible"
-        :type="modalType"
-        :title="modalTitle"
-        :content="modalContent"
-        @action="handleModalAction"
-      />
-    <button class="close-button" @click="closeModal">
-      <i class="fas fa-times"></i>
-    </button>
-
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
-import AlertModal from "../tools/AlertModal.vue";
-import { toast } from 'vue3-toastify';
 
 export default {
   data() {
     return {
-      users: [],
+      patients: [],
       rowsPerPage: 5,
       currentPage: 1,
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
-      selectedUser: null,
-
-      isModalVisible: false,
-      modalType: "info",
-      modalTitle: "",
-      modalContent: "",
-      pendingPatientId: null,
+      selectedPatient: null,
     };
   },
   components: {
     LoadingComponent,
-    AlertModal
   },
   computed: {
-    filteredUsers() {
-      const filtered = this.users.filter((user) => {
-        return user.patientName
+    filteredPatients() {
+      const filtered = this.patients.filter((patient) => {
+        return patient.patientName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase());
       });
@@ -160,8 +136,8 @@ export default {
       return filtered.slice(start, start + this.rowsPerPage);
     },
     totalPages() {
-      const filtered = this.users.filter((user) => {
-        return user.patientName
+      const filtered = this.patients.filter((patient) => {
+        return patient.patientName
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase());
       });
@@ -179,7 +155,7 @@ export default {
           },
         })
         .then((response) => {
-          this.users = response.data.result;
+          this.patients = response.data.result;
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
@@ -188,66 +164,32 @@ export default {
           this.isLoading = false;
         });
     },
-
-    openDetail(user) {
-      this.selectedUser = user;
+    togglePatientStatus(patient) {
+      const BEARER_TOKEN = localStorage.getItem("token");
+      axios
+        .patch(`https://api.unime.site/UNIME/patients/updateStatus/${patient.patientId}`, {
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+          },
+        })
+        .then(() => {
+          patient.patientStatus =
+            patient.patientStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+        })
+        .catch((error) => {
+          console.error("Error toggling patient status: ", error);
+        });
     },
-    closeDetail() {
-      this.selectedUser = null;
+    formatDate(dateString) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(dateString).toLocaleDateString("vi-VN", options);
     },
-
-    formatGender(gender) {
-      return gender ? "Nam" : "Nữ";
+    showPatientDetails(patient) {
+      this.selectedPatient = patient;
     },
-    editUser(id) {
-      console.log(`Editing user with id: ${id}`);
+    closeModal() {
+      this.selectedPatient = null;
     },
-    deleteUser(id) {
-      // console.log(`Deleting user with id: ${id}`);
-      // this.users = this.users.filter((user) => user.patientId !== id);
-      this.pendingPatientId = id;
-      this.modalType = "warning";
-      this.modalTitle = "Xác nhận xóa bệnh nhân";
-      this.modalContent = "Bạn có chắc chắn muốn xóa bệnh nhân này không?";
-      this.isModalVisible = true;
-    },
-
-    handleModalAction(action) {
-        console.log("Modal action: ", action);
-        const BEARER_TOKEN = localStorage.getItem("token");
-
-        if (action === "OK" && this.pendingPatientId !== null) {
-          axios
-            .delete(`https://api.unime.site/UNIME/patients/${this.pendingPatientId}`, {
-              headers: {
-                Authorization: `Bearer ${BEARER_TOKEN}`,
-              },
-            })
-            .then(() => {
-              this.users = this.users.filter(
-                (user) => user.patientId !== this.pendingUserId
-              );
-              this.pendingPatientId = null;
-              this.isModalVisible = false;
-              this.currentPage = 1;
-              toast.success(`Xóa bệnh nhân thành công!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },); 
-            })
-            .catch((error) => {
-              console.error("Error deleting user: ", error);
-              this.isModalVisible = false;
-            });
-        }
-        else if (action === "Cancel") {
-          this.isModalVisible = false;
-          this.pendingPatientId = null;
-        }
-      },
-    
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -297,10 +239,17 @@ h1 {
   width: 150px;
 }
 
-.user-table {
+.patient-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+}
+
+.patient-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 th,
@@ -319,35 +268,19 @@ tr:nth-child(even) {
   background-color: #fafafa;
 }
 
-button {
+.detail-btn {
   padding: 6px 12px;
+  width: 100%;
+  background-color: #2196F3;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #f0f0f0;
-}
-
-.edit-btn {
-  background-color: #4caf50;
-  color: white;
-  margin-right: 20px;
-}
-
-.edit-btn:hover {
-  background-color: #45a049;
-}
-
-.delete-btn {
-  background-color: #f44336;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #e53935;
+.detail-btn:hover {
+  background-color: #1976D2;
 }
 
 .pagination {
@@ -361,6 +294,7 @@ button:hover {
   padding: 8px 16px;
   background-color: #007bff;
   color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -382,119 +316,135 @@ button:hover {
   align-items: center;
 }
 
+/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7); 
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-.modal {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-  max-width: 500px;
-  width: 90%;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.modal h2 {
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #333;
-  text-align: center; 
-}
-
-.modal img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
+.modal-content {
+  background-color: white;
   border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-/* .modal p {
-  margin: 10px 0;
-  font-size: 1rem;
-  color: #555;
-}
-
-.modal p strong {
-  color: #333;
-} */
-
-.details {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-item {
+.modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.label {
-  font-weight: bold;
+.modal-body {
+  padding: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
   color: #333;
+}
+
+.patient-profile {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.patient-profile-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.patient-info {
   flex: 1;
   text-align: left;
 }
 
-.value {
-  color: #555;
-  flex: 2;
-  text-align: right;
+.patient-info h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
 }
 
-.modal button {
-  margin-top: 20px;
-  padding: 10px 15px;
-  border: none;
-  background: #28a745; 
-  color: white;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  display: block; 
-  width: 100%; 
-  text-align: center;
-  transition: background-color 0.3s;
+.patient-details{
+  display: flex;
+  flex-direction: column;
+  text-align: justify;
 }
 
-.modal button:hover {
-  background: #218838;
+.patient-details h4 {
+  color: #2196F3;
+  margin: 16px 0 8px 0;
 }
 
-.close-button {
+.patient-details p {
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
   cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
 }
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
 }
 
 </style>
