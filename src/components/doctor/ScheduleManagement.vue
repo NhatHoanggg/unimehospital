@@ -39,7 +39,7 @@
       Gửi dữ liệu
     </button>
     <p v-if="!isSendAllowed" class="warning-text">
-      Nút này chỉ khả dụng từ 20h đến 24h vào Thứ 4 hàng tuần.
+      Đã đăng kí lịch hẹn
     </p>
   </div>
 </template>
@@ -72,7 +72,8 @@ export default {
   },
   computed: {
     isSendAllowed() {
-      return true;
+      const isSendAllowed = localStorage.getItem("isSendAllowed");
+      return isSendAllowed === "true";
     },
   },
   created() {
@@ -128,7 +129,6 @@ export default {
 
       const startOfNextWeek = new Date(currentMonday);
       startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7  ); 
-      // qqq
 
       this.dates = [];
       this.datesToSend = [];

@@ -82,6 +82,17 @@ export default {
           if (this.scheduleData.length > 0) {
             this.doctorName = this.scheduleData[0].doctorName
           }
+
+          const uniqueWeeks = [...new Set(this.scheduleData.map(s => s.weekOfYear))]
+          uniqueWeeks.sort((a, b) => a - b) 
+          
+          if (uniqueWeeks.length >= 3) {
+            // console.log('Tuần của phần tử thứ 3:', uniqueWeeks[2])
+            localStorage.setItem('isSendAllowed', false)
+          }
+          else {
+            localStorage.setItem('isSendAllowed', true)
+          }
         }
       } catch (error) {
         console.error('Error fetching schedule:', error)
