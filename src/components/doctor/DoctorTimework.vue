@@ -79,7 +79,6 @@ export default {
         })
         if (response.data.code === 1000) {
           this.scheduleData = response.data.result
-          // console.log('count available:', this.scheduleData.filter(s => s.doctorTimeworkStatus === 'Available').length)
           if (this.scheduleData.length > 0) {
             this.doctorName = this.scheduleData[0].doctorName
           }
@@ -105,6 +104,7 @@ export default {
         'empty': !slot
       }
     },
+
     getSlotStatus(timeSlot, day) {
       const [startTime] = timeSlot.split('-')
       const weekData = this.getCurrentWeekData()
@@ -117,6 +117,7 @@ export default {
 
       return slot?.doctorTimeworkStatus || 'N/A'
     },
+
     getDayName(englishDay) {
       const dayMapping = {
         'MONDAY': 'THỨ HAI',
@@ -129,22 +130,29 @@ export default {
       }
       return dayMapping[englishDay]
     },
+
     getCurrentWeekData() {
       const date = new Date(this.currentDate)
-      
       date.setDate(date.getDate() + (this.currentWeek - 1) * 7)
       
-      const weekNumber = this.getWeekNumber(date)
+      const mondayOffset = date.getDay() === 0 ? -6 : 1 - date.getDay()
+      const monday = new Date(date)
+      monday.setDate(date.getDate() + mondayOffset)
+      
+      const thursday = new Date(monday)
+      thursday.setDate(monday.getDate() + 3)
       
       return {
-        week: weekNumber,
-        year: date.getFullYear()
+        week: this.getWeekNumber(date),
+        year: thursday.getFullYear() 
       }
     },
+
     getCurrentWeekNumber() {
       const weekData = this.getCurrentWeekData()
       return weekData.week
     },
+
     getWeekNumber(d) {
       d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
@@ -152,6 +160,7 @@ export default {
       const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
       return weekNo
     },
+
     getCurrentWeekDates() {
       const date = new Date(this.currentDate)
       date.setDate(date.getDate() + (this.currentWeek - 1) * 7)
@@ -165,13 +174,15 @@ export default {
       
       return { monday, sunday }
     },
+
     formatDateRange(dates) {
       const options = { day: '2-digit', month: '2-digit', year: 'numeric' }
       const startDate = dates.monday.toLocaleDateString('vi-VN', options)
       const endDate = dates.sunday.toLocaleDateString('vi-VN', options)
       return `${startDate} - ${endDate}`
-    }
+    },
   },
+  
   mounted() {
     this.currentDate = new Date()
     this.fetchSchedule()
