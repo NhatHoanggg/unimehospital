@@ -40,7 +40,7 @@
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" v-model="employeeEmail" readonly />
+          <input type="email" id="email" v-model="employeeEmail" />
         </div>
 
         <div class="form-group">

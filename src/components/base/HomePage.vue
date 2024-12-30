@@ -25,7 +25,7 @@
               <div class="stat-item">
                 <h2 class="stat-value">18+</h2>
                 <span class="stat-line stat-purple"></span>
-                <p class="stat-description">Vị trí phòng khám</p>
+                <p class="stat-description">Dịch vụ khác nhau</p>
               </div>
 
               <div class="stat-item">
@@ -54,7 +54,7 @@
               />
               <img
                 class="image-full card"
-                src="@/assets/images/hero-img03.png"
+                src="@/assets/images/hero-3.jpg"
                 alt=""
                 style="width: 300px; height: 300px"
               />
@@ -99,11 +99,11 @@
 
         <div class="service-item">
           <div class="service-icon">
-            <img src="@/assets/images/icon02.png" alt="" />
+            <img src="@/assets/images/icon021.png" alt="" />
           </div>
 
           <div class="service-info">
-            <h2 class="service-title">Tìm địa điểm phòng khám</h2>
+            <h2 class="service-title">Tìm dịch vụ mong muốn</h2>
             <p class="service-description">
               Sự chăm sóc tầm cỡ thế giới cho mọi người. Hệ thống chăm sóc sức
               khoẻ của chúng tôi rất chuyên nghiệp và vô tiền khoáng hậu. Từ

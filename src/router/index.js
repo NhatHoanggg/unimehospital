@@ -32,6 +32,8 @@ import AddService from '@/components/admin/AddService.vue';
 import AddDepartment from '@/components/admin/AddDepartment.vue';
 import AddDoctor from '@/components/admin/AddDoctor.vue';
 import AddEmployee from '@/components/admin/AddEmployee.vue';
+import AllHistory from '@/components/admin/AllHistory.vue';
+import AllPending from '@/components/admin/AllPending.vue';
 
 import EmployeeDashboard from '@/components/employee/EmployeeDashboard.vue';
 import AddDoctorService from '@/components/employee/AddDoctorService.vue';
@@ -199,6 +201,16 @@ const routes = [
         meta: { requiresAuth: true },
         // redirect: 'user-management/doctors',',
         
+      },
+      {
+        path: 'appointments/next-appointments',
+        component: AllPending,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'appointments/history',
+        component: AllHistory,
+        meta: { requiresAuth: true },
       },
       {
         path: 'department-management',

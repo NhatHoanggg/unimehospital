@@ -89,7 +89,7 @@ export default {
       this.pendingDoctorId = doctorId;
       this.modalType = "warning";
       this.modalTitle = "Xác nhận xóa bác sĩ";
-      this.modalContent = "Bạn có chắc chắn muốn xóa bác sĩ này không?";
+      this.modalContent = "Bạn có chắc chắn muốn xóa bác sĩ này khỏi dịch vụ được chọn không?";
       this.isModalVisible = true;
     },
     handleModalAction(action) {

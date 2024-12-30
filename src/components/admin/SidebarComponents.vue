@@ -22,12 +22,12 @@
       >
         <span>Bệnh nhân</span>
       </div>
-      <!-- <div
+      <div
         class="submenu-item"
         @click="selectItem('Bác sĩ', '/user-management/doctors')"
       >
         <span>Bác sĩ</span>
-      </div> -->
+      </div>
       <div
         class="submenu-item"
         @click="selectItem('Nhân viên', '/user-management/employees')"
@@ -36,16 +36,32 @@
       </div>
     </div>
 
+    <!--  -->
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Lịch sắp tới' }"
+      @click="selectItem('Lịch sắp tới', '/appointments/next-appointments')"
+    >
+      <img src="@/assets/pending.png" alt="" class="menu-icon" />
+      <span>Lịch sắp tới</span>
+    </div>
+
+    <div
+      class="menu-item"
+      :class="{ selected: selectedItem === 'Lịch sử' }"
+      @click="selectItem('Lịch sử', '/appointments/history')"
+    >
+      <img src="@/assets/busy.png" alt="" class="menu-icon" />
+      <span>Lịch sử</span>
+    </div>
+    
+    <!--  -->
     <div
       class="menu-item"
       :class="{ selected: selectedItem === 'Thêm nhân viên' }"
       @click="selectItem('Thêm nhân viên', '/add-employee')"
     >
-      <img
-        src="@/assets/add-user-1.png"
-        alt="ADD EMPLOYEE"
-        class="menu-icon"
-      />
+      <img src="@/assets/add-user-1.png" alt="ADD EMPLOYEE" class="menu-icon" />
       <span>Thêm Nhân Viên</span>
     </div>
 
