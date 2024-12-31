@@ -98,7 +98,13 @@
             <div class="employee-info">
               <h3>{{ selectedEmployee.employeeName }}</h3>
               <p><strong>Username:</strong> {{ selectedEmployee.employeeUsername }}</p>
-              <p><strong>Phòng ban:</strong> {{ selectedEmployee.departmentName }}</p>
+              <!-- <p><strong>Phòng ban:</strong> {{ selectedEmployee.departmentName }}</p> -->
+              <p><strong>Phòng ban:</strong>  
+                <DepartmentListComponentVue
+                  :defaultDepartment="selectedEmployee.departmentName"
+                  @department-selected="handleDepartmentSelected"
+                />
+              </p>
               <p><strong>Giới tính:</strong> {{ selectedEmployee.employeeGender ? 'Nam' : 'Nữ' }}</p>
               <p><strong>Email:</strong> {{ selectedEmployee.employeeEmail }}</p>
               <p><strong>Số điện thoại:</strong> {{ selectedEmployee.employeePhoneNumber }}</p>
@@ -113,6 +119,7 @@
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
+import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
 
 export default {
   data() {
@@ -128,6 +135,7 @@ export default {
   },
   components: {
     LoadingComponent,
+    DepartmentListComponentVue,
   },
   computed: {
     filteredEmployees() {
@@ -183,6 +191,23 @@ export default {
         console.error("Error updating status: ", error);
       }
     },
+
+    handleDepartmentSelected(payload) {
+      const departmentId = payload.department.value;
+      const BEARER_TOKEN = localStorage.getItem("token");
+      axios.patch(`https://api.unime.site/UNIME/employees/updateDepartment/?employee_id=${this.selectedEmployee.employeeId}&department_id=${departmentId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      });
+      if (this.selectedEmployee.departmentId === departmentId) {
+        return;
+      }
+      else {
+        this.fetchData();
+      }
+    },
+
     showEmployeeDetails(employee) {
       this.selectedEmployee = employee;
     },
@@ -334,7 +359,7 @@ tr:nth-child(even) {
   width: 90%;
   max-width: 800px;
   max-height: 90vh;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .modal-header {

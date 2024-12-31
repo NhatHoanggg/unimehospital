@@ -6,7 +6,7 @@
       <multiselect
         v-model="selectedDepartment"
         :options="departments"
-        placeholder="Chọn chuyên khoa"
+        :placeholder="defaultDepartment || 'Chọn phòng ban'"
         label="label"
         track-by="value"
         :searchable="true"
@@ -26,6 +26,12 @@ import Multiselect from "vue-multiselect";
 export default {
   name: "DepartmentListComponent",
   components: { Multiselect },
+  props: {
+    defaultDepartment: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       departments: [],
@@ -33,6 +39,19 @@ export default {
       loading: false,
       error: null,
     };
+  },
+  watch: {
+    defaultDepartment: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          const matchedDepartment = this.departments.find(
+            (dept) => dept.label === newVal
+          );
+          this.selectedDepartment = matchedDepartment || null;
+        }
+      },
+    },
   },
   methods: {
     async fetchDepartments() {
@@ -48,6 +67,13 @@ export default {
             label: dept.departmentName,
             description: dept.departmentDescription,
           }));
+          // Set the default department after data fetch
+          if (this.defaultDepartment) {
+            const matchedDepartment = this.departments.find(
+              (dept) => dept.label === this.defaultDepartment
+            );
+            this.selectedDepartment = matchedDepartment || null;
+          }
         } else {
           throw new Error("Không thể tải danh sách phòng ban.");
         }

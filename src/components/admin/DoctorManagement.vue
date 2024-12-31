@@ -99,7 +99,13 @@
             />
             <div class="doctor-info">
               <h3>{{ selectedDoctor.doctorName }}</h3>
-              <p><strong>Chuyên khoa:</strong> {{ selectedDoctor.departmentName }}</p>
+              <!-- <p><strong>Chuyên khoa:</strong> {{ selectedDoctor.departmentName }}</p> -->
+              <p><strong>Chuyên khoa:</strong>  
+                <DepartmentListComponentVue
+                  :defaultDepartment="selectedDoctor.departmentName"
+                  @department-selected="handleDepartmentSelected"
+                />
+              </p>
               <p><strong>Ngày sinh:</strong> {{ formatDate(selectedDoctor.doctorDateOfBirth) }}</p>
               <p><strong>Giới tính:</strong> {{ selectedDoctor.doctorGender ? 'Nam' : 'Nữ' }}</p>
               <p><strong>Email:</strong> {{ selectedDoctor.doctorEmail }}</p>
@@ -130,6 +136,7 @@
 <script>
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
+import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
 
 export default {
   data() {
@@ -145,6 +152,7 @@ export default {
   },
   components: {
     LoadingComponent,
+    DepartmentListComponentVue,
   },
   computed: {
     filteredDoctors() {
@@ -194,6 +202,22 @@ export default {
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
       });
+    },
+
+    handleDepartmentSelected(payload) {
+      const departmentId = payload.department.value;
+      const BEARER_TOKEN = localStorage.getItem("token");
+      axios.patch(`https://api.unime.site/UNIME/doctors/updateDepartment/?doctor_id=${this.selectedDoctor.doctorId}&department_id=${departmentId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      });
+      if (this.selectedDoctor.departmentId === departmentId) {
+        return;
+      }
+      else {
+        this.fetchData();
+      }
     },
 
     formatDate(dateString) {
