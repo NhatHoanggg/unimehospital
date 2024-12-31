@@ -227,8 +227,8 @@ export default {
       // console.log(`Cancelling Department with id: ${id}`);
       this.pendingDepartmentId = id;
       this.modalType = "warning";
-      this.modalTitle = "Xác nhận xóa dịch vụ";
-      this.modalContent = "Bạn có chắc chắn muốn xóa dịch vụ này không?";
+      this.modalTitle = "Xác nhận xóa chuyên khoa";
+      this.modalContent = "Bạn có chắc chắn muốn xóa chuyên khoa này không?";
       this.isModalVisible = true;
     },
     handleModalAction(action) {
@@ -256,8 +256,14 @@ export default {
                     position: toast.POSITION.TOP_RIGHT,
                   },); 
           })
-          .catch((error) => {
-            console.error("Error deleting department: ", error);
+          .catch(() => {
+            // console.error("Error deleting department: ", error);
+            toast.error(`Xóa không thành công! \nVì chuyên khoa có bác sĩ,\nhoặc dịch vụ đang sử dụng!`,
+                  {
+                    rtl: false,
+                    limit: 3,
+                    position: toast.POSITION.TOP_RIGHT,
+                  },);
           });
       }
       else if (action === "Cancel") {

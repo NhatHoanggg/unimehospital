@@ -258,6 +258,22 @@ export default {
             console.error("Lỗi tải dữ liệu:", error);
           });
       }
+      else if (this.authStore.user.scope === "EMPLOYEE"){
+        const token = localStorage.getItem("token");
+        await axios
+          .get(`https://api.unime.site/UNIME/employees/myInfo`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            if (response.data.code === 1000) {
+              const user = response.data.result;
+              this.imageSrc = user.employeeImage || this.defaultAvatar;
+            }
+          })
+          .catch((error) => {
+            console.error("Lỗi tải dữ liệu:", error);
+          });
+      }
     },
 
     toggleDropdown() {

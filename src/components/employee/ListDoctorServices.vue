@@ -16,11 +16,7 @@
             placeholder="Tìm kiếm dịch vụ"
           />
           <select v-model="rowsPerPage">
-            <option
-              v-for="option in rowsOptions"
-              :key="option"
-              :value="option"
-            >
+            <option v-for="option in rowsOptions" :key="option" :value="option">
               {{ option }} hàng
             </option>
           </select>
@@ -78,6 +74,7 @@
       <ListDoctorByService
         v-if="isDoctorListVisible"
         :serviceId="selectedServiceId"
+        :listDoctor="doctors"
         @close="isDoctorListVisible = false"
       />
 
@@ -89,8 +86,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script>
 import axios from "axios";
@@ -117,6 +112,10 @@ export default {
       selectedService: null,
       isDoctorListVisible: false,
       isServiceDetailVisible: false,
+
+      department: null,
+      departmentId: null,
+      doctors: [],
     };
   },
   computed: {
@@ -150,6 +149,51 @@ export default {
           this.isLoading = false;
         });
     },
+
+    async getDepartment() {
+      const token = localStorage.getItem("token");
+      await axios
+        .get(`https://api.unime.site/UNIME/employees/myInfo`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data.code === 1000) {
+            this.department = response.data.result.departmentName; 
+            console.log("Chuyên khoa: ", this.department);
+            this.getDoctorList();
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi tải dữ liệu:", error);
+        });
+    },
+
+    async getDoctorList() {
+      await axios
+        .get(
+          `https://api.unime.site/UNIME/departments/get/?department_name=${this.department}`
+        )
+        .then((response) => {
+          this.departmentId = response.data.result[0].departmentId || [];
+          console.log("Department Id: ", this.departmentId);
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+        });
+
+      await axios
+        .get(
+          `https://api.unime.site/UNIME/doctors/get/byDepartment?doctor_departmentId=${this.departmentId}`
+        )
+        .then((response) => {
+          this.doctors = response.data.result || [];
+          console.log("Danh sách bác sĩ: ", this.doctors);
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+        });
+    },
+
     showDoctorList(serviceId) {
       this.selectedServiceId = serviceId;
       this.isDoctorListVisible = true;
@@ -166,6 +210,7 @@ export default {
   },
   mounted() {
     this.fetchData();
+    this.getDepartment();
   },
 };
 </script>
@@ -216,7 +261,7 @@ table {
   margin-bottom: 20px;
 }
 
-.loading{
+.loading {
   display: flex;
   flex-direction: column;
   justify-content: center;
