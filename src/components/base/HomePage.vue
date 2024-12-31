@@ -171,7 +171,7 @@
     </div>
   </section>
 
-  <section>
+  <!-- <section>
     <div class="container">
       <div class="xl:w-[470px] mx-auto">
         <h2 class="heading text-center">Các bệnh nhân</h2>
@@ -182,14 +182,14 @@
 
       <TestimonialList />
     </div>
-  </section>
+  </section> -->
   <ChatBot />
 </template>
 
 <script>
 import FaqList from "./FaqList.vue";
 import ListServices from "./ListServices.vue";
-import TestimonialList from "./TestimonialList.vue";
+// import TestimonialList from "./TestimonialList.vue";
 import ChatBot from "./ChatBot.vue";
 import { useAuthStore } from '@/stores/auth';
 
@@ -203,7 +203,7 @@ export default {
   components: {
     ListServices, 
     FaqList,
-    TestimonialList,
+    // TestimonialList,
     ChatBot,
   },
   methods: {

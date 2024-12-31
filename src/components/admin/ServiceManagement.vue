@@ -85,7 +85,7 @@
               </div>
               <div class="detail-item">
                 <span class="label">Chuyên khoa:</span>
-                <input class="input-text" type="text" name="departmentname" id="" value="" v-model="selectedService.departmentName" :readonly="!isEditing">              
+                <input class="input-text" type="text" name="departmentname" id="" value="" v-model="selectedService.departmentName" readonly>              
               </div>
               <div class="detail-item">
                 <span class="label">Giá:</span>
@@ -234,41 +234,52 @@ export default {
     async saveChanges() {
       try {
         const BEARER_TOKEN = localStorage.getItem("token");
-        if(this.selectedService.serviceImage && typeof this.selectedService.serviceImage !== "string") {
-          // alert("Uploading image...");
+        
+        // If there's a new image (File object), upload it to Cloudinary
+        if (this.selectedService.serviceImage && typeof this.selectedService.serviceImage !== "string") {
           const formData = new FormData();
-          console.log(this.selectedService.serviceImage);
           formData.append("file", this.selectedService.serviceImage);
           formData.append("upload_preset", process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET);
+          
           const uploadResponse = await axios.post(
             `https://api.cloudinary.com/v1_1/${process.env.VUE_APP_CLOUD_NAME}/image/upload`,
             formData
           );
           this.selectedService.serviceImage = uploadResponse.data.secure_url;
-          console.log(this.selectedService.serviceImage);
-          try {
-            await axios.put(
-              `https://api.unime.site/UNIME/services/${this.selectedService.serviceId}`,
-              this.selectedService,
-              { headers: { Authorization: `Bearer ${BEARER_TOKEN}` } }
-            );
-            this.isEditing = false;
-            this.selectedService = null;
-            await this.fetchData();
-            toast.success("Cập nhật dịch vụ thành công!", {
-              rtl: false,
-              limit: 3,
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          } catch (error) {
-            console.error("Error updating service:", error);
-          }
         }
-        else {
-          alert("No image to upload");
+
+        // Update service information regardless of whether there's a new image
+        try {
+          await axios.put(
+            `https://api.unime.site/UNIME/services/${this.selectedService.serviceId}`,
+            this.selectedService,
+            { headers: { Authorization: `Bearer ${BEARER_TOKEN}` } }
+          );
+          
+          this.isEditing = false;
+          this.selectedService = null;
+          await this.fetchData();
+          
+          toast.success("Cập nhật dịch vụ thành công!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } catch (error) {
+          console.error("Error updating service:", error);
+          toast.error("Có lỗi xảy ra khi cập nhật dịch vụ!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
         }
       } catch (error) {
-        console.error("Error updating service:", error);
+        console.error("Error handling image upload:", error);
+        toast.error("Có lỗi xảy ra khi tải ảnh lên!", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     },
 
