@@ -54,6 +54,7 @@
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify"
 
 export default {
   name: "SignIn",
@@ -70,49 +71,97 @@ export default {
     };
 
     const submitLogin = async () => {
-      if (!username.value || !password.value) {
-        errorMessage.value = "Vui lòng nhập đầy đủ thông tin.";
+  // Reset error message at the start
+  errorMessage.value = "";
+
+  // Validate input fields
+  if (!username.value || !password.value) {
+    errorMessage.value = "Vui lòng nhập đầy đủ thông tin.";
+    return;
+  }
+
+  try {
+    const response = await fetch("https://api.unime.site/UNIME/auth/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Xử lý các trường hợp lỗi cụ thể
+      switch (data.message) {
+        case "you do not have permission":
+          errorMessage.value = "Tài khoản của bạn không có quyền truy cập vào hệ thống.";
+          toast.error("Tài khoản của bạn không có quyền truy cập vào hệ thống.", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          break;
+        case "User Not Exited":
+          errorMessage.value = "Tài khoản không tồn tại trong hệ thống.";
+          toast.error("Tài khoản không tồn tại trong hệ thống.", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          break;
+        case "Unauthenticated":
+          errorMessage.value = "Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại.";
+          toast.error("Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại.", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          break;
+        default:
+          errorMessage.value = data.message || "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+          toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+      }
+      
+      return;
+    }
+
+    // Login successful
+    authStore.login(data.result.token);
+    console.log("Token: ", data.result.token);
+
+    // Route based on user role
+    const { scope } = authStore.user;
+    switch (scope) {
+      case "ADMIN":
+        router.push("/admin");
+        break;
+      case "EMPLOYEE":
+        router.push("/employee");
+        break;
+      case "DOCTOR":
+        router.push("/doctor");
+        break;
+      case "PATIENT":
+        router.push("/");
+        break;
+      default:
+        errorMessage.value = "Quyền người dùng không hợp lệ.";
         return;
-      }
+    }
 
-      try {
-        const response = await fetch("https://api.unime.site/UNIME/auth/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: username.value,
-            password: password.value,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Đăng nhập thất bại: ${response.status}`);
-        }
-
-        const data = await response.json();
-        authStore.login(data.result.token);
-        console.log("Token: ", data.result.token);
-
-        // Điều hướng dựa trên quyền người dùng
-        const { scope } = authStore.user;
-        if (scope === "ADMIN") {
-          router.push("/admin");
-        } else if (scope === "EMPLOYEE") {
-          router.push("/employee");
-        } else if (scope === "DOCTOR") {
-          router.push("/doctor");
-        } else if (scope === "PATIENT") {
-          router.push("/");
-        } else {
-          throw new Error("Quyền người dùng không hợp lệ.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        errorMessage.value = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
-      }
-    };
+  } catch (error) {
+    console.error("Login error:", error);
+    errorMessage.value = "Có lỗi khi kết nối đến server. Vui lòng thử lại sau.";
+  }
+};
 
     return {
       username,
