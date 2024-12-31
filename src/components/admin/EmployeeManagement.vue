@@ -5,7 +5,7 @@
       <LoadingComponent />
     </div>
     <div v-else>
-      <h1>Quản lý Nhân viên</h1>
+      <h1>Danh sách Nhân viên</h1>
       <div class="search-container">
         <input
           type="text"
@@ -23,35 +23,38 @@
       <table class="employee-table">
         <thead>
           <tr>
+            <th>STT</th>
             <th>Tên</th>
-            <th>Chuyên khoa</th>
+            <th>Username</th>
+            <th>Phòng ban</th>
             <th>Trạng thái</th>
             <th>Email</th>
-            <th>SĐT</th>
-            <th>Giới tính</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="employee in filteredEmployees" :key="employee.employeeId">
+          <tr v-for="(employee, index) in filteredEmployees" :key="employee.employeeId">
+            <td>{{ index + 1 + rowsPerPage*(currentPage-1)}}</td>
             <td>{{ employee.employeeName }}</td>
+            <td>{{ employee.employeeUsername }}</td>
             <td>{{ employee.departmentName }}</td>
-            <td>{{ employee.employeeStatus }}</td>
+            <td>
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  :checked="employee.employeeStatus === 'ACTIVE'"
+                  @change="toggleEmployeeStatus(employee)"
+                />
+                <span class="slider"></span>
+              </label>
+            </td>
             <td>{{ employee.employeeEmail }}</td>
-            <td>{{ employee.employeePhoneNumber }}</td>
-            <td>{{ formatGender(employee.employeeGender) }}</td>
             <td>
               <button
-                @click="editEmployee(employee.employeeId)"
-                class="edit-btn"
+                @click="showEmployeeDetails(employee)"
+                class="detail-btn"
               >
-                Edit
-              </button>
-              <button
-                @click="deleteEmployee(employee.employeeId)"
-                class="delete-btn"
-              >
-                Delete
+                Chi tiết
               </button>
             </td>
           </tr>
@@ -76,6 +79,34 @@
         </button>
       </div>
     </div>
+
+    <!-- Modal Chi tiết nhân viên -->
+    <div v-if="selectedEmployee" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Thông tin chi tiết nhân viên</h2>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="employee-profile">
+            <img 
+              :src="selectedEmployee.employeeImage" 
+              :alt="selectedEmployee.employeeName"
+              class="employee-profile-image"
+            />
+            <div class="employee-info">
+              <h3>{{ selectedEmployee.employeeName }}</h3>
+              <p><strong>Username:</strong> {{ selectedEmployee.employeeUsername }}</p>
+              <p><strong>Phòng ban:</strong> {{ selectedEmployee.departmentName }}</p>
+              <p><strong>Giới tính:</strong> {{ selectedEmployee.employeeGender ? 'Nam' : 'Nữ' }}</p>
+              <p><strong>Email:</strong> {{ selectedEmployee.employeeEmail }}</p>
+              <p><strong>Số điện thoại:</strong> {{ selectedEmployee.employeePhoneNumber }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -92,6 +123,7 @@ export default {
       searchQuery: "",
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
+      selectedEmployee: null,
     };
   },
   components: {
@@ -128,7 +160,9 @@ export default {
           },
         })
         .then((response) => {
-          this.employees = response.data.result;
+          if (response.data.code === 1000) {
+            this.employees = response.data.result;
+          }
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
@@ -137,17 +171,23 @@ export default {
           this.isLoading = false;
         });
     },
-    formatGender(gender) {
-      return gender ? "Nam" : "Nữ";
+    async toggleEmployeeStatus(employee) {
+      const BEARER_TOKEN = localStorage.getItem("token");
+      try {
+        await axios.patch(`https://api.unime.site/UNIME/employees/updateStatus/${employee.employeeId}`, {}, {
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+          },
+        });
+      } catch (error) {
+        console.error("Error updating status: ", error);
+      }
     },
-    editEmployee(id) {
-      console.log(`Editing employee with id: ${id}`);
+    showEmployeeDetails(employee) {
+      this.selectedEmployee = employee;
     },
-    deleteEmployee(id) {
-      console.log(`Deleting employee with id: ${id}`);
-      this.employees = this.employees.filter(
-        (employee) => employee.employeeId !== id
-      );
+    closeModal() {
+      this.selectedEmployee = null;
     },
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
@@ -204,6 +244,13 @@ h1 {
   margin-bottom: 20px;
 }
 
+.employee-profile-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 th,
 td {
   padding: 12px;
@@ -220,34 +267,19 @@ tr:nth-child(even) {
   background-color: #fafafa;
 }
 
-button {
+.detail-btn {
   padding: 6px 12px;
+  width: 100%;
+  background-color: #2196F3;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #f0f0f0;
-}
-
-.edit-btn {
-  background-color: #4caf50;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #45a049;
-}
-
-.delete-btn {
-  background-color: #f44336;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #e53935;
+.detail-btn:hover {
+  background-color: #1976D2;
 }
 
 .pagination {
@@ -261,6 +293,7 @@ button:hover {
   padding: 8px 16px;
   background-color: #007bff;
   color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -280,5 +313,113 @@ button:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.employee-profile {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.employee-info {
+  flex: 1;
+  text-align: left;
+}
+
+.employee-info h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
 }
 </style>

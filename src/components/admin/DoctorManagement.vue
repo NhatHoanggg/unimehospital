@@ -35,7 +35,7 @@
         </thead>
         <tbody>
           <tr v-for="(doctor, index) in filteredDoctors" :key="doctor.doctorId">
-            <td>{{ index + 1 }}</td>
+            <td>{{ index + 1 + rowsPerPage*(currentPage-1)}}</td>
             <td>{{ doctor.doctorName }}</td>
             <td>{{ doctor.departmentName }}</td>
             <td>
@@ -189,7 +189,7 @@ export default {
     async toggleDoctorStatus(doctor) {
       // console.log(doctor.doctorId);
       const BEARER_TOKEN = localStorage.getItem("token");
-      await axios.patch(`https://api.unime.site/UNIME/doctors/updateStatus/${doctor.doctorId}`, {
+      await axios.patch(`https://api.unime.site/UNIME/doctors/updateStatus/${doctor.doctorId}`, {}, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },

@@ -33,7 +33,7 @@
         </thead>
         <tbody>
           <tr v-for="(patient, index) in filteredPatients" :key="patient.patientId">
-            <td>{{ index + 1 }}</td>
+            <td>{{ index + 1 + rowsPerPage*(currentPage-1)}}</td>
             <td>{{ patient.patientName }}</td>
             <td>{{ patient.patientUsername }}</td>
             <td>
@@ -167,7 +167,7 @@ export default {
     togglePatientStatus(patient) {
       const BEARER_TOKEN = localStorage.getItem("token");
       axios
-        .patch(`https://api.unime.site/UNIME/patients/updateStatus/${patient.patientId}`, {
+        .patch(`https://api.unime.site/UNIME/patients/${patient.patientId}`, {},{
           headers: {
             Authorization: `Bearer ${BEARER_TOKEN}`,
           },
