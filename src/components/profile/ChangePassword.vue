@@ -95,7 +95,7 @@ export default {
       };
 
       try {
-        const response = await axios.get(
+        const response = await axios.put(
           `https://api.unime.site/UNIME/password`,
           data,
           {
