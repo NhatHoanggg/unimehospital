@@ -111,6 +111,7 @@
             </div>
           </div>
         </div>
+        <button @click="handleSave" class="save-button">Lưu</button>
       </div>
     </div>
   </div>
@@ -120,6 +121,7 @@
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
+import {toast} from 'vue3-toastify';
 
 export default {
   data() {
@@ -131,6 +133,8 @@ export default {
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
       selectedEmployee: null,
+
+      isEdit: false,
     };
   },
   components: {
@@ -193,19 +197,21 @@ export default {
     },
 
     handleDepartmentSelected(payload) {
-      const departmentId = payload.department.value;
-      const BEARER_TOKEN = localStorage.getItem("token");
-      axios.patch(`https://api.unime.site/UNIME/employees/updateDepartment/?employee_id=${this.selectedEmployee.employeeId}&department_id=${departmentId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${BEARER_TOKEN}`,
-        },
-      });
-      if (this.selectedEmployee.departmentId === departmentId) {
-        return;
-      }
-      else {
-        this.fetchData();
-      }
+      this.selectedEmployee.departmentId = payload.department.value;
+      this.isEdit = true;
+      // const departmentId = payload.department.value;
+      // const BEARER_TOKEN = localStorage.getItem("token");
+      // axios.patch(`https://api.unime.site/UNIME/employees/updateDepartment/?employee_id=${this.selectedEmployee.employeeId}&department_id=${departmentId}`, {}, {
+      //   headers: {
+      //     Authorization: `Bearer ${BEARER_TOKEN}`,
+      //   },
+      // });
+      // if (this.selectedEmployee.departmentId === departmentId) {
+      //   return;
+      // }
+      // else {
+      //   this.fetchData();
+      // }
     },
 
     showEmployeeDetails(employee) {
@@ -214,6 +220,33 @@ export default {
     closeModal() {
       this.selectedEmployee = null;
     },
+
+    async handleSave() {
+      if (!this.isEdit) { 
+        this.closeModal();
+        return;
+      }
+      console.log(this.selectedEmployee);
+      const BEARER_TOKEN = localStorage.getItem("token");
+
+      axios.patch(`https://api.unime.site/UNIME/employees/updateDepartment/?employee_id=${this.selectedEmployee.employeeId}&department_id=${this.selectedEmployee.departmentId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+
+      }).then(() => {
+        this.fetchData();
+        toast.success(`Cập nhật phòng ban nhân viên thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
+        this.closeModal();
+      });
+
+    },
+
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -446,5 +479,20 @@ input:checked + .slider {
 
 input:checked + .slider:before {
   transform: translateX(14px);
+}
+
+.save-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 30px;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
 }
 </style>

@@ -128,6 +128,7 @@
             <p>{{ selectedDoctor.doctordetailAwardRecognization }}</p>
           </div>
         </div>
+        <button @click="handleSave" class="save-button">Lưu</button>
       </div>
     </div>
   </div>
@@ -137,6 +138,7 @@
 import axios from "axios";
 import LoadingComponent from "../tools/LoadingComponent.vue";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
+import {toast} from 'vue3-toastify';
 
 export default {
   data() {
@@ -148,6 +150,7 @@ export default {
       rowsOptions: [5, 10, 20, 50],
       isLoading: true,
       selectedDoctor: null,
+      isEdit: false,
     };
   },
   components: {
@@ -205,19 +208,34 @@ export default {
     },
 
     handleDepartmentSelected(payload) {
-      const departmentId = payload.department.value;
+      this.selectedDoctor.departmentId = payload.department.value;
+      this.isEdit = true;
+    },
+
+    async handleSave() {
+      if (!this.isEdit) { 
+        this.closeModal();
+        return;
+      }
+      console.log(this.selectedDoctor);
       const BEARER_TOKEN = localStorage.getItem("token");
-      axios.patch(`https://api.unime.site/UNIME/doctors/updateDepartment/?doctor_id=${this.selectedDoctor.doctorId}&department_id=${departmentId}`, {}, {
+
+      axios.patch(`https://api.unime.site/UNIME/doctors/updateDepartment/?doctor_id=${this.selectedDoctor.doctorId}&department_id=${this.selectedDoctor.departmentId}`, {}, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
-      });
-      if (this.selectedDoctor.departmentId === departmentId) {
-        return;
-      }
-      else {
+
+      }).then(() => {
         this.fetchData();
-      }
+        toast.success(`Cập nhật phòng ban nhân viên thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
+        this.closeModal();
+      });
+
     },
 
     formatDate(dateString) {
@@ -485,6 +503,21 @@ input:checked + .slider {
 
 input:checked + .slider:before {
   transform: translateX(14px);
+}
+
+.save-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 30px;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
 }
 
 </style>
