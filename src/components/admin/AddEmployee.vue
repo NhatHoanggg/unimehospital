@@ -1,9 +1,14 @@
 <template>
   <div class="add-employee-container">
-    <div class="add-employee-card">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+
+    <div v-else class="add-employee-card">
       <h2 class="card-title">Thêm Nhân Viên</h2>
       <form @submit.prevent="addEmployee">
-        <!-- Upload Avatar -->
+        <!-- Avatar -->
         <div class="avatar-container">
           <div class="avatar-wrapper">
             <img
@@ -12,7 +17,7 @@
               alt="Employee Avatar"
             />
             <div class="upload-button" @click="triggerFileUpload">
-              <i class="fa fa-upload"></i>.
+              <i class="fa fa-upload"></i>
             </div>
             <input
               class="file-upload"
@@ -52,6 +57,7 @@
           </div>
         </div>
 
+        <!-- Department Field -->
         <div class="form-row">
           <label for="department">Khoa:</label>
           <DepartmentListComponentVue
@@ -60,6 +66,7 @@
           />
         </div>
 
+        <!-- Submit Button -->
         <div class="form-group">
           <button type="submit" class="add-button">Thêm Nhân Viên</button>
         </div>
@@ -71,74 +78,28 @@
 <script>
 import axios from "axios";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
-// import { toast } from "vue3-toastify";
+import {toast} from "vue3-toastify";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
-  components: { DepartmentListComponentVue },
+  components: { DepartmentListComponentVue, LoadingComponent },
   data() {
     return {
       avatar: null,
       employeeImage: null,
       employeeGender: null,
       selectedDepartment: null,
+      isLoading: false,
       defaultAvatar: "https://via.placeholder.com/200",
       formFields: [
-        {
-          id: "employeeName",
-          label: "Họ và Tên",
-          type: "text",
-          model: "",
-          placeholder: "Nhập tên nhân viên",
-          required: true,
-        },
-        {
-          id: "employeeUsername",
-          label: "Username",
-          type: "text",
-          model: "",
-          placeholder: "Nhập username",
-          required: true,
-        },
-        {
-          id: "employeePassword",
-          label: "Mật Khẩu",
-          type: "password",
-          model: "",
-          placeholder: "Nhập mật khẩu",
-          required: true,
-        },
-        {
-          id: "employeeEmail",
-          label: "Email",
-          type: "email",
-          model: "",
-          placeholder: "Nhập email",
-          required: true,
-        },
+        { id: "employeeName", label: "Họ và Tên", type: "text", model: "", required: true },
+        { id: "employeeUsername", label: "Username", type: "text", model: "", required: true },
+        { id: "employeePassword", label: "Mật Khẩu", type: "password", model: "", required: true },
+        { id: "employeeEmail", label: "Email", type: "email", model: "", required: true },
         { id: "employeeGender", label: "Giới Tính", type: "radio" },
-        {
-          id: "employeeDateOfBirth",
-          label: "Ngày Sinh",
-          type: "date",
-          model: "",
-          required: true,
-        },
-        {
-          id: "employeePhoneNumber",
-          label: "Số Điện Thoại",
-          type: "tel",
-          model: "",
-          placeholder: "Nhập số điện thoại",
-          required: true,
-        },
-        {
-          id: "employeeAddress",
-          label: "Địa Chỉ",
-          type: "textarea",
-          model: "",
-          placeholder: "Nhập địa chỉ",
-          required: true,
-        },
+        { id: "employeeDateOfBirth", label: "Ngày Sinh", type: "date", model: "", required: true },
+        { id: "employeePhoneNumber", label: "Số Điện Thoại", type: "tel", model: "", required: true },
+        { id: "employeeAddress", label: "Địa Chỉ", type: "textarea", model: "", required: true }
       ],
     };
   },
@@ -152,25 +113,32 @@ export default {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.avatar = e.target.result;
-          this.employeeImage = file; 
+          this.employeeImage = file;
         };
         reader.readAsDataURL(file);
       }
     },
-
+    
     handleDepartmentSelected(payload) {
       this.selectedDepartment = payload.department.value;
     },
 
+    resetForm(){
+      this.formFields.forEach(field => field.model = "");
+      this.employeeGender = null;
+      this.selectedDepartment = null;
+      this.avatar = null;
+      this.employeeImage = null;
+    },
+    
     async addEmployee() {
+      this.isLoading = true;
+
       try {
         if (this.employeeImage && typeof this.employeeImage !== "string") {
           const formData = new FormData();
           formData.append("file", this.employeeImage);
-          formData.append(
-            "upload_preset",
-            process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET
-          );
+          formData.append("upload_preset", process.env.VUE_APP_CLOUD_AVATAR_UPLOAD_PRESET);
 
           const uploadResponse = await axios.post(
             `https://api.cloudinary.com/v1_1/${process.env.VUE_APP_CLOUD_NAME}/image/upload`,
@@ -179,68 +147,47 @@ export default {
           );
 
           this.employeeImage = uploadResponse.data.secure_url;
-          console.log("URL ảnh đã upload:", this.employeeImage);
         }
 
         const employeeData = {
-          employeeUsername: this.formFields.find(
-            (field) => field.id === "employeeUsername"
-          ).model,
-          employeePassword: this.formFields.find(
-            (field) => field.id === "employeePassword"
-          ).model,
-          employeeEmail: this.formFields.find(
-            (field) => field.id === "employeeEmail"
-          ).model,
+          employeeUsername: this.formFields.find(field => field.id === "employeeUsername").model,
+          employeePassword: this.formFields.find(field => field.id === "employeePassword").model,
+          employeeEmail: this.formFields.find(field => field.id === "employeeEmail").model,
           employeeImage: this.employeeImage,
-          employeeName: this.formFields.find(
-            (field) => field.id === "employeeName"
-          ).model,
-          // employeeAddress: this.formFields.find(
-          //   (field) => field.id === "employeeAddress"
-          // ).model,
-          employeePhoneNumber: this.formFields.find(
-            (field) => field.id === "employeePhoneNumber"
-          ).model,
+          employeeName: this.formFields.find(field => field.id === "employeeName").model,
+          employeePhoneNumber:  "+84" + this.formFields.find(field => field.id === "employeePhoneNumber").model.substring(1),
           employeeGender: this.employeeGender === "true",
-          employeeDateOfBirth: this.formFields.find(
-            (field) => field.id === "employeeDateOfBirth"
-          ).model,
+          employeeDateOfBirth: this.formFields.find(field => field.id === "employeeDateOfBirth").model,
           departmentId: this.selectedDepartment,
         };
 
-        console.log("emloyee data", employeeData);
-
         const BEARER_TOKEN = localStorage.getItem("token");
 
-        const response = await axios.post(
-          "https://api.unime.site/UNIME/employees",
-          employeeData,
-          {
-            headers: {
-              Authorization: `Bearer ${BEARER_TOKEN}`,
-            },
-          }
-        );
+        const response = await axios.post("https://api.unime.site/UNIME/employees", employeeData, {
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+          },
+        });
 
         if (response.data?.code === 1000) {
-          alert("Thêm nhân viên thành công");
+          toast.success(`Thêm nhân viên thành công!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          this.isLoading = false;
+          this.resetForm();
         } else {
-          alert(
-            "Có lỗi xảy ra: " +
-              (response.data?.message || "Không rõ nguyên nhân")
-          );
+          alert("Có lỗi xảy ra: " + (response.data?.message || "Không rõ nguyên nhân"));
         }
       } catch (error) {
-        console.error(
-          "Có lỗi xảy ra trong quá trình upload ảnh:",
-          error.response?.data || error.message
-        );
+        console.error("Có lỗi xảy ra:", error.response?.data || error.message);
       }
     },
   },
 };
 </script>
+
 
 <style scoped>
 .add-employee-container {

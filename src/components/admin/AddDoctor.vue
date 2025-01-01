@@ -1,6 +1,11 @@
 <template>
   <div class="add-doctor-container">
-    <div class="add-doctor-card">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+
+    <div v-else class="add-doctor-card">
       <h2 class="card-title">Thêm Bác Sĩ</h2>
       <form @submit.prevent="addDoctor">
         <!-- Upload Avatar -->
@@ -71,9 +76,10 @@
 import axios from "axios";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
 import { toast } from "vue3-toastify";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
-  components: { DepartmentListComponentVue },
+  components: { DepartmentListComponentVue, LoadingComponent },
 
   data() {
     return {
@@ -82,6 +88,7 @@ export default {
       doctorGender: null,
       selectedDepartment: null,
       defaultAvatar: "https://via.placeholder.com/200",
+      isLoading: false,
       formFields: [
         {
           id: "doctorName",
@@ -157,11 +164,6 @@ export default {
 
     onFileChange(event) {
       const file = event.target.files[0];
-      // if (file) {
-      //   this.doctorImage = file;
-      // } else {
-      //   console.error("Không có file nào được chọn!");
-      // }
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -176,7 +178,18 @@ export default {
       this.selectedDepartment = payload.department.value;
     },
 
+    resetForm() {
+      this.formFields.forEach((field) => {
+        field.model = "";
+      });
+      this.doctorGender = null;
+      this.selectedDepartment = null;
+      this.avatar = null;
+      this.doctorImage = null;
+    },
+
     async addDoctor() {
+      this.isLoading = true;
       try {
         if (this.doctorImage && typeof this.doctorImage !== "string") {
           const formData = new FormData();
@@ -194,6 +207,8 @@ export default {
 
           this.doctorImage = uploadResponse.data.secure_url;
           console.log("URL ảnh đã upload:", this.doctorImage);
+        } else {
+          this.doctorImage = this.defaultAvatar;
         }
 
         const doctorData = {
@@ -212,9 +227,9 @@ export default {
           doctorAddress: this.formFields.find(
             (field) => field.id === "doctorAddress"
           ).model,
-          doctorPhoneNumber: this.formFields.find(
+          doctorPhoneNumber: "+84" + this.formFields.find(
             (field) => field.id === "doctorPhoneNumber"
-          ).model,
+          ).model.substring(1),
           doctorGender: this.doctorGender === "true",
           doctorDateOfBirth: this.formFields.find(
             (field) => field.id === "doctorDateOfBirth"
@@ -224,7 +239,7 @@ export default {
           ).model,
           departmentId: this.selectedDepartment,
         };
-        
+
         console.log("Dữ liệu gửi đi:", doctorData);
 
         const BEARER_TOKEN = localStorage.getItem("token");
@@ -240,12 +255,13 @@ export default {
         );
 
         if (response.data?.code === 1000) {
-          toast.success(`Thêm bác sĩ thành công!`,
-                    {
-                      rtl: false,
-                      limit: 3,
-                      position: toast.POSITION.TOP_RIGHT,
-                    },); 
+          toast.success(`Thêm bác sĩ thành công!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          this.isLoading = false;
+          this.resetForm();
         } else {
           alert(
             "Có lỗi xảy ra: " +

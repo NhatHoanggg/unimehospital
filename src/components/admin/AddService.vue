@@ -1,6 +1,10 @@
 <template>
   <div class="wrapper">
-    <div class="add-service-container">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+    <div v-else class="add-service-container">
       <h2>Thêm dịch vụ bệnh viện</h2>
 
       <div class="form-group">
@@ -68,9 +72,10 @@
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import DepartmentListComponentVue from "../tools/DepartmentListComponent.vue";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
-  components: { DepartmentListComponentVue },
+  components: { DepartmentListComponentVue, LoadingComponent },
 
   data() {
     return {
@@ -81,6 +86,7 @@ export default {
       serviceImage: null,
       previewImage: null,
       imageUrl: "",
+      isLoading: false,
     };
   },
 
@@ -166,6 +172,7 @@ export default {
         );
 
         if (serviceResponse.status === 200) {
+          this.isLoading = false;
           toast.success("Thêm dịch vụ thành công!", {
             rtl: false,
             limit: 3,

@@ -102,48 +102,58 @@ export default {
       this.selectedDay = null;
       this.selectedShift = null;
     },
+    // getCurrentWeek() {
+    //   const now = new Date();
+    //   const year = now.getFullYear();
+
+    //   const firstJan = new Date(year, 0, 1);
+    //   const firstMonday = new Date(
+    //     year,
+    //     0,
+    //     firstJan.getDate() + ((8 - (firstJan.getDay() || 7)) % 7)
+    //   );
+
+    //   const daysSinceFirstMonday = Math.floor(
+    //     (now - firstMonday) / (24 * 60 * 60 * 1000)
+    //   );
+
+    //   let week = Math.floor(daysSinceFirstMonday / 7) + 1;
+
+    //   if (daysSinceFirstMonday < 0) {
+    //     const lastDec = new Date(year - 1, 11, 31);
+    //     const lastDecFirstMonday = new Date(
+    //       lastDec.getFullYear(),
+    //       0,
+    //       lastDec.getDate() + ((8 - (lastDec.getDay() || 7)) % 7)
+    //     );
+    //     week =
+    //       Math.floor(
+    //         (lastDec - lastDecFirstMonday) / (7 * 24 * 60 * 60 * 1000)
+    //       ) + 1;
+    //     return { year: year - 1, week };
+    //   }
+
+    //   if (week > 52) {
+    //     week = 1;
+    //     return { year: year + 1, week };
+    //   }
+    //   console.log("Current Year:", year, "Current Week:", week);
+
+    //   return { year, week };
+    // },
+
     getCurrentWeek() {
-      const now = new Date();
-      const year = now.getFullYear();
-
-      const firstJan = new Date(year, 0, 1);
-      const firstMonday = new Date(
-        year,
-        0,
-        firstJan.getDate() + ((8 - (firstJan.getDay() || 7)) % 7)
-      );
-
-      const daysSinceFirstMonday = Math.floor(
-        (now - firstMonday) / (24 * 60 * 60 * 1000)
-      );
-
-      let week = Math.floor(daysSinceFirstMonday / 7) + 1;
-
-      if (daysSinceFirstMonday < 0) {
-        const lastDec = new Date(year - 1, 11, 31);
-        const lastDecFirstMonday = new Date(
-          lastDec.getFullYear(),
-          0,
-          lastDec.getDate() + ((8 - (lastDec.getDay() || 7)) % 7)
-        );
-        week =
-          Math.floor(
-            (lastDec - lastDecFirstMonday) / (7 * 24 * 60 * 60 * 1000)
-          ) + 1;
-        return { year: year - 1, week };
-      }
-
-      if (week > 52) {
-        week = 1;
-        return { year: year + 1, week };
-      }
-      console.log("Current Year:", year, "Current Week:", week);
-
+      const today = new Date();
+      const thursday = new Date(today);
+      thursday.setDate(today.getDate() + (4 - (today.getDay() || 7)));
+      const startOfYear = new Date(thursday.getFullYear(), 0, 1);
+      const week = Math.ceil(((thursday - startOfYear) / (1000 * 60 * 60 * 24) + 1) / 7);
+      const year = thursday.getFullYear();
       return { year, week };
     },
 
+
     formatDay(dayOfWeek) {
-      // Format tên ngày trong tuần
       const days = {
         MONDAY: "Thứ Hai",
         TUESDAY: "Thứ Ba",
@@ -210,6 +220,7 @@ export default {
   },
   created() {
     this.fetchSchedule();
+    console.log("Current Week: ", this.getCurrentWeek());
   },
 };
 </script>

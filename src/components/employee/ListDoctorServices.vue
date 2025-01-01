@@ -137,8 +137,11 @@ export default {
   methods: {
     fetchData() {
       this.isLoading = true;
+      const token = localStorage.getItem("token");
       axios
-        .get("https://api.unime.site/UNIME/services/get/serviceList")
+        .get("https://api.unime.site/UNIME/services/get/byDepartment", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((response) => {
           this.services = response.data.result;
         })
