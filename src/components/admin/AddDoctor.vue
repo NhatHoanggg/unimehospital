@@ -89,6 +89,7 @@ export default {
       selectedDepartment: null,
       defaultAvatar: "https://via.placeholder.com/200",
       isLoading: false,
+      isSelectedDepartment: false,
       formFields: [
         {
           id: "doctorName",
@@ -176,6 +177,7 @@ export default {
 
     handleDepartmentSelected(payload) {
       this.selectedDepartment = payload.department.value;
+      this.isSelectedDepartment = true;
     },
 
     resetForm() {
@@ -190,6 +192,27 @@ export default {
 
     async addDoctor() {
       this.isLoading = true;
+      if (!this.isSelectedDepartment) {
+        toast.warning(`Vui lòng chọn khoa cho bác sĩ!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        this.isLoading = false;
+        return;
+      }
+
+      if (!this.doctorImage) {
+        toast.warning(`Vui lòng chọn ảnh đại diện cho bác sĩ!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        this.isLoading = false;
+        return;
+      }
       try {
         if (this.doctorImage && typeof this.doctorImage !== "string") {
           const formData = new FormData();

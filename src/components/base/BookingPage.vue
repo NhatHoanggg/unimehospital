@@ -7,7 +7,7 @@
     />
     <div class="search-bar">
       <DepartmentListComponent
-        style="width: 200px"
+        style="min-width: 200px"
         @department-selected="handleDepartmentSelected"
       />
       <input

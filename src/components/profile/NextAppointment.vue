@@ -145,6 +145,12 @@ export default {
       });
     },
 
+    formatDate(inputDate) {
+      const [year, month, day] = inputDate.split("-");
+      return `${day}/${month}/${year}`;
+    },
+
+
     async fetchAppointments() {
       try {
         const token = localStorage.getItem("token");
@@ -170,9 +176,21 @@ export default {
       }
     },
 
-    async searchAppointments() {
+    searchAppointments() {
       console.log("Searching appointments for date:", this.filterDate);
-      await this.fetchAppointments();
+      const data = [];
+      this.appointments.forEach((appointment) => {
+        console.log(this.formatAppointmentDate(appointment) == this.formatDate(this.filterDate));
+        if (this.formatAppointmentDate(appointment) == this.formatDate(this.filterDate)) {
+          data.push(appointment);
+        }
+      });
+      console.log("filtered : ->", data);
+      this.appointments = data;
+    },
+
+    reset() {
+      this.fetchAppointments();
     },
 
     getStatusClass(status) {

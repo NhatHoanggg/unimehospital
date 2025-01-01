@@ -32,7 +32,7 @@ import { useRouter } from "vue-router";
           { text: 'Quản lý ca', icon: require('@/assets/manage-schedule.png'), path: '/timework-management' },
           { text: 'Lịch chờ', icon: require('@/assets/pending.png'), path: '/pending-appointment' },
           { text: 'Lịch hủy', icon: require('@/assets/cancel.png'), path: '/cancelled-appointment' },
-          { text: 'Bệnh nhân', icon: require('@/assets/request.png'), path: '/patient-list' },
+          // { text: 'Bệnh nhân', icon: require('@/assets/request.png'), path: '/patient-list' },
           { text: 'Dịch vụ', icon: require('@/assets/list-service.png'), path: '/list-services' },
           { text: 'Hồ sơ', icon: require('@/assets/User-icon.png'), path: '/profile' },
           { text: 'Đăng xuất', icon: require('@/assets/logout.png'), path: '/logout' },
@@ -57,6 +57,7 @@ import { useRouter } from "vue-router";
         this.authStore.logout();
         localStorage.clear();
         this.router.push("/");
+        window.location.href = '/';
       },
     },
   };

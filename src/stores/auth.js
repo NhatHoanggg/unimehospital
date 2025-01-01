@@ -81,6 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        window.location.href = '/';
       } catch (error) {
         console.error("Error logging out:", error);
       }

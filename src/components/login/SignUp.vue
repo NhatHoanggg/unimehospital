@@ -45,6 +45,7 @@
                 placeholder="Nhập Email"
                 required
                 aria-label="Email"
+                readonly
               />
             </div>
           </div>
@@ -144,6 +145,7 @@
 
 <script>
 import axios from 'axios';
+import { toast } from 'vue3-toastify'
 
 export default {
   data() {
@@ -174,11 +176,23 @@ export default {
         !this.phone
       ) {
         this.errorMessage = "Vui lòng điền tất cả các trường.";
+        toast.error(`Vui lòng điền tất cả các trường.`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         return;
       }
 
       if (this.password !== this.confirmPassword) {
         this.errorMessage = "Mật khẩu không khớp.";
+        toast.error(`${this.errorMessage}`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
         return;
       }
 
@@ -197,11 +211,34 @@ export default {
         const response = await axios.post('https://api.unime.site/UNIME/patients', patientData);
         
         console.log(response.data);
+
+        toast.success(`Đăng ký thành công!`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         
         this.$router.push("/sign-in");
       } catch (error) {
-        this.errorMessage = "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.";
+        // this.errorMessage = "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.";
+        this.errorMessage = error.response.data.message;
+        if (error.response.data.message === "Invalid password format") {
+          this.errorMessage = "Sai định dạng mật khẩu.\nMật khẩu phải chứa ít nhất 8 ký tự!";
+        }
+        if (error.response.data.message === "Email is already registered") {
+          this.errorMessage = "Email đã được đăng ký!";
+        }
+        if (error.response.data.message === "Username is already taken") {
+          this.errorMessage = "Tên đăng nhập đã được sử dụng!";
+        }
         console.error(error);
+        toast.error(`${this.errorMessage}`,
+                    {
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },); 
       }
     },
   },

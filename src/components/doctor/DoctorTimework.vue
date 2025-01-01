@@ -1,6 +1,6 @@
 <template>
   <div class="schedule-container">
-    <h2 class="schedule-title">Lịch làm việc - {{ doctorName }}</h2>
+    <h2 class="schedule-title">Lịch làm việc</h2>
     
     <div class="week-navigation">
       <button 
@@ -66,7 +66,6 @@ export default {
         { time: '15:00-16:00' },
         { time: '16:00-17:00' },
       ],
-      doctorName: '',
       currentDate: new Date()
     }
   },

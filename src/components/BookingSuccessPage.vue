@@ -5,7 +5,7 @@
       <LoadingComponent />
     </div>
     <div v-else>
-      <div v-if = "bookingSuccess" class="confirmation-card">
+      <div v-if="bookingSuccess" class="confirmation-card">
         <div class="icon-check">
           <i class="fa fa-check-circle"></i>
         </div>
@@ -16,20 +16,24 @@
         </div>
         <div class="details">
           <p>
-            <i class="fa fa-calendar-alt"></i> Ngày: {{ appointment_info.date }} &nbsp;&nbsp;&nbsp;
-            Thời gian: {{ appointment_info.time }}
+            <span class="label"><i class="fa fa-calendar-alt"></i> Ngày:</span>
+            <span class="value">{{ appointment_info.date }}</span>
           </p>
           <p>
-            <i class="fa fa-map-marker-alt"></i> Địa chỉ: {{ appointment_info.doctor_address }} 
+            <span class="label"><i class="fa fa-clock"></i> Thời gian:</span>
+            <span class="value">{{ appointment_info.time }}</span>
           </p>
           <p>
-            <i class="fa fa-stethoscope"></i> Dịch vụ: <strong> {{ appointment_info.service }}</strong>
+            <span class="label"><i class="fa fa-map-marker-alt"></i> Địa chỉ:</span>
+            <span class="value">{{ appointment_info.doctor_address  }}</span>
           </p>
           <p>
-            <!-- <i class="fa fa-sticky-note"></i> Ghi chú: {{ appointment_info.note }} -->
+            <span class="label"><i class="fa fa-stethoscope"></i> Dịch vụ:</span>
+            <span class="value"><strong>{{ appointment_info.service }}</strong></span>
           </p>
           <p>
-            <i class="fa fa-dollar-sign"></i> Giá tiền: {{ appointment_info.price }}₫
+            <span class="label"><i class="fa fa-dollar-sign"></i> Giá tiền:</span>
+            <span class="value">{{ appointment_info.price }}₫</span>
           </p>
         </div>
         <button @click="goHome" class="btn-home">Quay về trang chủ</button>
@@ -42,10 +46,10 @@
         <h2>ĐẶT LỊCH KHÁM THẤT BẠI</h2>
         <button @click="goHome" class="btn-home">Quay về trang chủ</button>
       </div>
-
     </div>
   </div>
 </template>
+
 
 <script>
 
@@ -60,7 +64,7 @@ export default {
       serviceId: '',
       doctorId: '',
       doctorTimeworkId: '',
-      isLoading: true,
+      isLoading: false,
       bookingSuccess: true,
     };
   },
@@ -72,14 +76,14 @@ export default {
       this.$router.push('/');
     },
     async addAppointment(){
-      this.isLoading = true;
-      const BEARER_TOKEN = localStorage.getItem("token");
       const data = {
         doctorId: this.doctorId,
         serviceId: this.serviceId,
         doctortimeworkId: this.doctorTimeworkId,
       }
       console.log(data)
+      this.isLoading = true;
+      const BEARER_TOKEN = localStorage.getItem("token");
       try {
         const response = await axios.post(
           "https://api.unime.site/UNIME/appointments",
@@ -138,7 +142,7 @@ export default {
   
 <style scoped>
 .booking-confirmation {
-  margin-top: 64px;
+  /* margin-top: 64px; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -211,6 +215,26 @@ h2 {
 .btn-home:hover {
   background-color: #254bb5;
 }
+
+.details p {
+  display: flex;
+  align-items: center;
+}
+
+.details .label {
+  flex: 0 0 150px; 
+  font-weight: bold;
+  color: #3169f5;
+  display: flex;
+  align-items: center;
+}
+
+.details .value {
+  flex: 1; 
+  color: #333;
+  text-align: left;
+}
+
 
 @media (max-width: 768px) {
   .confirmation-card {

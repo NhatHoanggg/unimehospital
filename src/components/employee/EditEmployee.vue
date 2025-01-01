@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="dob">Ngày sinh</label>
           <input
             type="date"
@@ -63,7 +63,7 @@
             v-model="employeeDateOfBirth"
             required
           />
-        </div>
+        </div> -->
 
         <div class="form-group">
           <label for="phone">Số điện thoại</label>
@@ -100,7 +100,7 @@ export default {
       employeeName: "",
       employeePhoneNumber: "",
       employeeGender: "",
-      employeeDateOfBirth: "",
+      // employeeDateOfBirth: "",
     };
   },
   methods: {
@@ -144,7 +144,7 @@ export default {
           employeeImage: this.employeeImage,
           employeePhoneNumber: this.employeePhoneNumber,
           employeeGender: this.employeeGender,
-          employeeDateOfBirth: "2003-10-06"
+          // employeeDateOfBirth: this.employeeDateOfBirth,
         };
 
         console.log(JSON.stringify(updatedUser));

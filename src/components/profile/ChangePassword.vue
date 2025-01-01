@@ -88,6 +88,15 @@ export default {
         return;
       }
 
+      if (this.newPassword.length < 8) {
+        toast.error(`Mật khẩu mới phải chứa ít nhất 8 ký tự!`, {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        return;
+      }
+
       const token = localStorage.getItem("token");
       const data = {
         oldPassword: this.currentPassword,

@@ -302,7 +302,7 @@ const routes = [
     path: '/doctor',
     name: 'DoctorDashboard',
     component: DoctorDashboard,
-    redirect: '/doctor/next-appointments',
+    redirect: '/doctor/timework',
     children: [
       {
         path: 'next-appointments',
@@ -397,7 +397,7 @@ router.afterEach((to, from) => {
 });
 
 router.afterEach((to, from) => {
-  if (to.name === 'Home' && from.name === 'SignIn') {
+  if (to.name === 'Home' && from.name === 'SignIn' && localStorage.getItem('isLoggedIn') === 'true') {
     toast('Đăng nhập thành công');
   }
 });

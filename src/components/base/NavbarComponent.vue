@@ -285,8 +285,8 @@ export default {
       this.showDropdown = false;
       localStorage.clear();
 
-      this.$router.push("/");
-      
+      // this.$router.push("/");
+      window.location.href = '/';
     },
     showNavItem(item) {
       const authStore = useAuthStore();

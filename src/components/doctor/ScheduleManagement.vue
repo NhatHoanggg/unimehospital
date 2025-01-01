@@ -1,31 +1,38 @@
 <template>
   <div class="schedule">
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th v-for="(day, index) in days" :key="index">{{ day }}</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th v-for="(date, index) in dates" :key="index">{{ date }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(period, index) in periods" :key="index">
-          <td class="period">{{ shifts[period] }}</td>
-          <td
-            v-for="(day, dayIndex) in days"
-            :key="dayIndex"
-            :class="['time-slot', { selected: isSelected(dayIndex, period) }]"
-          >
-            <button @click="toggleSelection(dayIndex, period)">
-              {{ isSelected(dayIndex, period) ? "Đã chọn" : "Click để chọn" }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <h2>Bác sĩ click để chọn lịch bận</h2>
+    <div v-if="isLoading" class ="container">
+      <LoadingComponent />
+      <p>Đang tải dữ liệu</p>
+    </div>
+    <div v-else>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="(day, index) in days" :key="index">{{ day }}</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th v-for="(date, index) in dates" :key="index">{{ date }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(period, index) in periods" :key="index">
+            <td class="period">{{ shifts[period] }}</td>
+            <td
+              v-for="(day, dayIndex) in days"
+              :key="dayIndex"
+              :class="['time-slot', { selected: isSelected(dayIndex, period) }]"
+            >
+              <button @click="toggleSelection(dayIndex, period)">
+                {{ isSelected(dayIndex, period) ? "Đã chọn" : "Click để chọn" }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- <div class="selected-slots">
       <h3>Các khung giờ đã chọn:</h3>
@@ -38,15 +45,15 @@
     <button @click="sendData" class="send-button" :disabled="!isSendAllowed">
       Gửi dữ liệu
     </button>
-    <p v-if="!isSendAllowed" class="warning-text">
-      Đã đăng kí lịch hẹn
-    </p>
+    <p v-if="!isSendAllowed" class="warning-text">Đã đăng kí lịch hẹn</p>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import { toast } from "vue3-toastify";
+import LoadingComponent from "../tools/LoadingComponent.vue";
+
 export default {
   data() {
     return {
@@ -68,8 +75,13 @@ export default {
       selectedSlots: [],
       weekNumber: 0,
       timeworkList: [],
+      isLoading: false,
     };
   },
+  components: {
+    LoadingComponent,
+  },
+
   computed: {
     isSendAllowed() {
       const isSendAllowed = localStorage.getItem("isSendAllowed");
@@ -92,6 +104,7 @@ export default {
     },
 
     async getTimeworkList() {
+      this.isLoading = true;
       try {
         const response = await axios.get(
           "https://api.unime.site/UNIME/timeworks/get/timewordList"
@@ -99,9 +112,14 @@ export default {
 
         if (response.status === 200) {
           this.timeworkList = response.data.result;
-          console.log("Lấy danh sách timework thành công");
+          toast.success(`Lấy danh sách timework thành công!`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          this.isLoading = false;
         } else {
-          console.error("Lấy danh sách timework thất bại");
+          // console.error("Lấy danh sách timework thất bại");
           toast.error(`Lấy danh sách timework thất bại!`, {
             rtl: false,
             limit: 3,
@@ -128,7 +146,7 @@ export default {
       );
 
       const startOfNextWeek = new Date(currentMonday);
-      startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7  ); 
+      startOfNextWeek.setDate(currentMonday.getDate() + 7 + 7);
 
       this.dates = [];
       this.datesToSend = [];
@@ -136,13 +154,13 @@ export default {
       for (let i = 0; i < 6; i++) {
         const date = new Date(startOfNextWeek);
         date.setDate(startOfNextWeek.getDate() + i);
-        
+
         this.datesToSend.push(date);
-        
+
         const formattedDate = `${date.getDate()}/${
           date.getMonth() + 1
         }/${date.getFullYear()}`;
-        
+
         this.dates.push(formattedDate);
       }
 
@@ -155,13 +173,20 @@ export default {
     getWeekNumber(d) {
       const date = new Date(d);
       date.setHours(0, 0, 0, 0);
-      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+      date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
       const week1 = new Date(date.getFullYear(), 0, 4);
-      const week = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
-      
+      const week =
+        1 +
+        Math.round(
+          ((date.getTime() - week1.getTime()) / 86400000 -
+            3 +
+            ((week1.getDay() + 6) % 7)) /
+            7
+        );
+
       return {
         week: week,
-        year: date.getFullYear()
+        year: date.getFullYear(),
       };
     },
 
@@ -173,6 +198,14 @@ export default {
       if (slotIndex > -1) {
         this.selectedSlots.splice(slotIndex, 1);
       } else {
+        if (this.selectedSlots.length >= 4) {
+          toast.error("Chỉ được chọn tối đa 4 khung giờ!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          return;
+        }
         this.selectedSlots.push({ dayIndex, period });
       }
     },
@@ -196,6 +229,7 @@ export default {
     },
 
     async sendData() {
+      this.isLoading = true;
       const formattedData = [];
       const weekInfo = this.getWeekNumber(this.datesToSend[0]);
 
@@ -233,13 +267,16 @@ export default {
         );
 
         if (response.status === 200) {
+          this.isLoading = false;
           console.log("Thêm timework thành công", response.data);
           toast.success(`Thêm timework thành công!`, {
             rtl: false,
             limit: 3,
             position: toast.POSITION.TOP_RIGHT,
           });
+          localStorage.setItem("isSendAllowed", false);
         } else {
+          this.isLoading = false;
           console.error("Thêm timework thất bại", response.data);
           toast.error(`Thêm timework thất bại!`, {
             rtl: false,
@@ -261,6 +298,14 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 100px;
+}
+
 .schedule {
   margin-top: 70px;
 }

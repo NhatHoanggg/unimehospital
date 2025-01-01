@@ -89,6 +89,7 @@ export default {
       employeeImage: null,
       employeeGender: null,
       selectedDepartment: null,
+      isSelectedDepartment: false,
       isLoading: false,
       defaultAvatar: "https://via.placeholder.com/200",
       formFields: [
@@ -121,6 +122,7 @@ export default {
     
     handleDepartmentSelected(payload) {
       this.selectedDepartment = payload.department.value;
+      this.isSelectedDepartment = true;
     },
 
     resetForm(){
@@ -133,6 +135,27 @@ export default {
     
     async addEmployee() {
       this.isLoading = true;
+      if (!this.isSelectedDepartment) {
+        // alert("Vui lòng chọn khoa cho nhân viên!");
+        toast.warning("Vui lòng chọn khoa cho nhân viên!", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        this.isLoading = false;
+        return;
+      }
+
+      if (!this.employeeImage) {
+        // alert("Vui lòng chọn ảnh đại diện cho nhân viên!");
+        toast.warning("Vui lòng chọn ảnh đại diện cho nhân viên!", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        this.isLoading = false;
+        return;
+      }
 
       try {
         if (this.employeeImage && typeof this.employeeImage !== "string") {
