@@ -70,6 +70,7 @@ export default {
   },
   mounted() {
     const serviceId = this.$route.params.id;
+    this.serviceId = serviceId;
     const serviceData = localStorage.getItem("selectedService");
 
     if (serviceData) {
@@ -127,6 +128,7 @@ export default {
       
       const appointment_info = {
         serviceId: this.serviceId,
+        doctorId: this.doctorId,
         doctorTimeworkId: this.doctorTimeworkId,
         doctor_name: this.doctor.doctorName,
         doctor_specialty: this.doctor.departmentName,

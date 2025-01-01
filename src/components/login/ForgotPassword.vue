@@ -36,6 +36,7 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
 
 export default {
   data() {
@@ -54,18 +55,34 @@ export default {
           );
           if (response.data.code === 1000) {
             this.code = response.data.result; 
+            toast.success("Mật khẩu mới đã được gửi vào email của bạn",{
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
           } else {
-            this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+            this.errorMessage = "Có lỗi xảy ra khi gửi mật khẩu.";
+            toast.error("Có lỗi xảy ra khi gửi mật khẩu.",{
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
           }
         } catch (error) {
-          console.error("Error sending OTP:", error);
-          this.errorMessage = "Có lỗi xảy ra khi gửi mã OTP.";
+          console.error("Error sending password:", error);
+          this.errorMessage = "Có lỗi xảy ra khi gửi mã.";
+          toast.error("User không tồn tại",{
+                      rtl: false,
+                      limit: 3,
+                      position: toast.POSITION.TOP_RIGHT,
+                    },);
         }
-        alert("Mật khẩu mới đã được gửi vào email của bạn");
-        this.$router.push({ 
-          path: "/sign-in", 
-          query: { email: this.email } 
-        });
+        // alert("Mật khẩu mới đã được gửi vào email của bạn");
+        
+        // this.$router.push({ 
+        //   path: "/sign-in", 
+        //   query: { email: this.email } 
+        // });
       } else {
         this.errorMessage = "Vui lòng nhập email hợp lệ";
       }

@@ -53,7 +53,7 @@ export default {
   name: 'DoctorSchedule',
   data() {
     return {
-      currentWeek: 1,
+      currentWeek: this.getCurrentWeek(),
       scheduleData: [],
       daysOfWeek: ['THỨ HAI', 'THỨ BA', 'THỨ TƯ', 'THỨ NĂM', 'THỨ SÁU', 'THỨ BẢY', 'CHỦ NHẬT'],
       timeSlots: [
@@ -85,17 +85,27 @@ export default {
           const uniqueWeeks = [...new Set(this.scheduleData.map(s => s.weekOfYear))]
           uniqueWeeks.sort((a, b) => a - b) 
           
-          if (uniqueWeeks.length >= 3) {
-            // console.log('Tuần của phần tử thứ 3:', uniqueWeeks[2])
+          localStorage.setItem('isSendAllowed', true)
+          if (this.currentWeek + 2 === uniqueWeeks.at(-1)) {
             localStorage.setItem('isSendAllowed', false)
-          }
-          else {
-            localStorage.setItem('isSendAllowed', true)
           }
         }
       } catch (error) {
         console.error('Error fetching schedule:', error)
       }
+    },
+
+    getCurrentWeek() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const yearStart = new Date(today.getFullYear(), 0, 4);
+
+      const weekStart = new Date(yearStart);
+      weekStart.setDate(yearStart.getDate() - (yearStart.getDay() + 6) % 7);
+
+      const daysSinceStart = Math.round((today - weekStart) / (24 * 60 * 60 * 1000));
+
+      return Math.floor(daysSinceStart / 7) + 1;
     },
 
     getSlotClass(timeSlot, day) {

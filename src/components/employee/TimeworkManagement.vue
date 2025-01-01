@@ -5,7 +5,11 @@
       <button @click="changeWeek(-1)" :disabled="isPreviousDisabled">Tuần trước</button>
       <button @click="changeWeek(1)" :disabled="isNextDisabled">Tuần sau</button>
     </div>
-    <table class="schedule-table">
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+    <table v-else class="schedule-table">
       <thead>
         <tr>
           <th>Ca/Ngày</th>
@@ -25,25 +29,48 @@
           </td>
         </tr>
       </tbody>
-    </table>
-    <div v-if="loading" class="loading">Đang tải...</div>
-    <div v-if="error" class="error">{{ error }}</div>
+      <!-- Modal hiển thị danh sách bác sĩ -->
+      <div v-if="availableDoctors.length" class="doctor-modal">
+        <h3> {{ formatDay(selectedDay) }} - Ca: {{ selectedShift }}</h3>
+        <ul>
+          <li v-for="doctor in availableDoctors" :key="doctor.doctorId">
+            <button v-if = "doctor.doctorTimeworkStatus=='Busy'" >
+              <i class="fas fa-times"></i>
+            </button>
 
-    <!-- Modal hiển thị danh sách bác sĩ -->
-    <div v-if="availableDoctors.length" class="doctor-modal">
-      <h3> {{ formatDay(selectedDay) }} - Ca: {{ selectedShift }}</h3>
-      <ul>
-        <li v-for="doctor in availableDoctors" :key="doctor.doctorId">
-          {{ doctor.doctorName }}
-        </li>
-      </ul>
-      <button @click="closeDoctorModal">Đóng</button>
-    </div>
+            <button v-else @click="handleChangeTimeworkStatus(doctor)">
+              <i class="fas fa-edit" ></i>
+            </button>
+          
+            {{ doctor.doctorName }}  
+            ({{ doctor.doctorTimeworkStatus }})
+          </li>
+        </ul>
+        <button @click="closeDoctorModal">Đóng</button>
+      </div>
+    </table>
+    <!-- <div v-if="loading" class="loading">Đang tải...</div> -->
+    <div v-if="error" class="error">{{ error }}</div>
+    <AlertModal
+      :isVisible="isModalVisible"
+      :type="modalType"
+      :title="modalTitle"
+      :content="modalContent"
+      @action="handleModalAction"
+    />
+    <button class="close-button" @click="closeModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
+import AlertModal from "../tools/AlertModal.vue";
+import LoadingComponent from "../tools/LoadingComponent.vue";
 
 export default {
   name: "WeeklySchedule",
@@ -70,8 +97,26 @@ export default {
       selectedDay: null,
       selectedShift: null,
       availableDoctors: [],
+
+      doctors: [],
+      department: null,
+      departmentId: null,
+
+      isLoading: true,
+      isModalVisible: false,
+      modalType: "",
+      modalTitle: "",
+      modalContent: "",
+
+      selectedDoctor: null,
     };
   },
+
+  components: {
+    AlertModal,
+    LoadingComponent,
+  },
+
   computed: {
     isPreviousDisabled() {
       return (
@@ -85,6 +130,19 @@ export default {
     },
   },
   methods: {
+    // showAvailableDoctors(day, shift) {
+    //   this.selectedDay = day;
+    //   this.selectedShift = shift;
+    //   const [startTime, endTime] = shift.split("-");
+    //   this.availableDoctors = this.schedules.filter(
+    //     (schedule) =>
+    //       schedule.dayOfWeek === day &&
+    //       schedule.startTime === startTime &&
+    //       schedule.endTime === endTime &&
+    //       schedule.doctorTimeworkStatus === "Available"
+    //   );
+    // },
+
     showAvailableDoctors(day, shift) {
       this.selectedDay = day;
       this.selectedShift = shift;
@@ -93,54 +151,67 @@ export default {
         (schedule) =>
           schedule.dayOfWeek === day &&
           schedule.startTime === startTime &&
-          schedule.endTime === endTime &&
-          schedule.doctorTimeworkStatus === "Available"
+          schedule.endTime === endTime
       );
     },
+
+    handleChangeTimeworkStatus(doctor){
+      this.selectedDoctor = doctor;
+      this.modalType = "warning";
+      this.modalTitle = `Cập nhật ca làm việc`;
+      this.modalContent = `Cập nhật trạng thái làm việc của bác sĩ ${doctor.doctorName}`;
+      this.isModalVisible = true;
+    },
+
+    async handleModalAction(action) {
+
+      const BEARER_TOKEN = localStorage.getItem("token");
+      if (action === "OK" && this.pendingDepartmentId !== null) {
+        this.isLoading = true;
+        await axios
+          .put(
+            `https://api.unime.site/UNIME/doctortimework`,
+            {
+              doctorTimeworkId: this.selectedDoctor.doctorTimeworkId,
+              doctorTimeworkStatus: "Busy",
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${BEARER_TOKEN}`,
+              },
+            }
+          )
+          .then((response) => {
+            if (response.data.code === 1000) {
+              this.fetchSchedule();
+              this.closeDoctorModal();
+              // alert("Cập nhật trạng thái làm việc thành công!");
+              toast.success('Cập nhật trạng thái làm việc thành công!', {
+                rtl: false,
+                limit: 3,
+                position: toast.POSITION.TOP_RIGHT,
+              });
+              this.isModalVisible = false;
+              this.selectedDoctor = null;
+              this.isLoading = false;
+            } else {
+              this.error = "Không thể cập nhật trạng thái làm việc!";
+            }
+          })
+          .catch((err) => {
+            this.error = `Lỗi: ${err.message}`;
+          });
+      }
+      else if (action === "Cancel") {
+        this.isModalVisible = false;
+      }
+    },
+
     closeDoctorModal() {
       this.availableDoctors = [];
       this.selectedDay = null;
       this.selectedShift = null;
     },
-    // getCurrentWeek() {
-    //   const now = new Date();
-    //   const year = now.getFullYear();
-
-    //   const firstJan = new Date(year, 0, 1);
-    //   const firstMonday = new Date(
-    //     year,
-    //     0,
-    //     firstJan.getDate() + ((8 - (firstJan.getDay() || 7)) % 7)
-    //   );
-
-    //   const daysSinceFirstMonday = Math.floor(
-    //     (now - firstMonday) / (24 * 60 * 60 * 1000)
-    //   );
-
-    //   let week = Math.floor(daysSinceFirstMonday / 7) + 1;
-
-    //   if (daysSinceFirstMonday < 0) {
-    //     const lastDec = new Date(year - 1, 11, 31);
-    //     const lastDecFirstMonday = new Date(
-    //       lastDec.getFullYear(),
-    //       0,
-    //       lastDec.getDate() + ((8 - (lastDec.getDay() || 7)) % 7)
-    //     );
-    //     week =
-    //       Math.floor(
-    //         (lastDec - lastDecFirstMonday) / (7 * 24 * 60 * 60 * 1000)
-    //       ) + 1;
-    //     return { year: year - 1, week };
-    //   }
-
-    //   if (week > 52) {
-    //     week = 1;
-    //     return { year: year + 1, week };
-    //   }
-    //   console.log("Current Year:", year, "Current Week:", week);
-
-    //   return { year, week };
-    // },
 
     getCurrentWeek() {
       const today = new Date();
@@ -164,17 +235,27 @@ export default {
       };
       return days[dayOfWeek] || dayOfWeek;
     },
+    // getDoctorCount(day, shift) {
+    //   // Đếm số bác sĩ có trạng thái Available trong một ca
+    //   const [startTime, endTime] = shift.split("-");
+    //   return this.schedules.filter(
+    //     (schedule) =>
+    //       schedule.dayOfWeek === day &&
+    //       schedule.startTime === startTime &&
+    //       schedule.endTime === endTime &&
+    //       schedule.doctorTimeworkStatus === "Available" 
+    //   ).length;
+    // },
     getDoctorCount(day, shift) {
-      // Đếm số bác sĩ có trạng thái Available trong một ca
       const [startTime, endTime] = shift.split("-");
       return this.schedules.filter(
         (schedule) =>
           schedule.dayOfWeek === day &&
           schedule.startTime === startTime &&
-          schedule.endTime === endTime &&
-          schedule.doctorTimeworkStatus === "Available"
+          schedule.endTime === endTime
       ).length;
     },
+
     changeWeek(step) {
       this.weekOfYear += step;
 
@@ -190,7 +271,7 @@ export default {
     },
 
     fetchSchedule() {
-      this.loading = true;
+      this.isLoading = true;
       this.error = null;
 
       const BEARER_TOKEN = localStorage.getItem("token");
@@ -214,13 +295,66 @@ export default {
           this.error = `Lỗi: ${err.message}`;
         })
         .finally(() => {
-          this.loading = false;
+          this.isLoading = false;
         });
     },
+
+    async getDepartment() {
+      const token = localStorage.getItem("token");
+      this.isLoading = true;
+      await axios
+        .get(`https://api.unime.site/UNIME/employees/myInfo`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data.code === 1000) {
+            this.department = response.data.result.departmentName; 
+            console.log("Chuyên khoa: ", this.department);
+            this.getDoctorList();
+            this.isLoading = false;
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi tải dữ liệu:", error);
+        });
+    },
+
+    async getDoctorList() {
+      this.isLoading = true;
+      await axios
+        .get(
+          `https://api.unime.site/UNIME/departments/get/?department_name=${this.department}`
+        )
+        .then((response) => {
+          this.departmentId = response.data.result[0].departmentId || [];
+          console.log("Department Id: ", this.departmentId);
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+          this.isLoading = false;
+        });
+
+      await axios
+        .get(
+          `https://api.unime.site/UNIME/doctors/get/byDepartment?doctor_departmentId=${this.departmentId}`
+        )
+        .then((response) => {
+          this.doctors = response.data.result || [];
+          console.log("Danh sách bác sĩ: ", this.doctors);
+        })
+        .catch((error) => {
+          console.error("Error fetching data: ", error);
+          this.isLoading = false;
+        });
+      
+    },
+
   },
   created() {
     this.fetchSchedule();
     console.log("Current Week: ", this.getCurrentWeek());
+
+    this.getDepartment();
   },
 };
 </script>
@@ -261,6 +395,7 @@ export default {
 }
 
 .schedule-table {
+  position: relative;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -279,8 +414,16 @@ export default {
 }
 
 .loading {
-  color: #007bff;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  flex-direction: column;
+}
+
+.fas{
+  width: 20px;
+  height: 20px;
 }
 
 .error {
@@ -297,7 +440,7 @@ export default {
 }
 
 .doctor-modal {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -306,6 +449,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  text-align: justify;
 }
 .doctor-modal h3 {
   margin-bottom: 10px;
@@ -323,6 +467,17 @@ export default {
   background: #007bff;
   color: white;
   border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
 }
