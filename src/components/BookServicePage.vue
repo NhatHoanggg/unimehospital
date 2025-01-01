@@ -69,19 +69,19 @@ export default {
     DatePickerComponent,
   },
   mounted() {
-    const serviceId = this.$route.params.id;
-    this.serviceId = serviceId;
+    this.serviceId = this.$route.params.id;
+    // this.serviceId = serviceId;
     const serviceData = localStorage.getItem("selectedService");
 
     if (serviceData) {
       const service = JSON.parse(serviceData);
-      if (service.serviceId == serviceId) {
+      if (service.serviceId == this.serviceId) {
         this.service = service;
       } else {
-        this.fetchServiceData(serviceId);
+        this.fetchServiceData(this.serviceId);
       }
     } else {
-      this.fetchServiceData(serviceId);
+      this.fetchServiceData(this.serviceId);
     }
   },
   methods: {
