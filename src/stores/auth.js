@@ -69,13 +69,28 @@ export const useAuthStore = defineStore('auth', () => {
     return timeLeft <= 60 && timeLeft > 0;
   };
 
-  const logout = () => {
-    isLoggedIn.value = false;
-    user.value = null;
-    token.value = null;
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+  const logout = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await axios.post("https://api.unime.site/UNIME/auth/logout", { token: token });
+        console.log("Logout response:", response.data);
+        isLoggedIn.value = false;
+        user.value = null;
+        token.value = null;
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    }
+    // isLoggedIn.value = false;
+    // user.value = null;
+    // token.value = null;
+    // localStorage.removeItem('isLoggedIn');
+    // localStorage.removeItem('user');
+    // localStorage.removeItem('token');
   };
 
   const initialize = () => {
