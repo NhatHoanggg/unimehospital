@@ -50,8 +50,9 @@
         </div>
         <div class="doctor-info">
           <h3>{{ doctor.doctorName }}</h3>
-          <p>{{ doctor.doctorPhoneNumber }}</p>
-          <p>{{ doctor.doctorDescription }}</p>
+          <p>Chuyên khoa: {{ doctor.departmentName }}</p>
+          <p>Email: {{ doctor.doctorEmail }}</p>
+          <p>Ngày sinh: {{ formatDate(doctor.doctorDateOfBirth) }}</p>
           <div class="doctor-actions">
             <button class="btn view-more" @click="viewMore(doctor)">
               Xem thêm
@@ -131,6 +132,10 @@ export default {
       this.currentTab = "service";
       this.$router.push("/booking/services");
       console.log("Go to services");
+    },
+
+    formatDate(date) {
+      return new Date(date).toLocaleDateString("vi-VN");
     },
 
     async handleSearchClick() {

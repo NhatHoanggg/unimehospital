@@ -205,7 +205,7 @@
   
         try {
           const token = localStorage.getItem("token");
-          const response = await axios.post(
+          const response = await axios.put(
             "https://api.unime.site/UNIME/appointments/updateCancelledByEmployee",
             {
               appointmentId: this.selectedAppointmentId,

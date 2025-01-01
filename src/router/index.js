@@ -402,14 +402,4 @@ router.afterEach((to, from) => {
   }
 });
 
-router.afterEach((to, from) => {
-  if (to.name === 'BookingSuccess' && from.name === 'BookDoctorPage') {
-    toast.success('Đặt lịch hẹn thành công!', {
-      rtl: false,
-      limit: 3,
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  }
-});
-
 export default router;

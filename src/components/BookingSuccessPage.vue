@@ -1,33 +1,48 @@
 <template>
   <div class="booking-confirmation">
-    <div class="confirmation-card">
-      <div class="icon-check">
-        <i class="fa fa-check-circle"></i>
+    <div v-if="isLoading" class="loading">
+      <p>Đang tải dữ liệu</p>
+      <LoadingComponent />
+    </div>
+    <div v-else>
+      <div v-if = "bookingSuccess" class="confirmation-card">
+        <div class="icon-check">
+          <i class="fa fa-check-circle"></i>
+        </div>
+        <h2>ĐẶT LỊCH KHÁM THÀNH CÔNG</h2>
+        <div class="doctor-info">
+          <p><strong>{{ appointment_info.doctor_name }}</strong></p>
+          <p>Chuyên khoa: {{ appointment_info.doctor_specialty }}</p>
+        </div>
+        <div class="details">
+          <p>
+            <i class="fa fa-calendar-alt"></i> Ngày: {{ appointment_info.date }} &nbsp;&nbsp;&nbsp;
+            Thời gian: {{ appointment_info.time }}
+          </p>
+          <p>
+            <i class="fa fa-map-marker-alt"></i> Địa chỉ: {{ appointment_info.doctor_address }} 
+          </p>
+          <p>
+            <i class="fa fa-stethoscope"></i> Dịch vụ: <strong> {{ appointment_info.service }}</strong>
+          </p>
+          <p>
+            <!-- <i class="fa fa-sticky-note"></i> Ghi chú: {{ appointment_info.note }} -->
+          </p>
+          <p>
+            <i class="fa fa-dollar-sign"></i> Giá tiền: {{ appointment_info.price }}₫
+          </p>
+        </div>
+        <button @click="goHome" class="btn-home">Quay về trang chủ</button>
       </div>
-      <h2>ĐẶT LỊCH KHÁM THÀNH CÔNG</h2>
-      <div class="doctor-info">
-        <p><strong>{{ appointment_info.doctor_name }}</strong></p>
-        <p>Chuyên khoa: {{ appointment_info.doctor_specialty }}</p>
+
+      <div v-else class="confirmation-card">
+        <div class="icon-check">
+          <i class="fa fa-times-circle"></i>
+        </div>
+        <h2>ĐẶT LỊCH KHÁM THẤT BẠI</h2>
+        <button @click="goHome" class="btn-home">Quay về trang chủ</button>
       </div>
-      <div class="details">
-        <p>
-          <i class="fa fa-calendar-alt"></i> Ngày: {{ appointment_info.date }} &nbsp;&nbsp;&nbsp;
-          Thời gian: {{ appointment_info.time }}
-        </p>
-        <p>
-          <i class="fa fa-map-marker-alt"></i> Địa chỉ: {{ appointment_info.doctor_address }} 
-        </p>
-        <p>
-          <i class="fa fa-stethoscope"></i> Dịch vụ: <strong> {{ appointment_info.service }}</strong>
-        </p>
-        <p>
-          <!-- <i class="fa fa-sticky-note"></i> Ghi chú: {{ appointment_info.note }} -->
-        </p>
-        <p>
-          <i class="fa fa-dollar-sign"></i> Giá tiền: {{ appointment_info.price }}₫
-        </p>
-      </div>
-      <button @click="goHome" class="btn-home">Quay về trang chủ</button>
+
     </div>
   </div>
 </template>
@@ -36,26 +51,35 @@
 
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
+import LoadingComponent from './tools/LoadingComponent.vue';
 
 export default {
   data() {
     return {
       appointment_info: {},
       serviceId: '',
+      doctorId: '',
       doctorTimeworkId: '',
+      isLoading: true,
+      bookingSuccess: true,
     };
+  },
+  components: {
+    LoadingComponent,
   },
   methods: {
     goHome() {
       this.$router.push('/');
     },
     async addAppointment(){
+      this.isLoading = true;
       const BEARER_TOKEN = localStorage.getItem("token");
       const data = {
-        doctorserviceId: this.serviceId,
+        doctorId: this.doctorId,
+        serviceId: this.serviceId,
         doctortimeworkId: this.doctorTimeworkId,
       }
-      // console.log(data)
+      console.log(data)
       try {
         const response = await axios.post(
           "https://api.unime.site/UNIME/appointments",
@@ -63,14 +87,12 @@ export default {
           {
             headers: {
               Authorization: `Bearer ${BEARER_TOKEN}`,
-              // Authorization: `Bearer ${JSON.parse(BEARER_TOKEN)}`,
             },
           }
         );
 
         if (response.status === 200) {
-          console.log("Đặt lịch thành công:", response.data);
-          // alert("Đặt lịch thành công!");
+          this.isLoading = false;
           toast.success(`Đặt lịch thành công!`,
                     {
                       rtl: false,
@@ -79,7 +101,8 @@ export default {
                     },); 
         } else {
           console.error("Lỗi khi đặt lịch:", response.data);
-          // alert("Đặt lịch thất bại.");
+          this.isLoading = false;
+          this.bookingSuccess = false;
           toast.error(`Đặt lịch thất bại!`,
                     {
                       rtl: false,
@@ -89,7 +112,8 @@ export default {
           }
       } catch (error) {
         console.error("Lỗi xảy ra:", error);
-        // alert("Có lỗi xảy ra trong quá trình xử lý.");
+        this.isLoading = false;
+        this.bookingSuccess = false;
         toast.error(`Có lỗi xảy ra trong quá trình xử lý!`,
                     {
                       rtl: false,
@@ -105,7 +129,7 @@ export default {
       this.appointment_info = JSON.parse(appointmentData);
       this.doctorTimeworkId = this.appointment_info.doctorTimeworkId;
       this.serviceId = this.appointment_info.serviceId;
-      // console.log(this.appointment_info.doctorTimeworkId);
+      this.doctorId = this.appointment_info.doctorId;
       this.addAppointment();
     }
   }

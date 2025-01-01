@@ -212,6 +212,18 @@ export default {
       // this.authStore.refresh();
     },
   },
+  created() {
+    console.log(this.authStore?.user);
+    if (this.authStore?.user) {
+      if (this.authStore.user.scope === "EMPLOYEE") {
+        this.$router.push("employee");
+      } else if (this.authStore.user.scope === "DOCTOR") {
+        this.$router.push("/doctor");
+      } else if (this.authStore.user.scope === "ADMIN") {
+        this.$router.push("/admin");
+      }
+    }
+  },
 };
 </script>
 

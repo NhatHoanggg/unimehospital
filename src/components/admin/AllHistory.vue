@@ -15,6 +15,7 @@
               <th style="width: 150px">Ngày</th>
               <th style="width: 150px">Thời gian</th>
               <th style="width: 200px">Bác sĩ</th>
+              <th style="width: 200px">Bệnh nhân</th>
               <th style="width: 200px">Dịch vụ</th>
               <th style="width: 100px">Trạng thái</th>
             </tr>
@@ -28,6 +29,7 @@
               <td>{{ formatAppointmentDate(appointment) }}</td>
               <td>{{ `${appointment.startTime} - ${appointment.endTime}` }}</td>
               <td>{{ appointment.doctorName }}</td>
+              <td>{{ appointment.patientName }}</td>
               <td>{{ appointment.serviceName }}</td>
               <td>
                 <span :class="getStatusClass(appointment.appointmentStatus)">{{

@@ -74,6 +74,7 @@
 import axios from "axios";
 import AlertModal from "../tools/AlertModal.vue";
 import Multiselect from "vue-multiselect";
+import { toast } from "vue3-toastify";
 
 export default {
   components: { AlertModal, Multiselect },
@@ -126,7 +127,7 @@ export default {
       this.isModalVisible = true;
     },
     
-    handleModalAction(action) {
+    async handleModalAction(action) {
       const BEARER_TOKEN = localStorage.getItem("token");
 
       if (action === "OK" && this.pendingDoctorId !== null) {
@@ -137,36 +138,73 @@ export default {
 
         console.log("To delete: ", doctorServiceData);
 
-        axios
-          .delete(`https://api.unime.site/UNIME/doctorservice`, {
-            doctorServiceData,
+        try {
+          await axios.delete(`https://api.unime.site/UNIME/doctorservice`, {
+            data: doctorServiceData, // Gửi data trong body với 'data'
             headers: {
               Authorization: `Bearer ${BEARER_TOKEN}`,
             },
-          })
-          .then(() => {
-            this.doctors = this.doctors.filter(
-              (doctor) => doctor.doctorId !== this.pendingDoctorId
-            );
-            this.pendingDoctorId = null;
-            this.isModalVisible = false;
-          })
-          .catch((error) => {
-            if (error.response) {
-              console.error("Error response:", error.response.data);
-              alert(`Error: ${error.response.data.message}`);
-            } else {
-              console.error("Error:", error);
-            }
           });
+
+          // Nếu thành công, cập nhật lại state
+          this.doctors = this.doctors.filter(
+            (doctor) => doctor.doctorId !== this.pendingDoctorId
+          );
+          this.pendingDoctorId = null;
+          this.isModalVisible = false;
+
+          // Có thể hiển thị thông báo thành công nếu cần
+          toast.success('Xoá bác sĩ thành công', {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+
+        } catch (error) {
+          if (error.response) {
+            console.error("Error response:", error.response.data);
+            // toast.error(`Lỗi: ${error.response.data.message}`, {
+            let message = error.response.data.message;
+            // console.log("Message: ", message);
+            if (message === "Doctor service exited") {
+              message = "Bác sĩ đã có trong dịch vụ này!"
+            }
+
+            if (message === "Cannot delete as it has associated appointment.") {
+              message = "Không thể xóa vì bác sĩ có cuộc hẹn liên quan!"
+            }
+
+            toast.error(`Lỗi: ${message}`, {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          } else {
+            console.error("Error:", error);
+            toast.error('Lỗi không xác định', {
+              rtl: false,
+              limit: 3,
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          }
+        }
       } else {
         this.pendingDoctorId = null;
         this.isModalVisible = false;
       }
     },
 
-    confirmAddDoctor(doctorId) {
+    async confirmAddDoctor(doctorId) {
       const BEARER_TOKEN = localStorage.getItem("token");
+
+      if (!BEARER_TOKEN) {
+        toast.error("Token không hợp lệ. Vui lòng đăng nhập lại.", {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        return;
+      }
 
       const doctorServiceData = {
         doctorID: doctorId,
@@ -175,25 +213,43 @@ export default {
 
       console.log("To add: ", doctorServiceData);
 
-      axios
-        .post(`https://api.unime.site/UNIME/doctorservice`, doctorServiceData, {
-          headers: {
-            Authorization: `Bearer ${BEARER_TOKEN}`,
-          },
-        })
-        .then(() => {
-          this.fetchDoctors();
-          this.selectedDoctor = null;
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.error("Error response:", error.response.data);
-            alert(`Error: ${error.response.data.message}`);
-          } else {
-            console.error("Error:", error);
+      try {
+        await axios.post(
+          `https://api.unime.site/UNIME/doctorservice`,
+          doctorServiceData,
+          {
+            headers: {
+              Authorization: `Bearer ${BEARER_TOKEN}`,
+            },
           }
+        );
+
+        this.fetchDoctors();
+        this.selectedDoctor = null;
+        toast.success('Thêm bác sĩ thành công', {
+          rtl: false,
+          limit: 3,
+          position: toast.POSITION.TOP_RIGHT,
         });
+      } catch (error) {
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+          toast.error(`Lỗi: ${error.response.data.message}`, {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else {
+          console.error("Error:", error);
+          toast.error('Lỗi không xác định', {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      }
     },
+
 
     closeModal() {
       this.$emit("close");

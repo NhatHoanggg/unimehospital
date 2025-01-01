@@ -130,7 +130,7 @@ export default {
           patientImage: this.patientImage,
           patientName: this.patientName,
           patientAddress: this.patientAddress,
-          patientPhoneNumber: this.patientPhoneNumber,
+          patientPhoneNumber: "+84" + this.patientPhoneNumber.slice(0),
           patientGender: this.patientGender,
           patientDateOfBirth: this.patientDateOfBirth,
         };
@@ -187,7 +187,7 @@ export default {
             this.patientImage = user.patientImage;
             this.patientName = user.patientName;
             this.patientAddress = user.patientAddress;
-            this.patientPhoneNumber = user.patientPhoneNumber;
+            this.patientPhoneNumber = user.patientPhoneNumber.slice(3);
             this.patientGender = user.patientGender;
             this.patientDateOfBirth = user.patientDateOfBirth;
             this.avatar = user.patientImage || this.defaultAvatar;

@@ -5,16 +5,20 @@
       <div class="filter-container">
         <label for="date">Ngày:</label>
         <input type="date" v-model="filterDate" id="date" />
-        <button @click="searchAppointments">Search</button>
+        <button @click="searchAppointments">Tìm kiếm</button>
+        <button @click="reset">Đặt lại</button>
       </div>
-      <div class="table-container">
+      <div v-if = "appointments.length == 0">
+        <h2>Không có lịch hẹn</h2>
+      </div>
+      <div v-else class="table-container">
         <table>
           <thead>
             <tr>
               <th style="width: 60px">#</th>
               <th style="width: 150px">Ngày</th>
               <th style="width: 150px">Thời gian</th>
-              <th style="width: 200px">Tên bệnh nhân</th>
+              <!-- <th style="width: 200px">Tên bệnh nhân</th> -->
               <th style="width: 200px">Bác sĩ</th>
               <th style="width: 200px">Dịch vụ</th>
               <th style="width: 100px">Trạng thái</th>
@@ -29,7 +33,7 @@
               <td>{{ index + 1 }}</td>
               <td>{{ formatAppointmentDate(appointment) }}</td>
               <td>{{ `${appointment.startTime} - ${appointment.endTime}` }}</td>
-              <td>{{ appointment.patientName }}</td>
+              <!-- <td>{{ appointment.patientName }}</td> -->
               <td>{{ appointment.doctorName }}</td>
               <td>{{ appointment.serviceName }}</td>
               <td>
@@ -96,8 +100,6 @@ export default {
       showModal: false,
       cancellationNote: "",
       selectedAppointmentId: null,
-
-
     };
   },
   computed: {
@@ -161,6 +163,7 @@ export default {
 
         if (response.data.code === 1000) {
           this.appointments = response.data.result;
+          // console.log("Appointments:", this.appointments.length == 0); 
         }
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -267,7 +270,8 @@ export default {
   padding: 50px;
   border-radius: 20px;
   border-width: 1px;
-  max-width: 960px;
+  /* max-width: 960px; */
+  width: 1024px;
   background-color: white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }

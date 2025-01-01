@@ -18,7 +18,6 @@
                 <th style="width: 200px">Bác sĩ</th>
                 <th style="width: 200px">Dịch vụ</th>
                 <th style="width: 100px">Trạng thái</th>
-                <th style="width: 100px">Hủy lịch</th>
               </tr>
             </thead>
             <tbody>
@@ -36,11 +35,6 @@
                   <span :class="getStatusClass(appointment.appointmentStatus)">{{
                     appointment.appointmentStatus
                   }}</span>
-                </td>
-                <td>
-                  <button class="cancel-btn" @click="cancelAppointment(appointment.appointmentId)">
-                    Hủy
-                  </button>
                 </td>
               </tr>
             </tbody>
@@ -173,56 +167,7 @@
         };
         return statusClasses[status] || "status-default";
       },
-  
-      cancelAppointment(id) {
-          console.log("Cancel appointment with id:", id);
-        this.selectedAppointmentId = id;
-        this.showModal = true;
-        this.cancellationNote = "";
-      },
-  
-      closeModal() {
-        this.showModal = false;
-        this.cancellationNote = "";
-        this.selectedAppointmentId = null;
-      },
-  
-      async confirmCancellation() {
-        if (!this.cancellationNote.trim()) {
-          alert("Vui lòng nhập lý do hủy lịch!");
-          return;
-        }
-  
-        const confirmed = confirm("Bạn có chắc chắn muốn hủy lịch hẹn này?");
-        if (!confirmed) return;
-  
-        try {
-          const token = localStorage.getItem("token");
-          const response = await axios.put(
-            "https://api.unime.site/UNIME/appointments/updateCancelledByPatient",
-            {
-              appointmentId: this.selectedAppointmentId,
-              appointmentNote: this.cancellationNote,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-  
-          if (response.data.code === 1000) {
-            alert("Hủy lịch hẹn thành công!");
-            this.closeModal();
-            this.fetchAppointments(); 
-          } else {
-            alert("Có lỗi xảy ra khi hủy lịch hẹn!");
-          }
-        } catch (error) {
-          console.error("Error cancelling appointment:", error);
-          alert("Có lỗi xảy ra khi hủy lịch hẹn!");
-        }
-      },
+   
   
       previousPage() {
         if (this.currentPage > 1) this.currentPage--;
