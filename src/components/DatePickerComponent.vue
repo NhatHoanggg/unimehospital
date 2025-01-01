@@ -186,6 +186,39 @@ export default {
       return checkDate < new Date(currentDate.setHours(0, 0, 0, 0));
     },
 
+    checkTodaySlot() {
+      const today = new Date();
+      const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+      const todayShifts = this.schedules[todayFormatted] || [];
+      
+      if (todayShifts.length === 0) {
+        console.log("Hôm nay không có ca làm việc.");
+      } else {
+        console.log("Các ca làm việc hôm nay trước khi loại bỏ:");
+
+        todayShifts.forEach((shift) => {
+          console.log(`Ca: ${shift.time}`);
+        });
+
+        const currentTime = today.getHours() * 60 + today.getMinutes(); 
+        const filteredShifts = todayShifts.filter((shift) => {
+          const [startTime] = shift.time.split("-");
+          const [startHour, startMinute] = startTime.split(":").map(Number);
+          const shiftStartTime = startHour * 60 + startMinute; 
+
+          return shiftStartTime >= currentTime;
+        });
+
+        this.schedules[todayFormatted] = filteredShifts;
+
+        // console.log("Các ca làm việc hôm nay sau khi loại bỏ:");
+        // filteredShifts.forEach((shift) => {
+        //   console.log(`Ca: ${shift.time}`);
+        // });
+      }
+    },
+
     async updateSchedules() {
       console.log("doctor id: ->", this.doctorId);
       this.isLoading = true;
@@ -214,6 +247,7 @@ export default {
                 doctorTimeworkId: shift.doctorTimeworkId,
               });
             });
+            this.checkTodaySlot();
         } else {
           console.error("Failed to fetch schedules", response.data.message);
         }

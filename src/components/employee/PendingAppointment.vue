@@ -258,7 +258,7 @@
   .wrapper {
     display: flex;
     justify-content: center;
-    height: 100vh;
+    /* height: 100vh; */
     width: 100%;
     margin-top: 64px;
     margin-bottom: 64px;
