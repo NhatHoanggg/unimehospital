@@ -7,11 +7,12 @@
     />
     <div class="search-bar">
       <DepartmentListComponent
-      style="width: 200px"
+      style="min-width: 200px"
             @department-selected="handleDepartmentSelected"
       />
       <input type="text" v-model="searchQuery" placeholder="Tìm kiếm bác sĩ hoặc dịch vụ..." />
-      <button @click="handleSearchClick">Tìm kiếm</button>
+      <button class="search" @click="handleSearchClick">Tìm kiếm</button>
+      <button @click="handleReset">Đặt lại</button>
     </div>
   </div>
 
@@ -93,6 +94,8 @@ export default {
       itemsPerPage: 5,
       totalPages: 1,
       isLoading: true,
+
+      temp: [],
     };
   },
   computed: {
@@ -111,6 +114,13 @@ export default {
       this.currentTab = 'service';
       this.$router.push('/booking/services');
       console.log('Go to services');
+    },
+
+    handleReset() {
+      this.searchQuery = "";
+      this.selectedDepartment = null;
+      this.services = this.temp;
+      this.totalPages = Math.ceil(this.services.length / this.itemsPerPage);
     },
 
     async handleSearchClick() {
@@ -133,6 +143,10 @@ export default {
         departmentName: payload.department.label,
         departmentId: payload.department.value
       }
+      if (this.temp.length > 0) {
+        this.services = this.temp;
+      } else this.temp = this.services;
+      
       const result = this.services
       .filter(service => service.departmentName === this.selectedDepartment.departmentName);
       
@@ -222,6 +236,8 @@ export default {
   border-radius: 0 5px 5px 0;
   cursor: pointer;
 }
+
+
 
 .search-bar button:hover {
   background-color: #0056b3;
@@ -345,5 +361,9 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.search{
+  border-radius: 0 0 0 0;
 }
 </style>

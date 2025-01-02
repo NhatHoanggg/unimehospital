@@ -5,9 +5,13 @@
         <div class="filter-container">
           <label for="date">Ngày:</label>
           <input type="date" v-model="filterDate" id="date" />
-          <button @click="searchAppointments">Search</button>
+          <button @click="searchAppointments">Tìm kiếm</button>
+          <button @click="reset">Đặt lại</button>
         </div>
-        <div class="table-container">
+        <div v-if = "appointments.length == 0">
+          <h2>Không có lịch hẹn</h2>
+        </div>
+        <div v-else class="table-container">
           <table>
             <thead>
               <tr>
@@ -137,6 +141,12 @@
           day: "2-digit",
         });
       },
+
+      formatDate(inputDate) {
+        const [year, month, day] = inputDate.split("-");
+        return `${day}/${month}/${year}`;
+      },
+
   
       async fetchAppointments() {
         try {
@@ -158,11 +168,23 @@
         }
       },
   
-      async searchAppointments() {
+      searchAppointments() {
         console.log("Searching appointments for date:", this.filterDate);
-        await this.fetchAppointments();
+        const data = [];
+        this.appointments.forEach((appointment) => {
+          console.log(this.formatAppointmentDate(appointment) == this.formatDate(this.filterDate));
+          if (this.formatAppointmentDate(appointment) == this.formatDate(this.filterDate)) {
+            data.push(appointment);
+          }
+        });
+        console.log("filtered : ->", data);
+        this.appointments = data;
       },
-  
+
+      reset() {
+        this.fetchAppointments();
+      },
+      
       getStatusClass(status) {
         const statusClasses = {
           Pending: "status-pending",
