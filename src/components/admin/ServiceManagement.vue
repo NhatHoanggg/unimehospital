@@ -35,17 +35,17 @@
               <td>{{ service.departmentName }}</td>
               <td>{{ service.servicePrice }} VND</td>
               <td class="action-container">
-                <button @click="openDetail(service)">Detail</button>
-                <button @click="cancelService(service.serviceId)">Cancel</button>
+                <button @click="openDetail(service)">Chi tiết</button>
+                <button @click="cancelService(service.serviceId)">Hủy</button>
               </td>
             </tr>
           </tbody>
         </table>
 
         <div class="pagination">
-          <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">Previous</button>
+          <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">Trước</button>
           <span>Page {{ currentPage }} of {{ totalPages }}</span>
-          <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">Next</button>
+          <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">Sau</button>
         </div>
       </div>
 
@@ -312,6 +312,13 @@ export default {
           });
         } catch (error) {
           console.error("Error deleting service:", error);
+          toast.error("Có lỗi xảy ra khi xóa dịch vụ!", {
+            rtl: false,
+            limit: 3,
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          this.pendingServiceId = null;
+          this.isModalVisible = false;
         }
       } else if (action === "Cancel") {
         this.pendingServiceId = null;

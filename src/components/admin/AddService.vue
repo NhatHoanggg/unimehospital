@@ -27,7 +27,7 @@
         />
       </div>
 
-      <div class="form-group">
+      <div class="form-groupx">
         <label for="department">Chuyên khoa:</label>
         <department-list-component-vue
           @department-selected="handleDepartmentSelected"
@@ -229,6 +229,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
+}
+
+.form-groupx {
+  display: flex;
+  align-items: left;
+  justify-content: left;
   margin-bottom: 20px;
 }
 
